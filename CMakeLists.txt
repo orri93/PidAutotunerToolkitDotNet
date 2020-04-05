@@ -9,6 +9,7 @@ set(CMAKE_PLATFORM_INDEPENDENT_CODE ON)
 option(GOS_PID_TOOLKIT_C "Build C version of PID Toolkit" OFF)
 option(GOS_PID_TOOLKIT_CPP "Build C++ version of PID Toolkit" ON)
 option(GOS_PID_TOOLKIT_TEST "Build and execute the unit tests" OFF)
+option(GOS_PID_ARDUINO_BASED_TUNING "Build the Arduino Based auto-tuning" ON)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
 
@@ -80,6 +81,35 @@ if (GOS_PID_TOOLKIT_CPP)
   set(gos_build_dependency_boost ON)
 endif (GOS_PID_TOOLKIT_CPP)
 
+if (GOS_PID_ARDUINO_BASED_TUNING)
+  set(gos_pid_arduino_based_include_dir
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp")
+  configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/arduino/autotuning/version.h.in"
+    "include/cpp/gos/pid/arduino/autotuning/version.h"
+    @ONLY)
+  set(gos_pid_arduino_based_version_include_file
+    "${CMAKE_CURRENT_BINARY_DIR}/include/cpp/gos/pid/arduino/autotuning/version.h")
+  set(gos_pid_arduino_based_binary_include_dir
+    "${CMAKE_CURRENT_BINARY_DIR}/include/cpp")
+  list(APPEND gos_pid_arduino_based_public_header
+    "${gos_pid_arduino_based_version_include_file}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/arduino/autotuning/arduinobasedautotuning.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/arduino/autotuning/arduinobasedautotuninglibrary.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/arduino/autotuning/arrayvariables.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/arduino/autotuning/framework.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/arduino/autotuning/input.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/arduino/autotuning/output.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/arduino/autotuning/parameters.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/arduino/autotuning/pch.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/arduino/autotuning/type.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/arduino/autotuning/variables.h")
+  list(APPEND gos_pid_arduino_based_include
+    "${gos_pid_arduino_based_include_dir}"
+    "${gos_pid_arduino_based_binary_include_dir}")
+  set(gos_pid_arduino_based_library_target libarduinobasedautotuning)
+endif (GOS_PID_ARDUINO_BASED_TUNING)
+
 if (gos_build_dependency_boost)
   set(Boost_USE_MULTITHREADED        ON)
   set(Boost_USE_STATIC_RUNTIME      OFF)
@@ -113,9 +143,7 @@ if (GOS_PID_TOOLKIT_C)
   add_subdirectory(src/c)
 endif (GOS_PID_TOOLKIT_C)
 
-if (GOS_PID_TOOLKIT_CPP)
-  add_subdirectory(src/cpp)
-endif (GOS_PID_TOOLKIT_CPP)
+add_subdirectory(src/cpp)
 
 if (GOS_PID_TOOLKIT_TEST)
   if (MSVC)
