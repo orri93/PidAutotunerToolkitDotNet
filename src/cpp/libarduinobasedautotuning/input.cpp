@@ -1,4 +1,6 @@
-#include <gos/pid/arduino/autotuning/pch.h>
+#ifdef _USRDLL
+#include "pch.h"
+#endif
 #include <gos/pid/arduino/autotuning/input.h>
 
 AutotuningInput::AutotuningInput() :

@@ -1,7 +1,11 @@
 #ifndef GOS_PID_ARDUINO_AUTOTUNING_BASED_H_
 #define GOS_PID_ARDUINO_AUTOTUNING_BASED_H_
 
-#include <gos/pid/arduino/autotuning/arduinobasedautotuninglibrary.h>
+#ifdef _USRDLL
+#include "arduinobasedautotuninglibrary.h"
+#else
+#define ARDUINOBASEDPIDAUTOTUNINGDLL_LIBRARY
+#endif
 #include <gos/pid/arduino/autotuning/arrayvariables.h>
 #include <gos/pid/arduino/autotuning/parameters.h>
 #include <gos/pid/arduino/autotuning/variables.h>

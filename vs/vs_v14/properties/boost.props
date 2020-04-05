@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <BoostLibVs12_32>$(BOOST)\lib32-msvc-12.0</BoostLibVs12_32>
+    <BoostLibVs12_64>$(BOOST)\lib64-msvc-12.0</BoostLibVs12_64>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(BOOST);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="BoostLibVs12_32">
+      <Value>$(BoostLibVs12_32)</Value>
+    </BuildMacro>
+    <BuildMacro Include="BoostLibVs12_64">
+      <Value>$(BoostLibVs12_64)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>
