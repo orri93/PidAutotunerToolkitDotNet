@@ -1,6 +1,4 @@
 list(APPEND gos_pid_toolkit_cpp_library_source
-  "tune/parameters.cpp"
-  "tune/settings.cpp"
   "exception.cpp"
   "version.cpp")
 

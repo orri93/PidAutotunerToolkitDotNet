@@ -1,10 +1,8 @@
 list(APPEND gos_pid_arduino_based_library_source
   "arduinobasedautotuning.cpp"
   "parameters.cpp"
-  "pch.cpp"
   "input.cpp"
-  "version.cpp"
-  "dllmain.cpp")
+  "version.cpp")
 
 add_library(${gos_pid_arduino_based_library_target}
   ${gos_pid_arduino_based_library_source})
