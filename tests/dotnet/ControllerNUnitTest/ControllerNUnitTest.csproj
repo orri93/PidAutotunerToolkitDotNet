@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AutoTune\AutoTune.csproj" />
+    <ProjectReference Include="..\..\..\src\dotnet\Controller\Controller.csproj" />
   </ItemGroup>
 
 </Project>
