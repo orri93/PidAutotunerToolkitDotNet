@@ -5,7 +5,7 @@
     public Settings()
     {
       this.Type = ControlType.PID;
-      this.Range = new Range();
+      this.Range = null;
     }
 
     public ControlType Type { get; set; }

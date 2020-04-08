@@ -4,8 +4,6 @@ namespace PidToolkitNUnitTest
 {
   public class WindowTest
   {
-    const double Delta = 0.0000000001;
-
     [SetUp]
     public void Setup()
     {
@@ -22,11 +20,11 @@ namespace PidToolkitNUnitTest
 
       window = CreateWindow(a1.Length, a1);
       median = window.Median;
-      Assert.AreEqual(6.0, median, Delta);
+      Assert.AreEqual(6.0, median, PidToolkitTesting.Parameters.Delta);
 
       window = CreateWindow(a2.Length, a2);
       median = window.Median;
-      Assert.AreEqual(4.5, median, Delta);
+      Assert.AreEqual(4.5, median, PidToolkitTesting.Parameters.Delta);
     }
 
     [Test]
@@ -38,7 +36,8 @@ namespace PidToolkitNUnitTest
       PidToolkit.Window window = CreateWindow(a1.Length - 1, a1);
       sum = window.Sum;
 
-      Assert.AreEqual(600.0 + 470.0 + 170.0 + 430.0 + 300.0, sum, Delta);
+      Assert.AreEqual(600.0 + 470.0 + 170.0 + 430.0 + 300.0, sum,
+        PidToolkitTesting.Parameters.Delta);
     }
 
     [Test]
@@ -52,7 +51,7 @@ namespace PidToolkitNUnitTest
       PidToolkit.Window window = CreateWindow(a1.Length - 1, a1);
       mean = window.Mean;
 
-      Assert.AreEqual(394, mean, Delta);
+      Assert.AreEqual(394, mean, PidToolkitTesting.Parameters.Delta);
     }
 
     [Test]
@@ -66,7 +65,7 @@ namespace PidToolkitNUnitTest
       PidToolkit.Window window = CreateWindow(a1.Length - 1, a1);
       variance = window.Variance;
 
-      Assert.AreEqual(21704.0, variance, Delta);
+      Assert.AreEqual(21704.0, variance, PidToolkitTesting.Parameters.Delta);
     }
 
     [Test]
@@ -80,7 +79,8 @@ namespace PidToolkitNUnitTest
       PidToolkit.Window window = CreateWindow(a1.Length - 1, a1);
       sd = window.Sd;
 
-      Assert.AreEqual(147.32277488562318, sd, Delta);
+      Assert.AreEqual(147.32277488562318, sd,
+        PidToolkitTesting.Parameters.Delta);
     }
 
     [Test]

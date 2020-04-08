@@ -8,6 +8,7 @@ namespace PidToolkit
     {
       this.Size = 10;
       this.list = new List<double>();
+      this.Range = null;
     }
 
     public int Size { get; set; }
@@ -66,6 +67,8 @@ namespace PidToolkit
     }
 
     public double Sd { get { return System.Math.Sqrt(this.Variance); } }
+
+    public Range Range { get; set; }
 
     public void Add(double value)
     {

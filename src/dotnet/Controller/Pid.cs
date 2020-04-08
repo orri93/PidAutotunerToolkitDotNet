@@ -2,6 +2,14 @@
 {
   public class Pid
   {
+    public Pid()
+    {
+      this.settings = new Settings();
+      this.variables = new Variables();
+      this.terms = new Terms();
+      this.tune = new Terms();
+    }
+
     public Settings Settings
     {
       get { return this.settings; }
@@ -18,9 +26,35 @@
 
     public Terms Terms { get { return this.terms; } }
 
-    public bool IsHigh { get { return this.high; } }
+    public bool IsHigh
+    {
+      get
+      {
+        if(this.settings.Range != null)
+        {
+          return this.settings.Range.IsHigh;
+        }
+        else
+        {
+          return false;
+        }
+      }
+    }
 
-    public bool IsLow { get { return this.low; } }
+    public bool IsLow
+    {
+      get
+      {
+        if (this.settings.Range != null)
+        {
+          return this.settings.Range.IsLow;
+        }
+        else
+        {
+          return false;
+        }
+      }
+    }
 
     public double Output { get { return this.output; } }
 
@@ -46,7 +80,7 @@
       switch (this.settings.Type)
       {
         case ControlType.PID:
-          this.variables.Derivative = 
+          this.variables.Derivative =
             (this.variables.Error - this.variables.LastError) /
             this.settings.Time;
           this.terms.D = this.tune.D * this.variables.Derivative;
@@ -58,24 +92,15 @@
       }
       this.variables.LastError = this.variables.Error;
       this.output = this.terms.P + this.terms.I + this.terms.D;
-      high = output > this.settings.Range.Highest;
-      low = output < this.settings.Range.Lowest;
-      if(!high && !low)
+      if (this.settings.Range != null)
       {
-        return output;
-      }
-      else if(high)
-      {
-        return this.settings.Range.Highest;
+        return this.settings.Range.Restrict(this.output);
       }
       else
       {
-        return this.settings.Range.Lowest;
+        return this.output;
       }
     }
-
-    private bool low;
-    private bool high;
 
     private double output;
 
