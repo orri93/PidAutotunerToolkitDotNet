@@ -1,4 +1,4 @@
-#include <gos/pid/arduino/autotuning/pch.h>
+#include "pch.h"
 #include <gos/pid/arduino/autotuning/arduinobasedautotuning.h>
 
 #include <cstdlib>

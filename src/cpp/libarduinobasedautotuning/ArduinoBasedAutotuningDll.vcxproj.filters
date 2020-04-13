@@ -36,16 +36,16 @@
     <ClInclude Include="..\..\..\include\cpp\gos\pid\arduino\autotuning\variables.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\vs\include\cpp\gos\pid\arduino\autotuning\version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\vs\include\cpp\gos\pid\arduino\autotuning\arduinobasedautotuninglibrary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\vs\include\cpp\gos\pid\arduino\autotuning\framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\vs\include\cpp\gos\pid\arduino\autotuning\pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\vs\include\cpp\gos\pid\arduino\autotuning\version.h">
+    <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

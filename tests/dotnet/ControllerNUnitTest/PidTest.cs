@@ -12,9 +12,10 @@ namespace ControllerNUnitTest
     [Test]
     public void TestExecute()
     {
-
-
-      Assert.Pass();
+      PidToolkit.Controller.Pid pid = new PidToolkit.Controller.Pid();
+      Assert.IsNotNull(pid.Variables);
+      Assert.IsNotNull(pid.Settings);
+      Assert.IsNotNull(pid.Terms);
     }
   }
 }

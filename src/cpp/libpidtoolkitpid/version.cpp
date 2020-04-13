@@ -1,13 +1,10 @@
-#include "pch.h"
-
 #include <sstream>
 
-#include <gos/pid/arduino/autotuning/version.h>
+#include <gos/pid/toolkit/version.h>
 
 namespace gos {
 namespace pid {
-namespace arduino {
-namespace based {
+namespace toolkit {
 namespace version {
 
 const Option WithAll = WithPrefix | WithBuildDateTime;
@@ -19,7 +16,7 @@ std::string generate(const Option& option) {
   if (option & WithPrefix) {
     stream << "V";
   }
-  stream << GAB_VERSION_STRING;
+  stream << GPT_VERSION_STRING;
   if (option & WithBuildDateTime) {
 #if defined (__DATE__) && defined (__TIME__)
     stream << " built " << __DATE__ << " " << __TIME__;
@@ -31,7 +28,6 @@ std::string generate(const Option& option) {
 }
 
 } // namespace version
-} // namespace based
-} // namespace arduino
+} // namespace toolkit
 } // namespace pid
 } // namespace gos

@@ -1,7 +1,11 @@
 #ifndef GOS_PID_ARDUINO_AUTOTUNING_INPUT_H_
 #define GOS_PID_ARDUINO_AUTOTUNING_INPUT_H_
 
-#include <gos/pid/arduino/autotuning/arduinobasedautotuninglibrary.h>
+#ifdef ARDUINOBASEDAUTOTUNINGDLL
+#include "arduinobasedautotuninglibrary.h"
+#else
+#define ARDUINOBASEDPIDAUTOTUNINGDLL_LIBRARY
+#endif
 #include <gos/pid/arduino/autotuning/type.h>
 
 struct ARDUINOBASEDPIDAUTOTUNINGDLL_LIBRARY AutotuningInput {

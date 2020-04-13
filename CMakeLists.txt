@@ -69,15 +69,39 @@ if (GOS_PID_TOOLKIT_CPP)
     @ONLY)
   set(gos_pid_toolkit_cpp_version_include_file
     "${CMAKE_CURRENT_BINARY_DIR}/include/cpp/gos/pid/toolkit/version.h")
-  set(gos_pid_toolkit_cpp_binary_include_dir
-    "${CMAKE_CURRENT_BINARY_DIR}/include/cpp")
   list(APPEND gos_pid_toolkit_cpp_public_header
     "${gos_pid_toolkit_cpp_version_include_file}"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/toolkit/exception.h")
+  configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/toolkit/pid/version.h.in"
+    "include/cpp/gos/pid/toolkit/pid/version.h"
+    @ONLY)
+  set(gos_pid_toolkit_pid_cpp_version_include_file
+    "${CMAKE_CURRENT_BINARY_DIR}/include/cpp/gos/pid/toolkit/pid/version.h")
+  list(APPEND gos_pid_toolkit_pid_cpp_public_header
+    "${gos_pid_toolkit_pid_cpp_version_include_file}"
+#    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/toolkit/pid/exception.h"
+    )
+  configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/toolkit/tune/version.h.in"
+    "include/cpp/gos/pid/toolkit/tune/version.h"
+    @ONLY)
+  set(gos_pid_toolkit_tune_cpp_version_include_file
+    "${CMAKE_CURRENT_BINARY_DIR}/include/cpp/gos/pid/toolkit/tune/version.h")
+  list(APPEND gos_pid_toolkit_tune_cpp_public_header
+    "${gos_pid_toolkit_tune_cpp_version_include_file}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/toolkit/tune/type.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/toolkit/tune/settings.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/toolkit/tune/internals.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/toolkit/tune/parameters.h")
+  set(gos_pid_toolkit_cpp_binary_include_dir
+    "${CMAKE_CURRENT_BINARY_DIR}/include/cpp")
   list(APPEND gos_pid_toolkit_cpp_include
     "${gos_pid_toolkit_cpp_include_dir}"
     "${gos_pid_toolkit_cpp_binary_include_dir}")
   set(gos_pid_toolkit_cpp_library_target libpidtoolkitcpp)
+  set(gos_pid_toolkit_pid_cpp_library_target libpidtoolkitpid)
+  set(gos_pid_toolkit_tune_cpp_library_target libpidtoolkittune)
   set(gos_build_dependency_boost ON)
 endif (GOS_PID_TOOLKIT_CPP)
 

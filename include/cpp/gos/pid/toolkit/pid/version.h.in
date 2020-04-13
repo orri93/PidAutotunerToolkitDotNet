@@ -1,28 +1,28 @@
-#ifndef GOS_PID_TOOLKIT_TUNE_VERSION_H_
-#define GOS_PID_TOOLKIT_TUNE_VERSION_H_
+#ifndef GOS_PID_TOOLKIT_PID_VERSION_H_
+#define GOS_PID_TOOLKIT_PID_VERSION_H_
 
 /* The major version, (1, if %PROJECT_VERSION is 1.2.3.4) */
-#define GTT_VERSION_MAJOR (@PROJECT_VERSION_MAJOR@)
+#define GPP_VERSION_MAJOR (@PROJECT_VERSION_MAJOR@)
 
 /* The minor version (2, if %PROJECT_VERSION is 1.2.3.4) */
-#define GTT_VERSION_MINOR (@PROJECT_VERSION_MINOR@)
+#define GPP_VERSION_MINOR (@PROJECT_VERSION_MINOR@)
 
 /* The patch version (3, if %PROJECT_VERSION is 1.2.3.4) */
-#define GTT_VERSION_PATCH (@PROJECT_VERSION_PATCH@)
+#define GPP_VERSION_PATCH (@PROJECT_VERSION_PATCH@)
 
 /* The build version (4, if %PROJECT_VERSION is 1.2.3.4) */
-#define GTT_VERSION_BUILD (@PROJECT_VERSION_TWEAK@)
+#define GPP_VERSION_BUILD (@PROJECT_VERSION_TWEAK@)
 
 /* The full version, like 1.2.3.4 */
-#define GTT_VERSION         @PROJECT_VERSION@
+#define GPP_VERSION         @PROJECT_VERSION@
 
 /* The full version, in string form (suited for string concatenation) */
-#define GTT_VERSION_STRING "@PROJECT_VERSION@"
+#define GPP_VERSION_STRING "@PROJECT_VERSION@"
 
 namespace gos {
 namespace pid {
 namespace toolkit {
-namespace tune {
+namespace pid {
 namespace version {
 
 typedef unsigned char Option;
@@ -34,7 +34,7 @@ extern const Option WithBuildDateTime;
 std::string generate(const Option& option = WithPrefix);
 
 } // namespace version
-} // namespace tune
+} // namespace pid
 } // namespace toolkit
 } // namespace pid
 } // namespace gos
