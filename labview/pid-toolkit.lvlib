@@ -4,9 +4,15 @@
 	<Property Name="NI.Lib.SourceVersion" Type="Int">402685952</Property>
 	<Property Name="NI.Lib.Version" Type="Str">1.0.0.0</Property>
 	<Item Name="subvi" Type="Folder">
+		<Item Name="clearerror.vi" Type="VI" URL="../subvi/clearerror.vi"/>
 		<Item Name="dtmstodts.vi" Type="VI" URL="../subvi/dtmstodts.vi"/>
 		<Item Name="frequencytodt.vi" Type="VI" URL="../subvi/frequencytodt.vi"/>
 		<Item Name="restrictoutput.vi" Type="VI" URL="../subvi/restrictoutput.vi"/>
 	</Item>
+	<Item Name="pid-toolkit-autotuning-design.vi" Type="VI" URL="../pid-toolkit-autotuning-design.vi"/>
+	<Item Name="pid-toolkit-autotuning-temperature.vi" Type="VI" URL="../pid-toolkit-autotuning-temperature.vi"/>
+	<Item Name="pid-toolkit-autotuning.vi" Type="VI" URL="../pid-toolkit-autotuning.vi"/>
+	<Item Name="pid-toolkit-control.vi" Type="VI" URL="../pid-toolkit-control.vi"/>
+	<Item Name="pid-toolkit-online-autotuning.vi" Type="VI" URL="../pid-toolkit-online-autotuning.vi"/>
 	<Item Name="pid-toolkit.vi" Type="VI" URL="../pid-toolkit.vi"/>
 </Library>
