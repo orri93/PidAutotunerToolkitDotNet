@@ -22,9 +22,24 @@
 		<Property Name="varSourceProjectPath" Type="Str">My Computer\pid-toolkit-modbus.lvlib\pid-toolkit-modbus-master\</Property>
 		<Property Name="varSourceProjectSubPath" Type="Str">300001</Property>
 	</Item>
+	<Item Name="300010" Type="Variable">
+		<Property Name="featurePacks" Type="Str">Network</Property>
+		<Property Name="Network:AccessType" Type="Str">read only</Property>
+		<Property Name="Network:BuffSize" Type="Str">50</Property>
+		<Property Name="Network:ElemSize" Type="Str">1</Property>
+		<Property Name="Network:PointsPerWaveform" Type="Str">1</Property>
+		<Property Name="Network:ProjectBinding" Type="Str">True</Property>
+		<Property Name="Network:ProjectPath" Type="Str">My Computer\pid-toolkit-modbus.lvlib\pid-toolkit-modbus-master\300010</Property>
+		<Property Name="Network:UseBinding" Type="Str">True</Property>
+		<Property Name="Network:UseBuffering" Type="Str">True</Property>
+		<Property Name="numTypedefs" Type="UInt">0</Property>
+		<Property Name="type" Type="Str">Network</Property>
+		<Property Name="typeDesc" Type="Bin">'!#!!!!!!!)!"1!&amp;!!!-!%!!!@````]!!!!"!!%!!!!&lt;&amp;Q!!!"A!A!!!!!!"!!5!"A!!!1!!!!!!!!!!!!!!!!</Property>
+		<Property Name="varSourceProjectPath" Type="Str">My Computer\pid-toolkit-modbus.lvlib\pid-toolkit-modbus-master\</Property>
+		<Property Name="varSourceProjectSubPath" Type="Str">300010</Property>
+	</Item>
 	<Item Name="400001" Type="Variable">
-		<Property Name="Description:Description" Type="Str">The control loop interval</Property>
-		<Property Name="featurePacks" Type="Str">Network,Description</Property>
+		<Property Name="featurePacks" Type="Str">Network</Property>
 		<Property Name="Network:AccessType" Type="Str">read/write</Property>
 		<Property Name="Network:BuffSize" Type="Str">50</Property>
 		<Property Name="Network:ElemSize" Type="Str">1</Property>
@@ -34,7 +49,6 @@
 		<Property Name="Network:UseBinding" Type="Str">True</Property>
 		<Property Name="Network:UseBuffering" Type="Str">True</Property>
 		<Property Name="numTypedefs" Type="UInt">0</Property>
-		<Property Name="Path" Type="Str">/pid-toolkit.lvproj/My Computer/pid-toolkit-modbus.lvlib/</Property>
 		<Property Name="type" Type="Str">Network</Property>
 		<Property Name="typeDesc" Type="Bin">'!#!!!!!!!)!"1!&amp;!!!-!%!!!@````]!!!!"!!%!!!!&lt;&amp;Q!!!"A!A!!!!!!"!!5!"A!!!1!!!!!!!!!!!!!!!!</Property>
 		<Property Name="varSourceProjectPath" Type="Str">My Computer\pid-toolkit-modbus.lvlib\pid-toolkit-modbus-master\</Property>
@@ -59,8 +73,7 @@
 		<Property Name="varSourceProjectSubPath" Type="Str">400002</Property>
 	</Item>
 	<Item Name="400015" Type="Variable">
-		<Property Name="Description:Description" Type="Str"></Property>
-		<Property Name="featurePacks" Type="Str">Network,Description</Property>
+		<Property Name="featurePacks" Type="Str">Network</Property>
 		<Property Name="Network:AccessType" Type="Str">read/write</Property>
 		<Property Name="Network:BuffSize" Type="Str">50</Property>
 		<Property Name="Network:ElemSize" Type="Str">1</Property>
@@ -70,15 +83,13 @@
 		<Property Name="Network:UseBinding" Type="Str">True</Property>
 		<Property Name="Network:UseBuffering" Type="Str">True</Property>
 		<Property Name="numTypedefs" Type="UInt">0</Property>
-		<Property Name="Path" Type="Str">/pid-toolkit.lvproj/My Computer/pid-toolkit-modbus.lvlib/</Property>
 		<Property Name="type" Type="Str">Network</Property>
 		<Property Name="typeDesc" Type="Bin">'!#!!!!!!!)!"1!&amp;!!!-!%!!!@````]!!!!"!!%!!!!&lt;&amp;Q!!!"A!A!!!!!!"!!5!"A!!!1!!!!!!!!!!!!!!!!</Property>
 		<Property Name="varSourceProjectPath" Type="Str">My Computer\pid-toolkit-modbus.lvlib\pid-toolkit-modbus-master\</Property>
 		<Property Name="varSourceProjectSubPath" Type="Str">400015</Property>
 	</Item>
 	<Item Name="400016" Type="Variable">
-		<Property Name="Description:Description" Type="Str"></Property>
-		<Property Name="featurePacks" Type="Str">Network,Description</Property>
+		<Property Name="featurePacks" Type="Str">Network</Property>
 		<Property Name="Network:AccessType" Type="Str">read/write</Property>
 		<Property Name="Network:BuffSize" Type="Str">50</Property>
 		<Property Name="Network:ElemSize" Type="Str">1</Property>
@@ -88,7 +99,6 @@
 		<Property Name="Network:UseBinding" Type="Str">True</Property>
 		<Property Name="Network:UseBuffering" Type="Str">True</Property>
 		<Property Name="numTypedefs" Type="UInt">0</Property>
-		<Property Name="Path" Type="Str">/pid-toolkit.lvproj/My Computer/pid-toolkit-modbus.lvlib/</Property>
 		<Property Name="type" Type="Str">Network</Property>
 		<Property Name="typeDesc" Type="Bin">'!#!!!!!!!)!"1!&amp;!!!-!%!!!@````]!!!!"!!%!!!!&lt;&amp;Q!!!"A!A!!!!!!"!!5!"A!!!1!!!!!!!!!!!!!!!!</Property>
 		<Property Name="varSourceProjectPath" Type="Str">My Computer\pid-toolkit-modbus.lvlib\pid-toolkit-modbus-master\</Property>

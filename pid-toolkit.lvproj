@@ -1,8 +1,10 @@
 ﻿<?xml version='1.0' encoding='UTF-8'?>
 <Project Type="Project" LVVersion="18008000">
 	<Property Name="varPersistentID:{00940816-5564-46E6-B1C4-1F463CA01F08}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/F300002</Property>
+	<Property Name="varPersistentID:{0C933F7A-54FD-4AC1-B82D-1BCC20800239}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/300010</Property>
 	<Property Name="varPersistentID:{119E589F-1825-438E-8867-AA6B980751DF}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/F400003</Property>
 	<Property Name="varPersistentID:{149D18AB-9CFC-412A-A968-03EF8C778AB5}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/F300008</Property>
+	<Property Name="varPersistentID:{19400AB9-561B-4A42-A754-D95EAD04F80F}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/400016</Property>
 	<Property Name="varPersistentID:{21F9DCCB-3150-4C6A-A74B-2967D9201E66}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/F400011</Property>
 	<Property Name="varPersistentID:{4DF2F251-1BA4-42DB-A21A-221F6D578D92}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/F400013</Property>
 	<Property Name="varPersistentID:{51CF2893-F4FC-48A9-9986-AD631C5B77C5}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/OffHook</Property>
@@ -11,14 +13,13 @@
 	<Property Name="varPersistentID:{63908863-1481-4ABA-9D13-4A0735D1C82D}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/400002</Property>
 	<Property Name="varPersistentID:{72E61CCE-9F86-4DB5-9909-41D21A817B3D}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/UpdateRate</Property>
 	<Property Name="varPersistentID:{73294D6B-F762-43A2-8A4E-018A0C47ACD9}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/F300006</Property>
-	<Property Name="varPersistentID:{77EABF4C-CBDA-44A1-B5D2-1D175700E85E}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/400015</Property>
-	<Property Name="varPersistentID:{8042C7FC-D99B-478B-B707-6563AEE5BD7E}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/400016</Property>
 	<Property Name="varPersistentID:{87D076C9-225C-4E29-87CA-3F69F0361E7E}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/F400009</Property>
 	<Property Name="varPersistentID:{96A78492-FEA3-4B66-B02B-5E4F69BAA527}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/F400005</Property>
 	<Property Name="varPersistentID:{AFD79F35-AF6B-41CB-8CC4-D28AD26DB63A}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/F300004</Property>
 	<Property Name="varPersistentID:{BD3C58E4-5DF7-43D9-83AE-2CCC289DA98E}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/CommFail</Property>
 	<Property Name="varPersistentID:{C40FFDE4-7DD2-478F-B1A5-B7F330F75D6A}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/300001</Property>
-	<Property Name="varPersistentID:{D8867312-29CD-44EB-BA97-06B4FD0D1484}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/400001</Property>
+	<Property Name="varPersistentID:{CBA2277C-64EC-4BF2-84E4-EAAF37C25C1C}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/400001</Property>
+	<Property Name="varPersistentID:{ED459AA3-A22C-4E92-8C79-233CA4AE21B5}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/400015</Property>
 	<Property Name="varPersistentID:{F02AA7C8-5903-4BC4-915D-B3DCFAFCF19A}" Type="Ref">/My Computer/pid-toolkit-modbus.lvlib/F400007</Property>
 	<Item Name="My Computer" Type="My Computer">
 		<Property Name="server.app.propertiesEnabled" Type="Bool">true</Property>
