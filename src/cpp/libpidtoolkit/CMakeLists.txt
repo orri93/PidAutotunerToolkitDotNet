@@ -1,6 +1,11 @@
 list(APPEND gos_pid_toolkit_cpp_library_source
   "exception.cpp"
-  "version.cpp")
+  "default.cpp"
+  "options.cpp"
+  "setting.cpp"
+  "version.cpp"
+  "serial.cpp"
+  "text.cpp")
 
 add_library(${gos_pid_toolkit_cpp_library_target}
   ${gos_pid_toolkit_cpp_library_source})
