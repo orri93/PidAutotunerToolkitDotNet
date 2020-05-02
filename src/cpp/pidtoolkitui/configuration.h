@@ -6,7 +6,12 @@
 #include <QObject>
 #include <QSettings>
 #include <QMetaType>
+#include <QFileSystemWatcher>
 #include <QDebug>
+
+#include <gos/pid/tuning/types.h>
+
+#include <items.h>
 
 #define GOS_CONFIGURATION_FILE_PATH "configuration.ini"
 
@@ -15,21 +20,27 @@ namespace pid {
 namespace toolkit {
 namespace ui {
 
-class Configuration : public QObject {
+namespace configuration {
+enum class mode { normal, write, initializing };
+}
+
+class Configuration : public Items {
   Q_OBJECT
 
-  /* Communication */
+  /* Communication configuration */
   Q_PROPERTY(QString serialPort READ serialPort NOTIFY serialPortChanged)
   Q_PROPERTY(int serialBaud READ serialBaud NOTIFY serialBaudChanged)
   
-  /* Modbus */
+  /* Modbus configuration */
   Q_PROPERTY(int slaveId READ slaveId NOTIFY slaveIdChanged)
 
-  /* Timers */
-  Q_PROPERTY(int loopInterval READ loopInterval NOTIFY loopIntervalChanged)
-  Q_PROPERTY(int refreshInterval READ refreshInterval NOTIFY refreshIntervalChanged)
+  /* Timers configuration */
+  Q_PROPERTY(int interval READ interval WRITE setInterval NOTIFY intervalChanged)
+  Q_PROPERTY(bool applyIntervalToController READ applyIntervalToController WRITE setApplyIntervalToController NOTIFY applyIntervalToControllerChanged)
 
-  /* UI configuration */
+  /* Tuning configuration */
+  Q_PROPERTY(::gos::pid::tuning::types::TuningMode tuning READ tuning WRITE setTuning NOTIFY tuningChanged)
+  Q_PROPERTY(QString tuningText READ tuningText WRITE setTuningText NOTIFY tuningTextChanged)
 
   /* Chart*/
 #ifdef GOS_NOT_YET_USED
@@ -44,25 +55,13 @@ public:
   explicit Configuration(const QString& filepath, QObject* parent = nullptr);
   explicit Configuration(QObject* parent = nullptr);
 
-  virtual QSettings* read();
-  virtual QSettings* write(const bool& sync);
+  virtual QSettings* initialize(const bool& watcher);
 
-  /*
-   * Value access methods
-   */
+  virtual QSettings* read(const bool& sync = false);
+  virtual QSettings* write(const bool& sync = false);
 
-   /* Communication configuration */
-  const QString& serialPort() const;
-  const int& serialBaud() const;
-
-  /* Modbus configuration */
-  const int& slaveId() const;
-
-  /* Timers configuration */
-  const int& loopInterval() const;
-  const int& refreshInterval() const;
-
-  /* UI configuration */
+  const configuration::mode& mode() const;
+  void setMode(const configuration::mode& mode);
 
 signals:
   /* Communication configuration */
@@ -71,17 +70,39 @@ signals:
   /* Modbus configuration */
   void slaveIdChanged();
   /* Timers configuration */
-  void loopIntervalChanged();
-  void refreshIntervalChanged();
+  void intervalChanged();
+  void applyIntervalToControllerChanged();
+
+  /* Tuning configuration */
+  void tuningChanged();
+  void tuningTextChanged();
 
   /* UI configuration */
 
+public slots:
+  /* Timers configuration */
+  void setInterval(const int& value);
+  void setApplyIntervalToController(const bool& value);
+
+  /* Tuning configuration */
+  void setTuning(const ::gos::pid::tuning::types::TuningMode& value);
+  void setTuningText(const QString& value);
+
+private slots:
+  void onFileChanged(const QString& path);
+
 private:
   typedef std::unique_ptr<QSettings> SettingsPointer;
+  typedef std::unique_ptr<QFileSystemWatcher> WatcherPointer;
 
   SettingsPointer settings_;
+  WatcherPointer watcher_;
 
-  bool create();
+  /* Writing */
+  QSettings* startWriting();
+  void writeTuning();
+  void writeTimers();
+  virtual QSettings* completeWriting(const bool& sync = false);
 
   /* Communication configuration */
   void setSerialPort(const QString& value);
@@ -90,29 +111,11 @@ private:
   /* Modbus configuration */
   void setSlaveId(const int& value);
 
-  /* Timers configuration */
-  void setLoopInterval(const int& value);
-  void setRefreshInterval(const int& value);
-
   /* UI configuration */
 
   QString filepath_;
-  
-  /* Communication configuration */
-  QString serialPort_;
-  int serialBaud_;
-  /* Modbus configuration */
-  int slaveId_;
-  int holdingRegistryStartAddress_;
-  /* Timers configuration */
-  int loopInterval_;
-  int refreshInterval_;
-  /* UI configuration */
+  configuration::mode mode_;
 };
-
-namespace initialize {
-bool configuration(::gos::pid::toolkit::ui::Configuration& configuration);
-}
 
 } // namespace ui
 } // namespace toolkit

@@ -7,7 +7,8 @@ namespace pid {
 namespace toolkit {
 namespace ui {
 
-FloatValidator::FloatValidator(QObject* parent) {
+FloatValidator::FloatValidator(QObject* parent) :
+  QValidator(parent) {
 }
 
 QValidator::State FloatValidator::validate(QString& input, int& pos) const {

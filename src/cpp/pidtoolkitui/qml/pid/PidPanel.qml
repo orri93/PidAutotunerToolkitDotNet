@@ -6,6 +6,10 @@ import FloatValidator 1.0
 ColumnLayout {
   id: pidParameterPanel
 
+  anchors.top: parent.top
+  Layout.fillWidth: true
+  Layout.fillHeight: true
+
   property string tunePlaceholderText: qsTr("0.0")
   
   property color titleTextColor: "floralwhite"
@@ -18,36 +22,64 @@ ColumnLayout {
   property int inputFontPointSize: 10
   property int informationFontPointSize: 10
 
+  property real gridMargin: 5.0
+  property real titleVerticalMargin: 10.0
   property real titleLeftMargin: 10.0
   property real labelLeftMargin: 2.0
   property real inputTextLeftMargin: 5.0
   property real informationTextLeftMargin: 5.0
 
   Component.onCompleted: {
-    enableInput(false)
+    enableInput(false);
+    orchestration.panelCompleted();
+    
+  }
+
+  function initialize() {
+    intervalText.text = orchestration.interval.toString();
+      forceBox.currentIndex = orchestration.intervalIndex;
+      intervalApplyCheckBox.checked =
+                    orchestration.applyIntervalToController;
+      tuningComboBox.currentIndex = orchestration.tuningIndex;
   }
 
   FloatValidator {
     id: floatValidator
   }
 
-  Text {
-    text: "PID"
-    color: titleTextColor
-    Layout.fillWidth: false
-    Layout.leftMargin: titleLeftMargin
-    font.pointSize: titleFontPointSize
-  }
-
   GridLayout {
+    /* anchors.top: parent.top */
+    Layout.alignment: Qt.AlignTop
+    Layout.fillWidth: true
+    Layout.fillHeight: true
+    Layout.margins: gridMargin
+
     columns: 2
-    rows: 7
+    rows: 9
+
+    ColumnLayout {
+      id: titleColumn
+      Layout.fillWidth: true
+      Layout.columnSpan: 2
+      Layout.column: 0
+      Layout.row: 0
+
+      Text {
+        text: "PID"
+        color: titleTextColor
+        Layout.fillWidth: false
+        Layout.leftMargin: titleLeftMargin
+        Layout.topMargin: titleVerticalMargin
+        Layout.bottomMargin: titleVerticalMargin
+        font.pointSize: titleFontPointSize
+      }
+    }
 
     ColumnLayout {
       id: kpColumn
       Layout.fillWidth: true
       Layout.column: 0
-      Layout.row: 0
+      Layout.row: 1
       Label {
         text: qsTr("Kp")
         color: labelTextColor
@@ -77,7 +109,7 @@ ColumnLayout {
       id: integralColumn
       Layout.fillWidth: true
       Layout.column: 1
-      Layout.row: 0
+      Layout.row: 1
       Label {
         text: qsTr("Integral")
         color: labelTextColor
@@ -104,7 +136,7 @@ ColumnLayout {
       id: kiColumn
       Layout.fillWidth: true
       Layout.column: 0
-      Layout.row: 1
+      Layout.row: 2
       Label {
         text: qsTr("Ki")
         color: labelTextColor
@@ -134,7 +166,7 @@ ColumnLayout {
       id: kdColumn
       Layout.fillWidth: true
       Layout.column: 1
-      Layout.row: 1
+      Layout.row: 2
       Label {
         text: qsTr("Kd")
         color: labelTextColor
@@ -164,7 +196,7 @@ ColumnLayout {
       id: manualColumn
       Layout.fillWidth: true
       Layout.column: 0
-      Layout.row: 2
+      Layout.row: 3
       Label {
         text: qsTr("Manual")
         color: labelTextColor
@@ -191,7 +223,7 @@ ColumnLayout {
       id: forceColumn
       Layout.fillWidth: true
       Layout.column: 1
-      Layout.row: 2
+      Layout.row: 3
       Label {
         text: qsTr("Mode")
         color: labelTextColor
@@ -208,13 +240,13 @@ ColumnLayout {
           ListElement { text: "Automatic" }
         }
         onCurrentIndexChanged: {
-          orchestration.forceText = forceItems.get(currentIndex).text;
+          orchestration.forceIndex = currentIndex;
         }
       }
       Connections {
         target: orchestration
         onForceChanged: {
-          forceBox.currentIndex = orchestration.force - 1;
+          forceBox.currentIndex = orchestration.forceIndex;
         }
       }
     }
@@ -223,7 +255,7 @@ ColumnLayout {
       id: setpointColumn
       Layout.fillWidth: true
       Layout.column: 0
-      Layout.row: 3
+      Layout.row: 4
       Label {
         text: qsTr("Setpoint")
         color: labelTextColor
@@ -247,34 +279,9 @@ ColumnLayout {
     }
 
     ColumnLayout {
-      id: frequencyColumn
-      Layout.fillWidth: true
-      Layout.column: 0
-      Layout.row: 4
-      Layout.columnSpan: 2
-      Label {
-        text: qsTr("Frequency")
-        color: labelTextColor
-        Layout.leftMargin: labelLeftMargin
-        font.pointSize: labelFontPointSize
-      }
-      Slider {
-        id: frequencySlider
-        stepSize: 0.25
-        value: 1
-        from: 0.1
-        to: 10
-        Layout.fillWidth: true
-        onValueChanged: {
-          orchestration.refreshFrequency = value;
-        }
-      }
-    }
-
-    ColumnLayout {
       Layout.fillWidth: true
       Layout.column: 1
-      Layout.row: 3
+      Layout.row: 4
       Label {
         text: qsTr("Interval")
         color: labelTextColor
@@ -291,17 +298,101 @@ ColumnLayout {
       }
       Connections {
         target: orchestration
-        onRefreshIntervalChanged: {
-          intervalText.text = orchestration.refreshInterval.toString();
+        onIntervalChanged: {
+          intervalText.text = orchestration.interval.toString();
         }
       }
     }
+
+    ColumnLayout {
+      id: intervalColumn
+      Layout.fillWidth: true
+      Layout.column: 0
+      Layout.row: 5
+      Label {
+        text: qsTr("Interval")
+        color: labelTextColor
+        Layout.leftMargin: labelLeftMargin
+        font.pointSize: labelFontPointSize
+      }
+      ComboBox {
+        id: intervalComboBox
+        Layout.fillWidth: true
+        model: intervalModel
+        onCurrentIndexChanged: {
+          orchestration.intervalIndex = currentIndex;
+        }
+      }
+      Connections {
+        target: orchestration
+        onIntervalChanged: {
+          forceBox.currentIndex = orchestration.intervalIndex;
+        }
+      }
+    }
+
+    ColumnLayout {
+      id: intervalApplyColumn
+      Layout.fillWidth: true
+      Layout.column: 1
+      Layout.row: 5
+      Label {
+        text: qsTr("Apply to controller")
+        color: labelTextColor
+        Layout.leftMargin: labelLeftMargin
+        font.pointSize: labelFontPointSize
+      }
+      CheckBox {
+        id: intervalApplyCheckBox
+        onCheckedChanged: {
+          orchestration.applyIntervalToController = checked;
+        }
+      }
+      Connections {
+        target: orchestration
+        onSetpointChanged: {
+          intervalApplyCheckBox.checked =
+              orchestration.applyIntervalToController;
+        }
+      }
+    }
+
+    ColumnLayout {
+      Layout.fillWidth: true
+      Layout.column: 0
+      Layout.row: 6
+      Label {
+        text: qsTr("Tuning")
+        color: labelTextColor
+        Layout.leftMargin: labelLeftMargin
+        font.pointSize: labelFontPointSize
+      }
+      ComboBox {
+        id: tuningComboBox
+        Layout.fillWidth: true
+        model: ListModel {
+          id: tuningItems
+          ListElement { text: "None" }
+          ListElement { text: "Black Box" }
+        }
+        onCurrentIndexChanged: {
+          orchestration.tuningIndex = currentIndex;
+        }
+      }
+      Connections {
+        target: orchestration
+        onSetpointChanged: {
+          tuningComboBox.currentIndex = orchestration.tuningIndex;
+        }
+      }
+    }
+
 
     Button {
       id: connectDisconnectButton
       Layout.fillWidth: true
       Layout.column: 0
-      Layout.row: 5
+      Layout.row: 7
       text: qsTr("Connect")
       onClicked: {
         orchestration.connectDisconnect();
@@ -312,7 +403,7 @@ ColumnLayout {
       id: startStopLoggingButton
       Layout.fillWidth: true
       Layout.column: 1
-      Layout.row: 5
+      Layout.row: 7
       text: qsTr("Start logging")
       onClicked: {
         orchestration.startStopLogging();
@@ -323,7 +414,7 @@ ColumnLayout {
       Layout.fillWidth: true
       Layout.columnSpan: 2
       Layout.column: 0
-      Layout.row: 6
+      Layout.row: 8
       Label {
         text: qsTr("Status")
         color: labelTextColor
@@ -363,9 +454,8 @@ ColumnLayout {
     onIsConnectedChanged: {
       enableInput(orchestration.isConnected);
       if(orchestration.isConnected) {
-        intervalText.text = orchestration.refreshInterval.toString();
+        intervalText.text = orchestration.interval.toString();
         connectDisconnectButton.text = "Disconnect";
-        frequencySlider.value = orchestration.refreshFrequency;
         manualInput.value = orchestration.manual;
         setpointInput.value = 1000 * orchestration.setpoint;
         kpInput.value = 1000 * orchestration.kp;

@@ -11,7 +11,7 @@ namespace ui {
 class FloatValidator : public QValidator {
   Q_OBJECT
 public:
-  explicit FloatValidator(QObject* parent = 0);
+  explicit FloatValidator(QObject* parent = nullptr);
   virtual State validate(QString& input, int& pos) const;
 };
 

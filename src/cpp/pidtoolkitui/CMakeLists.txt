@@ -1,12 +1,17 @@
 set(gos_pid_toolkit_ui_target pidtoolkitui)
 
 list(APPEND gos_pid_toolkit_ui_source
+  "model/mode.cpp"
+  "model/tuning.cpp"
+  "model/interval.cpp"
   "orchestration.cpp"
   "configuration.cpp"
   "pidtoolkitui.cpp"
   "orchestration.h"
   "configuration.h"
-  "resources.qrc")
+  "resources.qrc"
+  "items.cpp"
+  "items.h")
 
 list(APPEND gos_pid_toolkit_ui_include
   ${CMAKE_CURRENT_SOURCE_DIR}

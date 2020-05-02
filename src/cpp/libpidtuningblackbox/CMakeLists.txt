@@ -24,5 +24,5 @@ set_target_properties(${gos_pid_tuning_black_box_library_target} PROPERTIES
 
 install(TARGETS ${gos_pid_tuning_black_box_library_target}
   LIBRARY DESTINATION lib
-  PUBLIC_HEADER DESTINATION include/gos/pid/tuning
+  PUBLIC_HEADER DESTINATION include/cpp/gos/pid/tuning
   ARCHIVE DESTINATION lib)

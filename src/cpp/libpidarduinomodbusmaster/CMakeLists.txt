@@ -22,5 +22,5 @@ set_target_properties(${gos_pid_arduino_modbus_master_library_target} PROPERTIES
 
 install(TARGETS ${gos_pid_arduino_modbus_master_library_target}
   LIBRARY DESTINATION lib
-  PUBLIC_HEADER DESTINATION include/gos/pid/arduino/modbus
+  PUBLIC_HEADER DESTINATION include/cpp/gos/pid/arduino/modbus
   ARCHIVE DESTINATION lib)

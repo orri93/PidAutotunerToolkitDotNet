@@ -61,8 +61,8 @@ ChartView {
 
   Connections {
     target: orchestration
-    onRefreshIntervalChanged: {
-      refreshTimer.interval = orchestration.refreshInterval;
+    onIntervalChanged: {
+      refreshTimer.interval = orchestration.interval;
     }
   }
 

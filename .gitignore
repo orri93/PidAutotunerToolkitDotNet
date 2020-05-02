@@ -359,3 +359,12 @@ out/
 
 # General
 build/
+
+# Qt
+msvc_make.bat
+*.qml.autosave
+*_resource.rc
+.qmake.stash
+Makefile
+Makefile.*
+RCa18632

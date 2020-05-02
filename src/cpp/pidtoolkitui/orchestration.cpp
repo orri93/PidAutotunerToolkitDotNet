@@ -22,10 +22,17 @@
 
 #include <orchestration.h>
 
+#include <model/interval.h>
+#include <model/tuning.h>
+#include <model/mode.h>
+
+namespace gp = ::gos::pid;
+
 namespace gpa = ::gos::pid::arduino;
 namespace gpam = ::gos::pid::arduino::modbus;
 
 namespace gptu = ::gos::pid::toolkit::ui;
+namespace gptum = ::gos::pid::toolkit::ui::model;
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -59,13 +66,12 @@ float parse(const QString& string) {
 }
 
 Orchestration::Orchestration(QQuickView* appViewer, QObject* parent) :
-  QObject(parent),
+  Items(parent),
   appViewer_(appViewer),
   count_(0),
+  ispanelcompleted_(false),
   isConnected_(false),
   lastErrorNumber_(0),
-  refreshInterval_(1000),
-  refreshFrequency_(1.0),
   manual_(0),
   setpoint_(0.0),
   kp_(0.0),
@@ -84,33 +90,103 @@ Orchestration::~Orchestration() {
   gpam::master::shutdown();
 }
 
-bool Orchestration::initialize(QQmlContext* context) {
-  gpam::types::result result;
-  configuration_ = std::make_unique<Configuration>(this);
-  if (configuration_) {
-    QSettings* settings = configuration_->read();
-    if (settings != nullptr) {
-      QString serialPort = configuration_->serialPort();
-      std::string serialport = serialPort.toStdString();
-      int serialbaud = configuration_->serialBaud();
-      int slaveid = configuration_->slaveId();
-      result = gpam::master::initialize(
-        serialport.c_str(),
-        serialbaud,
-        slaveid);
-      if (result == gpam::types::result::success) {
-        setRefreshInterval(configuration_->refreshInterval());
-        refreshFrequency_ = 1.0 / (refreshInterval_ / 1000.0);
-        _status = gptu::types::status::idle;
-        return true;
+bool Orchestration::initialize() {
+  QQmlContext* context = appViewer_.rootContext();
+  if (context != nullptr) {
+    gpam::types::result result;
+    if (context != nullptr) {
+      QVariant intervalmodel = gptum::interval::create();
+      context->setContextProperty("intervalModel", intervalmodel);
+      QVariant tuningmodel = gptum::tuning::create();
+      context->setContextProperty("tuningModel", tuningmodel);
+      QVariant modemodel = gptum::mode::create();
+      context->setContextProperty("modeModel", modemodel);
+    } else {
+      return false;
+    }
+    configuration_ = std::make_unique<Configuration>(this);
+    if (configuration_) {
+      QSettings* settings = configuration_->initialize(true);
+      if (settings != nullptr) {
+        QString serialPort = configuration_->serialPort();
+        std::string serialport = serialPort.toStdString();
+        int serialbaud = configuration_->serialBaud();
+        int slaveid = configuration_->slaveId();
+        result = gpam::master::initialize(
+          serialport.c_str(),
+          serialbaud,
+          slaveid);
+        if (result == gpam::types::result::success) {
+          applyConfiguration();
+          connectConfiguration();
+          _status = gptu::types::status::idle;
+          return true;
+        }
+      } else {
+        qCritical() << "Failed to initialize configuration";
       }
     } else {
       qCritical() << "Failed to create configuration";
     }
   } else {
-    qCritical() << "Failed to create configuration";
+    qCritical() << "QML Context is undefined";
   }
   return false;
+}
+
+int Orchestration::update(
+  QAbstractSeries* output,
+  QAbstractSeries* temperature,
+  QAbstractSeries* setpoints) {
+  if (_status == gptu::types::status::connected) {
+    gpam::types::registry::Input input;
+    gpam::types::result result =
+      gpam::master::retry::read::input(input);
+    if (result == gpam::types::result::success) {
+      if (_file) {
+        if (_file->is_open()) {
+          Duration duration = Clock::now() - _start;
+          Duration seconds =
+            std::chrono::duration_cast<std::chrono::seconds>(duration);
+          (*_file)
+            << seconds.count() << ","
+            << input.Output << ","
+            << input.Temperature << ","
+            << setpoint_ << std::endl;
+          _file->flush();
+        }
+      }
+      std::cout << "Getting " << input.Output << " as output and "
+        << input.Temperature << " as temperature" << std::endl;
+      std::cout << "Updating with " << count_ << " points" << std::endl;
+      if (input.Output >= 0 && input.Output <= 255) {
+        if (input.Temperature >= 0.0 && input.Temperature <= 300.0) {
+          float x = static_cast<float>(count_);
+          outputs_.append(QPointF(x, static_cast<double>(input.Output)));
+          temperature_.append(QPointF(x, static_cast<double>(
+            input.Temperature)));
+          setpoints_.append(QPointF(x, setpoint_));
+          count_++;
+        }
+      }
+      setIntegral(input.Integral);
+    }
+  }
+  if (count_ > 2) {
+    if (output) {
+      QXYSeries* xySeries = static_cast<QXYSeries*>(output);
+      xySeries->replace(outputs_);
+    }
+    if (temperature) {
+      QXYSeries* xySeries = static_cast<QXYSeries*>(temperature);
+      xySeries->replace(temperature_);
+    }
+    if (setpoints) {
+      QXYSeries* xySeries = static_cast<QXYSeries*>(setpoints);
+      xySeries->replace(setpoints_);
+    }
+  }
+  return count_;
 }
 
 bool Orchestration::connectDisconnect() {
@@ -187,54 +263,89 @@ bool Orchestration::startStopLogging() {
   return false;
 }
 
-bool Orchestration::isConnected() { return isConnected_; }
-bool Orchestration::isLogging() {
+void Orchestration::panelCompleted() {
+  ispanelcompleted_ = true;
+}
+
+
+const bool& Orchestration::isConnected() const {
+  return isConnected_;
+}
+const bool Orchestration::isLogging() const {
   if (_file) {
     return _file->is_open();
   } else {
     return false;
   }
 }
-QString Orchestration::statusString() { return statusString_; }
-QString Orchestration::lastErrorString() { return lastErrorString_; }
-errno_t Orchestration::lastErrorNumber() { return lastErrorNumber_; }
-int Orchestration::refreshInterval() { return refreshInterval_; }
-double Orchestration::refreshFrequency() { return refreshFrequency_; }
-int Orchestration::manual() { return manual_; }
-double Orchestration::setpoint() { return setpoint_; }
-float Orchestration::kp() { return kp_; }
-float Orchestration::ki() { return ki_; }
-float Orchestration::kd() { return kd_; }
-QString Orchestration::kpText() { return QString::number(kp_); }
-QString Orchestration::kiText() { return QString::number(ki_); }
-QString Orchestration::kdText() { return QString::number(kd_); }
-int Orchestration::force() { return force_; }
-QString Orchestration::forceText() {
-  switch (force_) {
-  case 0:
-    return QStringLiteral(u"Off");
-  case 1:
-    return QStringLiteral(u"Idle");
-  case 2:
-    return QStringLiteral(u"Manual");
-  case 3:
-    return QStringLiteral(u"Automatic");
-  default:
-    return QStringLiteral(u"Unknown");
-  }
+const QString& Orchestration::statusString() const {
+  return statusString_;
 }
-float Orchestration::integral() {
+const QString& Orchestration::lastErrorString() const {
+  return lastErrorString_;
+}
+const errno_t& Orchestration::lastErrorNumber() const {
+  return lastErrorNumber_;
+}
+const int Orchestration::intervalIndex() const {
+  return gptum::interval::index(interval_);
+}
+const int& Orchestration::manual() const {
+  return manual_;
+}
+const double& Orchestration::setpoint() const {
+  return setpoint_;
+}
+const float& Orchestration::kp() const { return kp_; }
+const float& Orchestration::ki() const { return ki_; }
+const float& Orchestration::kd() const { return kd_; }
+const QString Orchestration::kpText() const { return QString::number(kp_); }
+const QString Orchestration::kiText() const { return QString::number(ki_); }
+const QString Orchestration::kdText() const { return QString::number(kd_); }
+const int& Orchestration::force() const {
+  return force_;
+}
+const int Orchestration::forceIndex() const {
+  return gptum::mode::index(force_);
+}
+const float& Orchestration::integral() const {
   return integral_;
 }
-QString Orchestration::integralText() {
+const QString Orchestration::integralText() const {
   return QString::number(integral_);
 }
 
-void Orchestration::setRefreshFrequency(const double& value) {
-  if (refreshFrequency_ != value && value >= 0.1 && value <= 10) {
-    refreshFrequency_ = value;
-    setRefreshInterval(static_cast<int>(1000.0 / refreshFrequency_));
-    emit refreshFrequencyChanged();
+const int Orchestration::tuningIndex() const {
+  return gptum::tuning::index(tuning_);
+}
+
+void Orchestration::setInterval(const int& value) {
+  if (interval_ != value) {
+    interval_ = value;
+    configuration_->setMode(configuration::mode::write);
+    configuration_->setInterval(interval_);
+    configuration_->setMode(configuration::mode::normal);
+    emit intervalChanged();
+  }
+}
+
+void Orchestration::setIntervalIndex(const int& value) {
+  if (ispanelcompleted_) {
+    int intval = gptum::interval::value(value);
+    if (intval != -1) {
+      setInterval(intval);
+    }
+  }
+}
+
+void Orchestration::setApplyIntervalToController(const bool& value) {
+  if (ispanelcompleted_) {
+    if (applyIntervalToController_ != value) {
+      applyIntervalToController_ = value;
+      configuration_->setMode(configuration::mode::write);
+      configuration_->setApplyIntervalToController(applyIntervalToController_);
+      configuration_->setMode(configuration::mode::normal);
+    }
   }
 }
 
@@ -412,74 +523,80 @@ void Orchestration::setForce(const int& value) {
     }
     force_ = value;
     emit forceChanged();
-    emit forceTextChanged();
   }
 }
 
-void Orchestration::setForceText(const QString& value) {
-  const Qt::CaseSensitivity Cis = Qt::CaseInsensitive;
-  if (value.compare(QStringLiteral(u"Idle"), Cis) == 0) {
-    setForce(1);
-  } else if (value.compare(QStringLiteral(u"Manual"), Cis) == 0) {
-    setForce(2);
-  } else if (value.compare(QStringLiteral(u"Automatic"), Cis) == 0) {
-    setForce(3);
+void Orchestration::setForceIndex(const int& value) {
+  int force = gptum::mode::mode(value);
+  if (force >= 0) {
+    setForce(force);
   }
 }
 
-int Orchestration::update(
-  QAbstractSeries* output,
-  QAbstractSeries* temperature,
-  QAbstractSeries* setpoints) {
-  if (_status == gptu::types::status::connected) {
-    gpam::types::registry::Input input;
-    gpam::types::result result =
-      gpam::master::retry::read::input(input);
-    if (result == gpam::types::result::success) {
-      if (_file) {
-        if (_file->is_open()) {
-          Duration duration = Clock::now() - _start;
-          Duration seconds =
-            std::chrono::duration_cast<std::chrono::seconds>(duration);
-          (*_file)
-            << seconds.count() << ","
-            << input.Output << ","
-            << input.Temperature << ","
-            << setpoint_ << std::endl;
-          _file->flush();
-        }
-      }
-      std::cout << "Getting " << input.Output << " as output and "
-        << input.Temperature << " as temperature" << std::endl;
-      std::cout << "Updating with " << count_ << " points" << std::endl;
-      if (input.Output >= 0 && input.Output <= 255) {
-        if (input.Temperature >= 0.0 && input.Temperature <= 300.0) {
-          float x = static_cast<float>(count_);
-          outputs_.append(QPointF(x, static_cast<double>(input.Output)));
-          temperature_.append(QPointF(x, static_cast<double>(
-            input.Temperature)));
-          setpoints_.append(QPointF(x, setpoint_));
-          count_++;
-        }
-      }
-      setIntegral(input.Integral);
-    }
+void Orchestration::setTuning(const gp::tuning::types::TuningMode& value) {
+  if (tuning_ != value) {
+    tuning_ = value;
+    emit tuningChanged();
+    configuration_->setMode(configuration::mode::write);
+    configuration_->setTuning(tuning_);
+    configuration_->setMode(configuration::mode::normal);
   }
-  if (count_ > 2) {
-    if (output) {
-      QXYSeries* xySeries = static_cast<QXYSeries*>(output);
-      xySeries->replace(outputs_);
-    }
-    if (temperature) {
-      QXYSeries* xySeries = static_cast<QXYSeries*>(temperature);
-      xySeries->replace(temperature_);
-    }
-    if (setpoints) {
-      QXYSeries* xySeries = static_cast<QXYSeries*>(setpoints);
-      xySeries->replace(setpoints_);
-    }
+}
+
+void Orchestration::setTuningIndex(const int& value) {
+  if (ispanelcompleted_) {
+    setTuning(gptum::tuning::value(value));
   }
-  return count_;
+}
+
+void Orchestration::onCommunicationConfigurationChanged() {
+  qDebug() << " Communication Configuration Changed";
+}
+
+void Orchestration::onModbusConfigurationChanged() {
+  qDebug() << " Modbus Configuration Changed";
+}
+
+void Orchestration::onTimersConfigurationChanged() {
+  qDebug() << " Timers Configuration Changed";
+}
+
+void Orchestration::onTuningConfigurationChanged() {
+  qDebug() << " Tuning Configuration Changed";
+}
+
+void Orchestration::applyConfiguration() {
+  setInterval(configuration_->interval());
+  setApplyIntervalToController(configuration_->applyIntervalToController());
+  setTuning(configuration_->tuning());
+}
+
+void Orchestration::connectConfiguration() {
+  QObject::connect(
+    configuration_.get(),
+    &Configuration::serialPortChanged,
+    this,
+    &Orchestration::onCommunicationConfigurationChanged);
+  QObject::connect(
+    configuration_.get(),
+    &Configuration::serialBaudChanged,
+    this,
+    &Orchestration::onCommunicationConfigurationChanged);
+  QObject::connect(
+    configuration_.get(),
+    &Configuration::slaveIdChanged,
+    this,
+    &Orchestration::onModbusConfigurationChanged);
+  QObject::connect(
+    configuration_.get(),
+    &Configuration::intervalChanged,
+    this,
+    &Orchestration::onTimersConfigurationChanged);
+  QObject::connect(
+    configuration_.get(),
+    &Configuration::tuningChanged,
+    this,
+    &Orchestration::onTuningConfigurationChanged);
 }
 
 void Orchestration::setIntegral(const float& value) {
@@ -545,13 +662,6 @@ void Orchestration::setLastErrorNumber(const errno_t& value) {
   if (lastErrorNumber_ != value) {
     lastErrorNumber_ = value;
     emit lastErrorNumberChanged();
-  }
-}
-
-void Orchestration::setRefreshInterval(const int& value) {
-  if (refreshInterval_ != value) {
-    refreshInterval_ = value;
-    emit refreshIntervalChanged();
   }
 }
 

@@ -1,33 +1,7 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the Qt Charts module of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:GPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3 or (at your option) any later version
-** approved by the KDE Free Qt Foundation. The licenses are as published by
-** the Free Software Foundation and appearing in the file LICENSE.GPL3
-** included in the packaging of this file. Please review the following
-** information to ensure the GNU General Public License requirements will
-** be met: https://www.gnu.org/licenses/gpl-3.0.html.
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
 #include <cstdlib>
+
+#include <memory>
+#include <iostream>
 
 #include <QtWidgets/QApplication>
 #include <QtQml/QQmlContext>
@@ -39,8 +13,21 @@
 
 #include <orchestration.h>
 
+#define GOS_QML_ORCHESTRATION "orchestration"
+#define GOS_QML_FLOAT_VALIDATOR "FloatValidator"
+
 namespace gpt = ::gos::pid::toolkit;
 namespace gptu = ::gos::pid::toolkit::ui;
+
+namespace registration {
+bool items();
+}
+
+namespace orchestration {
+typedef std::unique_ptr<gptu::Orchestration> OrchestrationPointer;
+static OrchestrationPointer orchestration_;
+bool create(QQuickView& viewer);
+}
 
 int main(int argc, char* argv[]) {
   // Qt Charts uses Qt Graphics View Framework for drawing, therefore QApplication must be used.
@@ -61,8 +48,7 @@ int main(int argc, char* argv[]) {
       QString::fromLatin1("qml"))
   );
 
-  qmlRegisterType<gptu::FloatValidator>(
-    "FloatValidator", 1, 0, "FloatValidator");
+  registration::items();
 
   viewer.setTitle(QStringLiteral("PID HMI"));
 
@@ -72,17 +58,47 @@ int main(int argc, char* argv[]) {
     &viewer,
     &QWindow::close);
 
-  gptu::Orchestration orchestration(&viewer);
-
-  viewer.rootContext()->setContextProperty("orchestration", &orchestration);
-  if (!orchestration.initialize(viewer.rootContext())) {
-    return EXIT_FAILURE;
-  }
-
   viewer.setSource(QUrl("qrc:/qml/pid/main.qml"));
   viewer.setResizeMode(QQuickView::SizeRootObjectToView);
   viewer.setColor(QColor("#404040"));
-  viewer.show();
+  if (orchestration::create(viewer)) {
+    viewer.show();
+    return app.exec();
+  } else {
+    return EXIT_FAILURE;
+  }
+}
 
-  return app.exec();
+namespace registration {
+bool items() {
+#ifdef GOS_QML_NOT_USE_ANONYMOUS_REGISTRATION
+  qmlRegisterType<gptu::FloatValidator>(
+    GOS_QML_FLOAT_VALIDATOR,
+    1
+    0,
+    GOS_QML_FLOAT_VALIDATOR);
+#else
+  qmlRegisterAnonymousType<gptu::FloatValidator>(GOS_QML_FLOAT_VALIDATOR, 1);
+#endif
+}
+}
+
+namespace orchestration {
+bool create(QQuickView& viewer) {
+  orchestration_ = std::make_unique<gptu::Orchestration>(viewer);
+  if (orchestration_) {
+    viewer.rootContext()->setContextProperty(
+      GOS_QML_ORCHESTRATION,
+      orchestration_.get());
+    if (orchestration_->initialize()) {
+      return true;
+    } else {
+      std::cerr << "Failed to initialize the Orchestration" << std::endl;
+      return false;
+    }
+  } else {
+    std::cerr << "Out of memory when creating the Orchestration" << std::endl;
+    return false;
+  }
+}
 }
