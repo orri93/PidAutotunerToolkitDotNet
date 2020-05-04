@@ -7,14 +7,16 @@ namespace gos {
 namespace pid {
 namespace toolkit {
 namespace ui {
+namespace validator {
 
-class FloatValidator : public QValidator {
+class Float : public QValidator {
   Q_OBJECT
 public:
-  explicit FloatValidator(QObject* parent = nullptr);
+  explicit Float(QObject* parent = nullptr);
   virtual State validate(QString& input, int& pos) const;
 };
 
+} // namespace validator
 } // namespace ui
 } // namespace toolkit
 } // namespace pid

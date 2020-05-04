@@ -1,12 +1,19 @@
-import QtQuick 2.0
-import QtCharts 2.3
+import QtQuick 2.14
+import QtQuick.Layouts 1.2
+import QtQuick.Controls 2.12
+import QtQuick.Window 2.14
 
-Item {
-  id: main
-  implicitHeight: 800
-  implicitWidth: 1024
+Window {
+  id: pidMainWindow
 
-  property int statusHeight: 52
+  width: 1024
+  height: 800
+
+  color: "#404040"
+
+  title: pidParameterPanel.titleText
+
+  visible: true
 
   PidPanel {
     id: pidParameterPanel
@@ -21,6 +28,6 @@ Item {
     anchors.bottom: parent.bottom
     anchors.right: parent.right
     anchors.left: pidParameterPanel.right
-    height: main.height
+    height: pidMainWindow.height
   }
 }

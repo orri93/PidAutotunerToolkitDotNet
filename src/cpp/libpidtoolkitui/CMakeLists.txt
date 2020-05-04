@@ -1,5 +1,5 @@
 list(APPEND gos_pid_toolkit_ui_cpp_library_source
-  "fvalidator.cpp")
+  "floatvalidator.cpp")
 
 find_package(Qt5 COMPONENTS REQUIRED Core Gui)
 

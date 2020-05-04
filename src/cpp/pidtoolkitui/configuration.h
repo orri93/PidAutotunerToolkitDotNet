@@ -2,6 +2,7 @@
 #define GOS_PID_TUNING_UI_CONFIGURATION_H_
 
 #include <memory>
+#include <vector>
 
 #include <QObject>
 #include <QSettings>
@@ -40,12 +41,13 @@ class Configuration : public Items {
 
   /* Tuning configuration */
   Q_PROPERTY(::gos::pid::tuning::types::TuningMode tuning READ tuning WRITE setTuning NOTIFY tuningChanged)
-  Q_PROPERTY(QString tuningText READ tuningText WRITE setTuningText NOTIFY tuningTextChanged)
+  Q_PROPERTY(QString tuningText READ tuningText WRITE setTuningText)
+
+  Q_PROPERTY(QString modeText READ modeText NOTIFY modeTextChanged)
 
   /* Chart*/
 #ifdef GOS_NOT_YET_USED
     antialiasing
-
 #endif
 
 protected:
@@ -63,7 +65,10 @@ public:
   const configuration::mode& mode() const;
   void setMode(const configuration::mode& mode);
 
+  const QString modeText() const;
+
 signals:
+  void modeTextChanged();
   /* Communication configuration */
   void serialPortChanged();
   void serialBaudChanged();
@@ -75,7 +80,6 @@ signals:
 
   /* Tuning configuration */
   void tuningChanged();
-  void tuningTextChanged();
 
   /* UI configuration */
 
@@ -95,8 +99,13 @@ private:
   typedef std::unique_ptr<QSettings> SettingsPointer;
   typedef std::unique_ptr<QFileSystemWatcher> WatcherPointer;
 
-  SettingsPointer settings_;
-  WatcherPointer watcher_;
+  void create();
+
+  void handle(std::function<void()>& changed);
+  void handle(std::function<void()>& changed, std::function<void()>& write);
+  void handle(
+    std::vector<std::function<void()>>& changed,
+    std::function<void()>& write);
 
   /* Writing */
   QSettings* startWriting();
@@ -112,6 +121,14 @@ private:
   void setSlaveId(const int& value);
 
   /* UI configuration */
+
+  /* Functions */
+  std::function<void()> fWriteTuning_;
+  std::function<void()> fWriteTimers_;
+
+  /* Private */
+  SettingsPointer settings_;
+  WatcherPointer watcher_;
 
   QString filepath_;
   configuration::mode mode_;

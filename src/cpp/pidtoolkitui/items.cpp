@@ -1,6 +1,10 @@
 #include <items.h>
 
+#include <model/interval.h>
+#include <model/tuning.h>
+
 namespace gp = ::gos::pid;
+namespace gptum = ::gos::pid::toolkit::ui::model;
 
 namespace gos {
 namespace pid {
@@ -9,6 +13,7 @@ namespace ui {
 
 Items::Items(QObject* parent) :
   QObject(parent),
+  iscompleted_(false),
   serialBaud_(0),
   slaveId_(0),
   interval_(0),
@@ -36,6 +41,9 @@ const int& Items::slaveId() const {
 const int& Items::interval() const {
   return interval_;
 }
+const int Items::intervalIndex() const {
+  return gptum::interval::index(interval_);
+}
 const bool& Items::applyIntervalToController() const {
   return applyIntervalToController_;
 }
@@ -44,11 +52,73 @@ const bool& Items::applyIntervalToController() const {
 const gp::tuning::types::TuningMode& Items::tuning() const {
   return tuning_;
 }
+const int Items::tuningIndex() const {
+  return gptum::tuning::index(tuning_);
+}
 const QString Items::tuningText() const {
   return tuningText(tuning_);
 }
 
+/* Communication items */
+bool Items::applySerialPort(const QString& value) {
+  if (serialPort_ != value) {
+    serialPort_ = value;
+    return true;
+  }
+  return false;
+}
+bool Items::applySerialBaud(const int& value) {
+  if (serialBaud_ != value) {
+    serialBaud_ = value;
+    return true;
+  }
+  return false;
+}
+
+/* Modbus items */
+bool Items::applySlaveId(const int& value) {
+  if (slaveId_ != value) {
+    slaveId_ = value;
+    return true;
+  }
+  return false;
+}
+
+/* Timers items */
+bool Items::applyInterval(const int& value) {
+  if (iscompleted_ && interval_ != value) {
+    interval_ = value;
+    return true;
+  }
+  return false;
+}
+bool Items::applyIntervalIndex(const int& value) {
+  return applyInterval(gptum::interval::value(value));
+}
+bool Items::applyApplyIntervalToController(const bool& value) {
+  if (iscompleted_ && applyIntervalToController_ != value) {
+    applyIntervalToController_ = value;
+    return true;
+  }
+  return false;
+}
+
 /* Tuning items */
+bool Items::applyTuning(const gp::tuning::types::TuningMode& value) {
+  if (iscompleted_ && tuning_ != value) {
+    tuning_ = value;
+    return true;
+  }
+  return false;
+}
+bool Items::applyTuningIndex(const int& value) {
+  return applyTuning(gptum::tuning::value(value));
+}
+bool Items::applyTuningText(const QString& value) {
+  return applyTuning(tuningMode(value));
+}
+
+/* Tuning methods */
 const gp::tuning::types::TuningMode Items::tuningMode(const QString& text) {
   if (text.compare(TUNING_TEXT_BLACK_BOX, Qt::CaseInsensitive) == 0) {
     return gp::tuning::types::TuningMode::blackbox;

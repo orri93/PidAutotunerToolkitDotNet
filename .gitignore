@@ -368,3 +368,8 @@ msvc_make.bat
 Makefile
 Makefile.*
 RCa18632
+
+# Qt CMake
+.cmake/
+CMakeCache.txt
+CMakeFiles/

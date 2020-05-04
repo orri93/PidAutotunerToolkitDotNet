@@ -6,12 +6,14 @@ import FloatValidator 1.0
 ColumnLayout {
   id: pidParameterPanel
 
-  anchors.top: parent.top
+  Layout.alignment: Qt.AlignTop
   Layout.fillWidth: true
   Layout.fillHeight: true
 
-  property string tunePlaceholderText: qsTr("0.0")
-  
+  property string titleText: qsTr("PID Toolkit")
+
+  property string realPlaceholderText: qsTr("0.0")
+
   property color titleTextColor: "floralwhite"
   property color labelTextColor: "white"
   property color inputTextColor: "beige"
@@ -32,15 +34,6 @@ ColumnLayout {
   Component.onCompleted: {
     enableInput(false);
     orchestration.panelCompleted();
-    
-  }
-
-  function initialize() {
-    intervalText.text = orchestration.interval.toString();
-      forceBox.currentIndex = orchestration.intervalIndex;
-      intervalApplyCheckBox.checked =
-                    orchestration.applyIntervalToController;
-      tuningComboBox.currentIndex = orchestration.tuningIndex;
   }
 
   FloatValidator {
@@ -48,14 +41,13 @@ ColumnLayout {
   }
 
   GridLayout {
-    /* anchors.top: parent.top */
     Layout.alignment: Qt.AlignTop
     Layout.fillWidth: true
     Layout.fillHeight: true
     Layout.margins: gridMargin
 
     columns: 2
-    rows: 9
+    rows: 11
 
     ColumnLayout {
       id: titleColumn
@@ -65,12 +57,13 @@ ColumnLayout {
       Layout.row: 0
 
       Text {
-        text: "PID"
+        text: titleText
         color: titleTextColor
         Layout.fillWidth: false
         Layout.leftMargin: titleLeftMargin
         Layout.topMargin: titleVerticalMargin
         Layout.bottomMargin: titleVerticalMargin
+        Layout.alignment: Qt.AlignTop
         font.pointSize: titleFontPointSize
       }
     }
@@ -118,7 +111,7 @@ ColumnLayout {
       }
       Text {
         id: integralText
-        text: qsTr("0.0")
+        text: realPlaceholderText
         color: informationTextColor
         Layout.leftMargin: informationTextLeftMargin
         font.pointSize: informationFontPointSize
@@ -233,12 +226,7 @@ ColumnLayout {
       ComboBox {
         id: forceBox
         Layout.fillWidth: true
-        model: ListModel {
-          id: forceItems
-          ListElement { text: "Idle" }
-          ListElement { text: "Manual" }
-          ListElement { text: "Automatic" }
-        }
+        model: modeModel
         onCurrentIndexChanged: {
           orchestration.forceIndex = currentIndex;
         }
@@ -290,7 +278,7 @@ ColumnLayout {
       }
       Text {
         id: intervalText
-        text: qsTr("0 ms")
+        text: realPlaceholderText
         color: informationTextColor
         Layout.leftMargin: informationTextLeftMargin
         font.pointSize: informationFontPointSize
@@ -299,7 +287,7 @@ ColumnLayout {
       Connections {
         target: orchestration
         onIntervalChanged: {
-          intervalText.text = orchestration.interval.toString();
+          intervalText.text = orchestration.interval.toString() + " ms";
         }
       }
     }
@@ -326,7 +314,7 @@ ColumnLayout {
       Connections {
         target: orchestration
         onIntervalChanged: {
-          forceBox.currentIndex = orchestration.intervalIndex;
+          intervalComboBox.currentIndex = orchestration.intervalIndex;
         }
       }
     }
@@ -350,7 +338,12 @@ ColumnLayout {
       }
       Connections {
         target: orchestration
-        onSetpointChanged: {
+        onApplyIntervalToControllerChanged: {
+          if(orchestration.applyIntervalToController) {
+            debugMessage("Apply Interval To Controller Changed to true");
+          } else {
+            debugMessage("Apply Interval To Controller Changed to false");
+          }
           intervalApplyCheckBox.checked =
               orchestration.applyIntervalToController;
         }
@@ -370,23 +363,24 @@ ColumnLayout {
       ComboBox {
         id: tuningComboBox
         Layout.fillWidth: true
-        model: ListModel {
-          id: tuningItems
-          ListElement { text: "None" }
-          ListElement { text: "Black Box" }
-        }
+        model: tuningModel
         onCurrentIndexChanged: {
           orchestration.tuningIndex = currentIndex;
+          if(pidParameterPanel.status == Component.Ready) {
+            enableInput(currentIndex == 0);
+          }
         }
       }
       Connections {
         target: orchestration
-        onSetpointChanged: {
+        onTuningChanged: {
           tuningComboBox.currentIndex = orchestration.tuningIndex;
+          if(pidParameterPanel.status == Component.Ready) {
+            enableInput(orchestration.tuningIndex == 0);
+          }
         }
       }
     }
-
 
     Button {
       id: connectDisconnectButton
@@ -436,6 +430,57 @@ ColumnLayout {
         }
       }
     }
+
+    ColumnLayout {
+      Layout.fillWidth: true
+      Layout.columnSpan: 2
+      Layout.column: 0
+      Layout.row: 9
+      Label {
+        id: debugLabel
+        text: qsTr("Debug")
+        visible: false
+        color: labelTextColor
+        Layout.leftMargin: labelLeftMargin
+        font.pointSize: labelFontPointSize
+      }
+      Text {
+        id: debugText
+        color: informationTextColor
+        Layout.leftMargin: informationTextLeftMargin
+        font.pointSize: informationFontPointSize
+        Layout.fillWidth: true
+      }
+    }
+
+    ColumnLayout {
+      Layout.fillWidth: true
+      Layout.columnSpan: 2
+      Layout.column: 0
+      Layout.row: 10
+      Label {
+        id: configurationModeLabel
+        text: qsTr("Configuration Mode")
+        visible: true
+        color: labelTextColor
+        Layout.leftMargin: labelLeftMargin
+        font.pointSize: labelFontPointSize
+      }
+      Text {
+        id: configurationModeText
+        color: informationTextColor
+        Layout.leftMargin: informationTextLeftMargin
+        font.pointSize: informationFontPointSize
+        Layout.fillWidth: true
+      }
+      Connections {
+        target: orchestration
+        onConfigurationModeTextChanged: {
+          configurationModeText.text = orchestration.configurationModeText;
+        }
+      }
+    }
+
   }
 
   Connections {
@@ -464,6 +509,13 @@ ColumnLayout {
       } else {
         connectDisconnectButton.text = "Connect";
       }
+    }
+  }
+
+  function debugMessage(message) {
+    if(pidParameterPanel.status == Component.Ready) {
+      debugLabel.visible = true;
+      debugText.text = message;
     }
   }
 

@@ -1,17 +1,18 @@
 #include <cmath>
 
-#include <gos/pid/ui/fvalidator.h>
+#include <gos/pid/ui/floatvalidator.h>
 
 namespace gos {
 namespace pid {
 namespace toolkit {
 namespace ui {
+namespace validator {
 
-FloatValidator::FloatValidator(QObject* parent) :
+Float::Float(QObject* parent) :
   QValidator(parent) {
 }
 
-QValidator::State FloatValidator::validate(QString& input, int& pos) const {
+QValidator::State Float::validate(QString& input, int& pos) const {
   Q_UNUSED(pos)
   if (input.isEmpty()) {
     return Acceptable;
@@ -21,6 +22,7 @@ QValidator::State FloatValidator::validate(QString& input, int& pos) const {
   return (ok && std::isfinite(f)) ? Acceptable : Invalid;
 }
 
+} // namespace validator
 } // namespace ui
 } // namespace toolkit
 } // namespace pid

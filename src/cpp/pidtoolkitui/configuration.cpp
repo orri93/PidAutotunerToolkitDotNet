@@ -40,12 +40,14 @@ Configuration::Configuration(const QString& filepath, QObject* parent) :
   Items(parent),
   filepath_(filepath),
   mode_(configuration::mode::normal) {
+  create();
 }
 
 Configuration::Configuration(QObject* parent) :
   Items(parent),
   filepath_(GOS_CONFIGURATION_FILE_PATH),
   mode_(configuration::mode::normal) {
+  create();
 }
 
 QSettings* Configuration::initialize(const bool& watcher) {
@@ -54,7 +56,17 @@ QSettings* Configuration::initialize(const bool& watcher) {
   settings_ = std::make_unique<QSettings>(filepath_, SettingsFormat);
   if (settings_) {
     setMode(configuration::mode::initializing);
+    iscompleted_ = true;
     result = read(false);
+    if (!QFile::exists(settings_->fileName())) {
+      qInfo() << "Creating a default Configuration file at '"
+        << settings_->fileName() << "'";
+      result = write(true);
+      if (result == nullptr) {
+        qCritical() << "Failed to write default configuration file";
+        return result;
+      }
+    }
     if(result != nullptr) {
       if (watcher) {
         watcher_ = std::make_unique<QFileSystemWatcher>(this);
@@ -135,20 +147,16 @@ QSettings* Configuration::write(const bool& sync) {
     return nullptr;
   }
 
-#ifdef GOS_CONFIGURATION_NOT_WRITE
   /* Communication configuration */
   settings_->beginGroup(GROUP_COMMUNICATION);
   settings_->setValue(KEY_SERIAL_PORT, serialPort_);
   settings_->setValue(KEY_SERIAL_BAUD, serialBaud_);
   settings_->endGroup();
-#endif
 
-#ifdef GOS_CONFIGURATION_NOT_WRITE
   /* Modbus configuration */
   settings_->beginGroup(GROUP_MODBUS);
   settings_->setValue(KEY_SLAVE_ID, slaveId_);
   settings_->endGroup();
-#endif
 
   writeTuning();
   writeTimers();
@@ -166,15 +174,15 @@ QSettings* Configuration::startWriting() {
 }
 void Configuration::writeTuning() {
   /* Tuning configuration */
-  settings_->beginGroup(GROUP_TIMERS);
-  settings_->setValue(KEY_INTERVAL, interval_);
-  settings_->setValue(KEY_APPLY_TO_CONTROLLER, applyIntervalToController_);
+  settings_->beginGroup(GROUP_TUNING);
+  settings_->setValue(KEY_TUNING_TEXT, tuningText());
   settings_->endGroup();
 }
 void Configuration::writeTimers() {
   /* Timers configuration */
-  settings_->beginGroup(GROUP_TUNING);
-  settings_->setValue(KEY_TUNING_TEXT, tuningText());
+  settings_->beginGroup(GROUP_TIMERS);
+  settings_->setValue(KEY_INTERVAL, interval_);
+  settings_->setValue(KEY_APPLY_TO_CONTROLLER, applyIntervalToController_);
   settings_->endGroup();
 }
 QSettings* Configuration::completeWriting(const bool& sync) {
@@ -188,134 +196,77 @@ const configuration::mode& Configuration::mode() const {
   return mode_;
 }
 void Configuration::setMode(const configuration::mode& mode) {
-  mode_ = mode;
+  if (mode_ != mode) {
+    mode_ = mode;
+    emit modeTextChanged();
+  }
+}
+const QString Configuration::modeText() const {
+  switch (mode_) {
+  case configuration::mode::normal:
+    return "Normal";
+  case configuration::mode::initializing:
+    return "Initializing";
+  case configuration::mode::write:
+    return "Write";
+  default:
+    return "Unknown";
+  }
 }
 
 /* Communication configuration */
 void Configuration::setSerialPort(const QString& value) {
-  if (serialPort_ != value) {
-    serialPort_ = value;
-    qDebug() << "Setting serial port to " << serialPort_;
-    emit serialPortChanged();
-    switch (mode_) {
-    case configuration::mode::normal:
-      emit serialPortChanged();
-      break;
-    case configuration::mode::write:
-      //write(true);
-      break;
-    case configuration::mode::initializing:
-    default:
-      break;
-    }
+  if (applySerialPort(value)) {
+    std::function<void()> changed =
+      std::bind(&Configuration::serialPortChanged, this);
+    qDebug() << "Setting serial port to " << value;
+    handle(changed);
   }
 }
 void Configuration::setSerialBaud(const int& value) {
-  if (serialBaud_ != value) {
-    serialBaud_ = value;
-    qDebug() << "Setting serial Baud to " << serialBaud_;
-    switch (mode_) {
-    case configuration::mode::normal:
-      emit serialBaudChanged();
-      break;
-    case configuration::mode::write:
-      //write(true);
-      break;
-    case configuration::mode::initializing:
-    default:
-      break;
-    }
+  if (applySerialBaud(value)) {
+    std::function<void()> changed =
+      std::bind(&Configuration::serialBaudChanged, this);
+    qDebug() << "Setting serial baud to " << value;
+    handle(changed);
   }
 }
 
 /* Modbus configuration */
 void Configuration::setSlaveId(const int& value) {
-  if (slaveId_ != value) {
-    slaveId_ = value;
-    qDebug() << "Setting slave id to " << slaveId_;
-    switch (mode_) {
-    case configuration::mode::normal:
-      emit slaveIdChanged();
-      break;
-    case configuration::mode::write:
-      //write(true);
-      break;
-    case configuration::mode::initializing:
-    default:
-      break;
-
-    }
+  if (applySlaveId(value)) {
+    std::function<void()> changed =
+      std::bind(&Configuration::slaveIdChanged, this);
+    qDebug() << "Setting slave id to " << value;
+    handle(changed);
   }
 }
 
 /* Timers configuration */
 void Configuration::setInterval(const int& value) {
-  if (interval_ != value) {
-    interval_ = value;
-    qDebug() << "Setting interval to " << interval_;
-    switch (mode_) {
-    case configuration::mode::normal:
-      emit intervalChanged();
-      break;
-    case configuration::mode::write:
-      setMode(configuration::mode::write);
-      if (startWriting()) {
-        writeTimers();
-        completeWriting(true);
-      }
-      setMode(configuration::mode::normal);
-      break;
-    case configuration::mode::initializing:
-    default:
-      break;
-    }
+  if (applyInterval(value)) {
+    std::function<void()> changed =
+      std::bind(&Configuration::intervalChanged, this);
+    qDebug() << "Setting interval to " << value;
+    handle(changed, fWriteTimers_);
   }
 }
 void Configuration::setApplyIntervalToController(const bool& value) {
-  if (applyIntervalToController_ != value) {
-    applyIntervalToController_ = value;
-    qDebug() << "Setting apply to controller to " << applyIntervalToController_;
-    switch (mode_) {
-    case configuration::mode::normal:
-      emit applyIntervalToControllerChanged();
-      break;
-    case configuration::mode::write:
-      setMode(configuration::mode::write);
-      if (startWriting()) {
-        writeTimers();
-        completeWriting(true);
-      }
-      setMode(configuration::mode::normal);
-      break;
-    case configuration::mode::initializing:
-    default:
-      break;
-    }
+  if (applyApplyIntervalToController(value)) {
+    std::function<void()> changed =
+      std::bind(&Configuration::applyIntervalToControllerChanged, this);
+    qDebug() << "Setting apply to controller to " << value;
+    handle(changed, fWriteTimers_);
   }
 }
 
 /* Tuning configuration */
 void Configuration::setTuning(const gp::tuning::types::TuningMode& value) {
-  if (tuning_ != value) {
-    tuning_ = value;
-    qDebug() << "Setting tuning to " << tuningText(tuning_);
-    switch (mode_) {
-    case configuration::mode::normal:
-      emit tuningChanged();
-      emit tuningTextChanged();
-      break;
-    case configuration::mode::write:
-      setMode(configuration::mode::write);
-      if (startWriting()) {
-        writeTuning();
-        completeWriting(true);
-      }
-      setMode(configuration::mode::normal);
-      break;
-    case configuration::mode::initializing:
-    default:
-      break;
-    }
+  if (applyTuning(value)) {
+    std::function<void()> changed =
+      std::bind(&Configuration::tuningChanged, this);
+    qDebug() << "Setting tuning to " << tuningText(value);
+    handle(changed, fWriteTuning_);
   }
 }
 void Configuration::setTuningText(const QString& value) {
@@ -325,13 +276,88 @@ void Configuration::setTuningText(const QString& value) {
 void Configuration::onFileChanged(const QString& path) {
   switch (mode_) {
   case configuration::mode::normal:
+    qDebug() << "Configuration file at '" << path
+             << "' change and in 'read' mode";
     read(true);
+    break;
+  case configuration::mode::write:
+    qDebug() << "Ignoring Configuration file at '" << path
+             << "' change because in 'write' mode";
+    qDebug() << "Configuration Setting mode back to 'normal'";
+    setMode(configuration::mode::normal);
+    break;
+  case configuration::mode::initializing:
+    qDebug() << "Ignoring Configuration file at '" << path
+             << "' change because in 'initializing' mode";
+    break;
+  default:
+    qWarning() << "Ignoring Configuration file at '" << path
+               << "' change because in Unknown mode";
+    break;
+  }
+}
+
+void Configuration::create() {
+  fWriteTuning_ = std::bind(&Configuration::writeTuning, this);
+  fWriteTimers_ = std::bind(&Configuration::writeTimers, this);
+}
+
+void Configuration::handle(std::function<void()>& changed) {
+  switch (mode_) {
+  case configuration::mode::normal:
+    emit changed();
     break;
   case configuration::mode::write:
   case configuration::mode::initializing:
   default:
     break;
-  }  
+  }
+}
+
+void Configuration::handle(
+  std::function<void()>& changed,
+  std::function<void()>& write) {
+  switch (mode_) {
+  case configuration::mode::normal:
+    qDebug() << "Configuration handling mode 'normal'";
+    emit changed();
+    break;
+  case configuration::mode::write:
+    qDebug() << "Configuration handling mode 'write'";
+    if (startWriting()) {
+      write();
+      completeWriting(true);
+      qDebug() << "Configuration writing completed";
+    }
+    break;
+  case configuration::mode::initializing:
+  default:
+    break;
+  }
+}
+
+void Configuration::handle(
+  std::vector<std::function<void()>>& changed,
+  std::function<void()>& write) {
+  switch (mode_) {
+  case configuration::mode::normal:
+    qDebug() << "Configuration handling mode 'normal'";
+    for (std::function<void()> f : changed) {
+      emit f();
+    }
+    break;
+  case configuration::mode::write:
+    qDebug() << "Configuration handling mode 'write'";
+    if (startWriting()) {
+      write();
+      completeWriting(true);
+      qDebug() << "Configuration writing completed";
+    }
+    break;
+  case configuration::mode::initializing:
+  default:
+    break;
+  }
 }
 
 } // namespace ui

@@ -4,7 +4,6 @@
 #include <fstream>
 #include <string>
 #include <memory>
-#include <chrono>
 
 #include <QDebug>
 
@@ -19,6 +18,7 @@
 #include <gos/pid/arduino/modbus/retry.h>
 
 #include <gos/pid/ui/types.h>
+#include <gos/pid/ui/floatvalidator.h>
 
 #include <orchestration.h>
 
@@ -26,7 +26,12 @@
 #include <model/tuning.h>
 #include <model/mode.h>
 
+#define GOS_QML_ORCHESTRATION "orchestration"
+#define GOS_QML_FLOAT_VALIDATOR "FloatValidator"
+
 namespace gp = ::gos::pid;
+
+namespace gptt = ::gos::pid::tuning::types;
 
 namespace gpa = ::gos::pid::arduino;
 namespace gpam = ::gos::pid::arduino::modbus;
@@ -44,13 +49,48 @@ namespace pid {
 namespace toolkit {
 namespace ui {
 
+namespace orchestration {
+typedef std::unique_ptr<Orchestration> OrchestrationPointer;
+static OrchestrationPointer _orchestration;
+bool create(QQmlContext& context) {
+  qmlRegisterType<gptu::validator::Float>(
+    GOS_QML_FLOAT_VALIDATOR, 1, 0, GOS_QML_FLOAT_VALIDATOR);
+
+  _orchestration = std::make_unique<Orchestration>(context);
+  if (_orchestration) {
+    context.setContextProperty(GOS_QML_ORCHESTRATION, _orchestration.get());
+    if (_orchestration->initialize(false)) {
+      return true;
+    } else {
+      std::cerr << "Failed to initialize the Orchestration" << std::endl;
+    }
+  } else {
+    std::cerr << "Out of memory when creating the Orchestration" << std::endl;
+  }
+  return false;
+}
+namespace handle {
+template<typename T> void general(
+  Configuration& configuration,
+  std::function<void(const T&)>& setter,
+  const bool& watcher,
+  const T& value) {
+  qDebug() << "Setting configuration to 'write' mode";
+  if (watcher) {
+    configuration.setMode(configuration::mode::write);
+    setter(value);
+  } else {
+    configuration.setMode(configuration::mode::write);
+    setter(value);
+    configuration.setMode(configuration::mode::normal);
+  }
+}
+}
+}
+
 std::unique_ptr<std::ofstream> _file;
 
-typedef std::chrono::steady_clock Clock;
-typedef Clock::duration Duration;
-typedef Clock::time_point Time;
-
-Time _start;
+gptu::types::Time _start;
 
 gptu::types::status _status = gptu::types::status::undefined;
 
@@ -65,11 +105,11 @@ float parse(const QString& string) {
 }
 }
 
-Orchestration::Orchestration(QQuickView* appViewer, QObject* parent) :
+Orchestration::Orchestration(QQmlContext& context, QObject* parent) :
   Items(parent),
-  appViewer_(appViewer),
+  context_(context),
   count_(0),
-  ispanelcompleted_(false),
+  watcher_(false),
   isConnected_(false),
   lastErrorNumber_(0),
   manual_(0),
@@ -90,46 +130,25 @@ Orchestration::~Orchestration() {
   gpam::master::shutdown();
 }
 
-bool Orchestration::initialize() {
-  QQmlContext* context = appViewer_.rootContext();
-  if (context != nullptr) {
-    gpam::types::result result;
-    if (context != nullptr) {
-      QVariant intervalmodel = gptum::interval::create();
-      context->setContextProperty("intervalModel", intervalmodel);
-      QVariant tuningmodel = gptum::tuning::create();
-      context->setContextProperty("tuningModel", tuningmodel);
-      QVariant modemodel = gptum::mode::create();
-      context->setContextProperty("modeModel", modemodel);
+bool Orchestration::initialize(const bool& watcher) {
+  watcher_ = watcher;
+  QVariant intervalmodel = gptum::interval::create();
+  context_.setContextProperty("intervalModel", intervalmodel);
+  QVariant tuningmodel = gptum::tuning::create();
+  context_.setContextProperty("tuningModel", tuningmodel);
+  QVariant modemodel = gptum::mode::create();
+  context_.setContextProperty("modeModel", modemodel);
+  configuration_ = std::make_unique<Configuration>(this);
+  if (configuration_) {
+    QSettings* settings = configuration_->initialize(watcher);
+    if (settings != nullptr) {
+      applyConfiguration();
+      return initializemodbus();
     } else {
-      return false;
-    }
-    configuration_ = std::make_unique<Configuration>(this);
-    if (configuration_) {
-      QSettings* settings = configuration_->initialize(true);
-      if (settings != nullptr) {
-        QString serialPort = configuration_->serialPort();
-        std::string serialport = serialPort.toStdString();
-        int serialbaud = configuration_->serialBaud();
-        int slaveid = configuration_->slaveId();
-        result = gpam::master::initialize(
-          serialport.c_str(),
-          serialbaud,
-          slaveid);
-        if (result == gpam::types::result::success) {
-          applyConfiguration();
-          connectConfiguration();
-          _status = gptu::types::status::idle;
-          return true;
-        }
-      } else {
-        qCritical() << "Failed to initialize configuration";
-      }
-    } else {
-      qCritical() << "Failed to create configuration";
+      qCritical() << "Failed to initialize configuration";
     }
   } else {
-    qCritical() << "QML Context is undefined";
+    qCritical() << "Failed to create configuration";
   }
   return false;
 }
@@ -145,8 +164,8 @@ int Orchestration::update(
     if (result == gpam::types::result::success) {
       if (_file) {
         if (_file->is_open()) {
-          Duration duration = Clock::now() - _start;
-          Duration seconds =
+          gptu::types::Duration duration = gptu::types::Clock::now() - _start;
+          gptu::types::Duration seconds =
             std::chrono::duration_cast<std::chrono::seconds>(duration);
           (*_file)
             << seconds.count() << ","
@@ -224,6 +243,9 @@ bool Orchestration::connectDisconnect() {
         setForce(static_cast<int>(holding.Force));
         setIsConnected(true);
         setStatusString("Connected");
+        if (applyIntervalToController()) {
+          writeInterval(static_cast<gpa::types::Unsigned>(interval()));
+        }
         _status = gptu::types::status::connected;
         return true;
       }
@@ -251,7 +273,7 @@ bool Orchestration::startStopLogging() {
   } else {
     _file = std::make_unique<std::ofstream>("pid.csv", std::ios::out);
     if (_file->is_open()) {
-      _start = Clock::now();
+      _start = gptu::types::Clock::now();
       std::cout << "Logging file opened successful" << std::endl;
       emit isLoggingChanged();
       return true;
@@ -264,9 +286,14 @@ bool Orchestration::startStopLogging() {
 }
 
 void Orchestration::panelCompleted() {
-  ispanelcompleted_ = true;
+  qDebug() << "Panel Completed";
+  notify();
+  iscompleted_ = true;
 }
 
+const QString Orchestration::configurationModeText() const {
+  return configuration_->modeText();
+}
 
 const bool& Orchestration::isConnected() const {
   return isConnected_;
@@ -286,9 +313,6 @@ const QString& Orchestration::lastErrorString() const {
 }
 const errno_t& Orchestration::lastErrorNumber() const {
   return lastErrorNumber_;
-}
-const int Orchestration::intervalIndex() const {
-  return gptum::interval::index(interval_);
 }
 const int& Orchestration::manual() const {
   return manual_;
@@ -315,37 +339,31 @@ const QString Orchestration::integralText() const {
   return QString::number(integral_);
 }
 
-const int Orchestration::tuningIndex() const {
-  return gptum::tuning::index(tuning_);
-}
-
 void Orchestration::setInterval(const int& value) {
-  if (interval_ != value) {
-    interval_ = value;
-    configuration_->setMode(configuration::mode::write);
-    configuration_->setInterval(interval_);
-    configuration_->setMode(configuration::mode::normal);
+  if (applyInterval(value)) {
+    std::function<void(const int&)> setter = std::bind(
+      &Configuration::setInterval, configuration_.get(), std::placeholders::_1);
+    orchestration::handle::general(*configuration_, setter, watcher_, value);
+    if (applyIntervalToController() && 
+      _status == gptu::types::status::connected) {
+      writeInterval(static_cast<gpa::types::Unsigned>(interval()));
+    }
     emit intervalChanged();
   }
 }
 
 void Orchestration::setIntervalIndex(const int& value) {
-  if (ispanelcompleted_) {
-    int intval = gptum::interval::value(value);
-    if (intval != -1) {
-      setInterval(intval);
-    }
-  }
+  setInterval(model::interval::value(value));
 }
 
 void Orchestration::setApplyIntervalToController(const bool& value) {
-  if (ispanelcompleted_) {
-    if (applyIntervalToController_ != value) {
-      applyIntervalToController_ = value;
-      configuration_->setMode(configuration::mode::write);
-      configuration_->setApplyIntervalToController(applyIntervalToController_);
-      configuration_->setMode(configuration::mode::normal);
-    }
+  if (applyApplyIntervalToController(value)) {
+    std::function<void(const bool&)> setter = std::bind(
+      &Configuration::setApplyIntervalToController,
+      configuration_.get(),
+      std::placeholders::_1);
+    orchestration::handle::general(*configuration_, setter, watcher_, value);
+    emit applyIntervalToControllerChanged();
   }
 }
 
@@ -533,20 +551,22 @@ void Orchestration::setForceIndex(const int& value) {
   }
 }
 
-void Orchestration::setTuning(const gp::tuning::types::TuningMode& value) {
-  if (tuning_ != value) {
-    tuning_ = value;
+void Orchestration::setTuning(const gptt::TuningMode& value) {
+  if (applyTuning(value)) {
+    std::function<void(const gptt::TuningMode&)> setter = std::bind(
+      &Configuration::setTuning, configuration_.get(), std::placeholders::_1);
+    orchestration::handle::general(*configuration_, setter, watcher_, value);
     emit tuningChanged();
-    configuration_->setMode(configuration::mode::write);
-    configuration_->setTuning(tuning_);
-    configuration_->setMode(configuration::mode::normal);
   }
 }
 
 void Orchestration::setTuningIndex(const int& value) {
-  if (ispanelcompleted_) {
-    setTuning(gptum::tuning::value(value));
-  }
+  setTuning(gptum::tuning::value(value));
+}
+
+void Orchestration::onConfigurationModeTextChanged() {
+  qDebug() << " Configuration Mode Text Changed";
+  emit configurationModeTextChanged();
 }
 
 void Orchestration::onCommunicationConfigurationChanged() {
@@ -559,19 +579,27 @@ void Orchestration::onModbusConfigurationChanged() {
 
 void Orchestration::onTimersConfigurationChanged() {
   qDebug() << " Timers Configuration Changed";
+  setInterval(configuration_->interval());
+  setApplyIntervalToController(configuration_->applyIntervalToController());
 }
 
 void Orchestration::onTuningConfigurationChanged() {
   qDebug() << " Tuning Configuration Changed";
-}
-
-void Orchestration::applyConfiguration() {
-  setInterval(configuration_->interval());
-  setApplyIntervalToController(configuration_->applyIntervalToController());
   setTuning(configuration_->tuning());
 }
 
+void Orchestration::applyConfiguration() {
+  interval_ = configuration_->interval();
+  applyIntervalToController_ = configuration_->applyIntervalToController();
+  tuning_ = configuration_->tuning();
+}
+
 void Orchestration::connectConfiguration() {
+  QObject::connect(
+    configuration_.get(),
+    &Configuration::modeTextChanged,
+    this,
+    &Orchestration::onConfigurationModeTextChanged);
   QObject::connect(
     configuration_.get(),
     &Configuration::serialPortChanged,
@@ -590,6 +618,11 @@ void Orchestration::connectConfiguration() {
   QObject::connect(
     configuration_.get(),
     &Configuration::intervalChanged,
+    this,
+    &Orchestration::onTimersConfigurationChanged);
+  QObject::connect(
+    configuration_.get(),
+    &Configuration::applyIntervalToControllerChanged,
     this,
     &Orchestration::onTimersConfigurationChanged);
   QObject::connect(
@@ -637,6 +670,11 @@ bool Orchestration::writeForce(const gpa::types::Unsigned& force) {
     gpam::types::result::success;
 }
 
+bool Orchestration::writeInterval(const gpa::types::Unsigned& interval) {
+  return gpam::master::retry::write::interval(interval) ==
+    gpam::types::result::success;
+}
+
 void Orchestration::setIsConnected(const bool& value) {
   if (isConnected_ != value) {
     isConnected_ = value;
@@ -663,6 +701,36 @@ void Orchestration::setLastErrorNumber(const errno_t& value) {
     lastErrorNumber_ = value;
     emit lastErrorNumberChanged();
   }
+}
+
+void Orchestration::notify() {
+  emit configurationModeTextChanged();
+  emit intervalChanged();
+  emit applyIntervalToControllerChanged();
+  emit forceChanged();
+  emit tuningChanged();
+}
+
+bool Orchestration::initializemodbus() {
+  gpam::types::result result;
+  QString serialPort = configuration_->serialPort();
+  std::string serialport = serialPort.toStdString();
+  int serialbaud = configuration_->serialBaud();
+  int slaveid = configuration_->slaveId();
+  result = gpam::master::initialize(
+    serialport.c_str(),
+    serialbaud,
+    slaveid);
+  if (result == gpam::types::result::success) {
+    applyConfiguration();
+    connectConfiguration();
+    _status = gptu::types::status::idle;
+    return true;
+  } else {
+    std::cerr << "Failed to initialize Modbus Master: "
+      << gpam::master::report::error::last << std::endl;
+  }
+  return false;
 }
 
 } // namespace ui

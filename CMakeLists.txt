@@ -162,9 +162,9 @@ if (GOS_PID_TOOLKIT_CPP)
 
   if (GOS_PID_TOOLKIT_UI)
     list(APPEND gos_pid_toolkit_ui_cpp_library_source
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/fvalidator.h")
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/floatvalidator.h")
     list(APPEND gos_pid_toolkit_ui_cpp_library_public_header
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/fvalidator.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/floatvalidator.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/types.h")
     set(gos_pid_toolkit_ui_cpp_library_target libpidtoolkitui)
   endif (GOS_PID_TOOLKIT_UI)

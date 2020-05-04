@@ -27,11 +27,17 @@ namespace pid {
 namespace toolkit {
 namespace ui {
 
+namespace orchestration {
+bool create(QQmlContext& context);
+}
+
 class Orchestration : public Items {
   Q_OBJECT
 public:
-  explicit Orchestration(QQuickView& appViewer, QObject* parent = nullptr);
+  explicit Orchestration(QQmlContext& context, QObject* parent = nullptr);
   ~Orchestration();
+
+  Q_PROPERTY(QString configurationModeText READ configurationModeText NOTIFY configurationModeTextChanged)
 
   Q_PROPERTY(bool isConnected READ isConnected NOTIFY isConnectedChanged)
   Q_PROPERTY(bool isLogging READ isLogging NOTIFY isLoggingChanged)
@@ -40,7 +46,7 @@ public:
   Q_PROPERTY(errno_t lastErrorNumber READ lastErrorNumber NOTIFY lastErrorNumberChanged)
   Q_PROPERTY(int interval READ interval WRITE setInterval NOTIFY intervalChanged)
   Q_PROPERTY(int intervalIndex READ intervalIndex WRITE setIntervalIndex)
-  Q_PROPERTY(bool applyIntervalToController READ applyIntervalToController WRITE setApplyIntervalToController)
+  Q_PROPERTY(bool applyIntervalToController READ applyIntervalToController WRITE setApplyIntervalToController NOTIFY applyIntervalToControllerChanged)
   Q_PROPERTY(int manual READ manual WRITE setManual NOTIFY manualChanged)
   Q_PROPERTY(double setpoint READ setpoint WRITE setSetpoint NOTIFY setpointChanged)
   Q_PROPERTY(float kp READ kp WRITE setKp NOTIFY kpChanged)
@@ -56,7 +62,7 @@ public:
   Q_PROPERTY(::gos::pid::tuning::types::TuningMode tuning READ tuning WRITE setTuning NOTIFY tuningChanged)
   Q_PROPERTY(int tuningIndex READ tuningIndex WRITE setTuningIndex)
 
-  bool initialize();
+  bool initialize(const bool& watcher = true);
 
   Q_INVOKABLE int update(
     QAbstractSeries* output,
@@ -66,12 +72,13 @@ public:
   Q_INVOKABLE bool startStopLogging();
   Q_INVOKABLE void panelCompleted();
 
+  const QString configurationModeText() const;
+
   const bool& isConnected() const;
   const bool isLogging() const;
   const QString& statusString() const;
   const QString& lastErrorString() const;
   const errno_t& lastErrorNumber() const;
-  const int intervalIndex() const;
   const int& manual() const;
   const double& setpoint() const;
   const float& kp() const;
@@ -84,9 +91,9 @@ public:
   const int forceIndex() const;
   const float& integral() const;
   const QString integralText() const;
-  const int tuningIndex() const;
 
 signals:
+  void configurationModeTextChanged();
   /* Communication configuration */
   void isConnectedChanged();
   void isLoggingChanged();
@@ -94,6 +101,7 @@ signals:
   void lastErrorStringChanged();
   void lastErrorNumberChanged();
   void intervalChanged();
+  void applyIntervalToControllerChanged();
   void manualChanged();
   void setpointChanged();
   void kpChanged();
@@ -132,6 +140,7 @@ public slots:
   void setTuningIndex(const int& value);
 
 private slots:
+  void onConfigurationModeTextChanged();
   void onCommunicationConfigurationChanged();
   void onModbusConfigurationChanged();
   void onTimersConfigurationChanged();
@@ -152,6 +161,7 @@ private:
   bool writeKi(const ::gos::pid::arduino::types::Real& ki);
   bool writeKd(const ::gos::pid::arduino::types::Real& kd);
   bool writeForce(const ::gos::pid::arduino::types::Unsigned& force);
+  bool writeInterval(const ::gos::pid::arduino::types::Unsigned& interval);
 
   void setIsConnected(const bool& value);
 //void setIsLogging(const bool& value);
@@ -159,7 +169,11 @@ private:
   void setLastErrorString(const QString& value);
   void setLastErrorNumber(const errno_t& value);
 
-  QQuickView& appViewer_;
+  void notify();
+
+  bool initializemodbus();
+
+  QQmlContext& context_;
   VectorList setpoints_;
   VectorList temperature_;
   VectorList outputs_;
@@ -167,8 +181,7 @@ private:
 
   ConfigurationPointer configuration_;
 
-  bool ispanelcompleted_;
-
+  bool watcher_;
   bool isConnected_;
   QString statusString_;
   QString lastErrorString_;

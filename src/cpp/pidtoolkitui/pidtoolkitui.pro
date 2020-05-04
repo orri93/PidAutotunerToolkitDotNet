@@ -10,17 +10,25 @@ QMAKE_CXXFLAGS += /FS
 
 TARGET       = PidToolkitUi
 
-#INCLUDEPATH += "$$(BOOST_32B_PATH)"
+INCLUDEPATH += "$$(BOOST)"
 INCLUDEPATH += $$PWD
 
 HEADERS += \
+    model/interval.h \
+    model/tuning.h \
+    model/mode.h \
     configuration.h \
-    orchestration.h
+    orchestration.h \
+    items.h
 
 SOURCES += \
+    model/interval.cpp \
+    model/tuning.cpp \
+    model/mode.cpp \
     pidtoolkitui.cpp \
     configuration.cpp \
-    orchestration.cpp
+    orchestration.cpp \
+    items.cpp
 
 RESOURCES += \
     resources.qrc
