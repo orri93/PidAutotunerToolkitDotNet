@@ -1,9 +1,11 @@
-#ifndef GOS_PID_TUNING_UI_MODEL_TUNING_H_
-#define GOS_PID_TUNING_UI_MODEL_TUNING_H_
+#ifndef GOS_PID_TUNING_UI_LIB_MODEL_TUNING_H_
+#define GOS_PID_TUNING_UI_LIB_MODEL_TUNING_H_
 
 #include <QVariant>
 
 #include <gos/pid/tuning/types.h>
+
+#define GOS_QML_MODEL_TUNING "tuningModel"
 
 namespace gos {
 namespace pid {

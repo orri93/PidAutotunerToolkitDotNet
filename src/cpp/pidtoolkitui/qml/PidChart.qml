@@ -61,14 +61,14 @@ ChartView {
 
   Connections {
     target: orchestration
-    onIntervalChanged: {
+    onStatusChanged: {
       refreshTimer.interval = orchestration.interval;
     }
   }
 
   Connections {
     target: orchestration
-    onIsConnectedChanged: {
+    onStatusChanged: {
       refreshTimer.running = orchestration.isConnected;
     }
   }

@@ -2,6 +2,7 @@
 #define GOS_PID_TUNING_BLACK_BOX_H_
 
 #include <ostream>
+#include <memory>
 
 #include <boost/program_options.hpp>
 
@@ -10,6 +11,7 @@
 #include <gos/pid/toolkit/types.h>
 #include <gos/pid/arduino/types.h>
 #include <gos/pid/tuning/types.h>
+#include <gos/pid/tuning/notify.h>
 
 #define GOS_PID_TUNING_BLACK_BOX_SEED_TYPE int
 #define GOS_PID_TUNING_BLACK_BOX_ELAPSED_TYPE double 
@@ -43,6 +45,13 @@ struct Variables {
   bool IsDataReady;
   size_t Count;
 };
+
+typedef std::unique_ptr<Variables> VariablesPointer;
+
+namespace notify {
+bool handover(::gos::pid::tuning::NotifyPointer& notify);
+bool recover(::gos::pid::tuning::NotifyPointer& notify);
+}
 
 void initialize(
   gos::pid::tuning::types::Variables& variables,

@@ -1,7 +1,6 @@
 #include <items.h>
 
-#include <model/interval.h>
-#include <model/tuning.h>
+#include <gos/pid/ui/models.h>
 
 namespace gp = ::gos::pid;
 namespace gptum = ::gos::pid::toolkit::ui::model;
@@ -28,8 +27,14 @@ Items::~Items() {
 const QString& Items::serialPort() const {
   return serialPort_;
 }
+const int Items::serialPortIndex() const {
+  return gptum::port::index(serialPort_);
+}
 const int& Items::serialBaud() const {
   return serialBaud_;
+}
+const int Items::serialBaudIndex() const {
+  return gptum::baud::index(serialBaud_);
 }
 
 /* Modbus items */
@@ -58,26 +63,35 @@ const int Items::tuningIndex() const {
 const QString Items::tuningText() const {
   return tuningText(tuning_);
 }
+const bool Items::isTuning() const {
+  return tuning_ != gp::tuning::types::TuningMode::undefined;
+}
 
 /* Communication items */
 bool Items::applySerialPort(const QString& value) {
-  if (serialPort_ != value) {
+  if (iscompleted_ && serialPort_ != value) {
     serialPort_ = value;
     return true;
   }
   return false;
 }
+bool Items::applySerialPortIndex(const int& index) {
+  return applySerialPort(gptum::port::value(index));
+}
 bool Items::applySerialBaud(const int& value) {
-  if (serialBaud_ != value) {
+  if (iscompleted_ && serialBaud_ != value) {
     serialBaud_ = value;
     return true;
   }
   return false;
 }
+bool Items::applySerialBaudIndex(const int& index) {
+  return applySerialBaud(gptum::baud::value(index));
+}
 
 /* Modbus items */
 bool Items::applySlaveId(const int& value) {
-  if (slaveId_ != value) {
+  if (iscompleted_ && slaveId_ != value) {
     slaveId_ = value;
     return true;
   }

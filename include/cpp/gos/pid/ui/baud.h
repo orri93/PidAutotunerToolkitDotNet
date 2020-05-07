@@ -1,22 +1,24 @@
-#ifndef GOS_PID_TUNING_UI_MODEL_MODE_H_
-#define GOS_PID_TUNING_UI_MODEL_MODE_H_
+#ifndef GOS_PID_TUNING_UI_LIB_MODEL_BAUD_H_
+#define GOS_PID_TUNING_UI_LIB_MODEL_BAUD_H_
 
 #include <QVariant>
+
+#define GOS_QML_MODEL_BAUD "baudModel"
 
 namespace gos {
 namespace pid {
 namespace toolkit {
 namespace ui {
 namespace model {
-namespace mode {
+namespace baud {
 
-int index(const int& mode);
+int index(const int value);
 
-int mode(const int& index);
+int value(const int& index);
 
 QVariant create();
 
-} // namespace mode
+} // namespace baud
 } // namespace model
 } // namespace ui
 } // namespace toolkit

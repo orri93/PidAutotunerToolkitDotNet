@@ -7,11 +7,9 @@
 #include <QStringList>
 #endif
 
-#include <model/interval.h>
-#include <item/interval.h>
+#include <gos/pid/ui/interval.h>
 
 namespace gptu = ::gos::pid::toolkit::ui;
-namespace gptui = ::gos::pid::toolkit::ui::item;
 
 namespace gos {
 namespace pid {

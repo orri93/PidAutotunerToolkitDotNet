@@ -3,6 +3,9 @@
 
 #include <QValidator>
 
+#define GOS_QML_VALIDATOR_NAME_FLOAT "FloatValidator"
+#define GOS_QML_VALIDATOR_URI_FLOAT GOS_QML_VALIDATOR_NAME_FLOAT
+
 namespace gos {
 namespace pid {
 namespace toolkit {

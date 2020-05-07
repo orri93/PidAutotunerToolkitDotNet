@@ -29,8 +29,8 @@ class Configuration : public Items {
   Q_OBJECT
 
   /* Communication configuration */
-  Q_PROPERTY(QString serialPort READ serialPort NOTIFY serialPortChanged)
-  Q_PROPERTY(int serialBaud READ serialBaud NOTIFY serialBaudChanged)
+  Q_PROPERTY(QString serialPort READ serialPort WRITE setSerialPort NOTIFY serialPortChanged)
+  Q_PROPERTY(int serialBaud READ serialBaud WRITE setSerialBaud NOTIFY serialBaudChanged)
   
   /* Modbus configuration */
   Q_PROPERTY(int slaveId READ slaveId NOTIFY slaveIdChanged)
@@ -84,6 +84,9 @@ signals:
   /* UI configuration */
 
 public slots:
+  /* Communication configuration */
+  void setSerialPort(const QString& value);
+  void setSerialBaud(const int& value);
   /* Timers configuration */
   void setInterval(const int& value);
   void setApplyIntervalToController(const bool& value);
@@ -112,10 +115,6 @@ private:
   void writeTuning();
   void writeTimers();
   virtual QSettings* completeWriting(const bool& sync = false);
-
-  /* Communication configuration */
-  void setSerialPort(const QString& value);
-  void setSerialBaud(const int& value);
 
   /* Modbus configuration */
   void setSlaveId(const int& value);

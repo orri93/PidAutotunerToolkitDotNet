@@ -1,5 +1,6 @@
-QT += charts qml quick
+QT += serialport charts quick core qml
 
+CONFIG += c++11
 
 VERSION = 1.0.0
 QMAKE_TARGET_COMPANY = Geirmundur Orri Sigurdsson
@@ -14,26 +15,20 @@ INCLUDEPATH += "$$(BOOST)"
 INCLUDEPATH += $$PWD
 
 HEADERS += \
-    model/interval.h \
-    model/tuning.h \
-    model/mode.h \
     configuration.h \
     orchestration.h \
     items.h
 
 SOURCES += \
-    model/interval.cpp \
-    model/tuning.cpp \
-    model/mode.cpp \
     pidtoolkitui.cpp \
     configuration.cpp \
     orchestration.cpp \
     items.cpp
 
 RESOURCES += \
-    resources.qrc
+    qml/pidtoolkit.qrc
 
-include("$$PWD/../libpidtoolkitui/libpidtoolkitui.pri")
+include("$$PWD/../libpidtoolkituiplugin/Pid/Toolkit/libpidtoolkituiplugin.pri")
 
 #DEFINES += _USE_MATH_DEFINES
 
@@ -53,28 +48,33 @@ CONFIG(release, debug|release) {
     PID_TOOLKIT_API_PATH = $$PWD/../../../out/install/x64-Debug
 }
 
+# Additional import path used to resolve QML modules in Qt Creator's code model
+QML_IMPORT_PATH =
+
+# Additional import path used to resolve QML modules just for Qt Quick Designer
+QML_DESIGNER_IMPORT_PATH =
+
 win32 {
 LIBS += -lws2_32
 } else {
 }
 
-
 LIBS            += "$${PID_TOOLKIT_API_PATH}/lib/libmodbus.lib"
 LIBS            += "$${PID_TOOLKIT_API_PATH}/lib/libpidarduinomodbusmaster.lib"
 LIBS            += "$${PID_TOOLKIT_API_PATH}/lib/libpidtuningblackbox.lib"
 LIBS            += "$${PID_TOOLKIT_API_PATH}/lib/libpidtoolkitcpp.lib"
+LIBS            += "$${PID_TOOLKIT_API_PATH}/lib/pidtoolkitplugin.lib"
+LIBS            += "$${PID_TOOLKIT_API_PATH}/lib/libpidtoolkitui.lib"
 
 PRE_TARGETDEPS  += "$${PID_TOOLKIT_API_PATH}/lib/libmodbus.lib"
 PRE_TARGETDEPS  += "$${PID_TOOLKIT_API_PATH}/lib/libpidarduinomodbusmaster.lib"
 PRE_TARGETDEPS  += "$${PID_TOOLKIT_API_PATH}/lib/libpidtuningblackbox.lib"
 PRE_TARGETDEPS  += "$${PID_TOOLKIT_API_PATH}/lib/libpidtoolkitcpp.lib"
+PRE_TARGETDEPS  += "$${PID_TOOLKIT_API_PATH}/lib/pidtoolkitplugin.lib"
+PRE_TARGETDEPS  += "$${PID_TOOLKIT_API_PATH}/lib/libpidtoolkitui.lib"
 
 INCLUDEPATH +="$${PID_TOOLKIT_API_PATH}/include/modbus"
 INCLUDEPATH +="$${PID_TOOLKIT_API_PATH}/include/cpp"
 
 DISTFILES += \
-    qml/pid/main.qml \
-    qml/pid/PidChart.qml \
-    qml/pid/PidPanel.qml \
-    qml/pid/RealSpinBox.qml \
-    qml/pid/*
+    configuration.ini

@@ -123,11 +123,14 @@ if (GOS_PID_TOOLKIT_CPP)
   list(APPEND gos_pid_toolkit_cpp_include
     "${gos_pid_toolkit_cpp_include_dir}"
     "${gos_pid_toolkit_cpp_binary_include_dir}")
+  set(gos_pid_toolkit_tune_cpp_library_dir 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/libpidtoolkitui")
   set(gos_pid_toolkit_cpp_library_target libpidtoolkitcpp)
   set(gos_pid_toolkit_pid_cpp_library_target libpidtoolkitpid)
   set(gos_pid_toolkit_tune_cpp_library_target libpidtoolkittune)
   set(gos_pid_arduino_modbus_master_library_target libpidarduinomodbusmaster)
   set(gos_pid_tuning_black_box_library_target libpidtuningblackbox)
+  set(gos_pid_toolkit_ui_cpp_plugin_target pidtoolkitplugin)
   set(gos_pid_black_box_tuning_target pidblackboxtuning)
   set(gos_build_dependency_boost ON)
 
@@ -161,11 +164,22 @@ if (GOS_PID_TOOLKIT_CPP)
   endif (GOS_PID_ARDUINO_BASED_TUNING)
 
   if (GOS_PID_TOOLKIT_UI)
-    list(APPEND gos_pid_toolkit_ui_cpp_library_source
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/floatvalidator.h")
-    list(APPEND gos_pid_toolkit_ui_cpp_library_public_header
+    list(APPEND gos_pid_toolkit_ui_cpp_plugin_source
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/floatvalidator.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/types.h")
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/connection.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/plugin.h")
+    list(APPEND gos_pid_toolkit_ui_cpp_plugin_public_header
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/connection.h")
+    list(APPEND gos_pid_toolkit_ui_cpp_library_public_header
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/formatting.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/interval.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/models.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/status.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/tuning.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/types.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/mode.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/baud.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/port.h")
     set(gos_pid_toolkit_ui_cpp_library_target libpidtoolkitui)
   endif (GOS_PID_TOOLKIT_UI)
 

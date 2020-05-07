@@ -1,7 +1,8 @@
+#include <iostream>
 #include <random>
 #include <memory>
 #include <limits>
-#include <iostream>
+#include <mutex>
 
 #include <gos/pid/toolkit/utilities.h>
 #include <gos/pid/toolkit/setting.h>
@@ -65,6 +66,32 @@ static DistributionPointer _distribution;
 
 static const gpat::Real Mean = 0.0;
 
+namespace notify {
+static gp::tuning::NotifyPointer _instance;
+static std::mutex _lock;
+bool handover(::gos::pid::tuning::NotifyPointer& notify) {
+  std::lock_guard<std::mutex> guard(_lock);
+  if (!_instance && notify) {
+    _instance = std::move(notify);
+    if (_instance) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool recover(::gos::pid::tuning::NotifyPointer& notify) {
+  std::lock_guard<std::mutex> guard(_lock);
+  if (!notify && _instance) {
+    notify = std::move(_instance);
+    if (notify) {
+      return true;
+    }
+  }
+  return false;
+}
+}
+
 void initialize(
   gptt::Variables& variables,
   Variables& black,
@@ -104,7 +131,13 @@ void shutdown() {
     detail::output::file::stream::pointer->flush();
     detail::output::file::stream::pointer->close();
   }
-  gpa::modbus::master::retry::write::force(GOT_PI_FORCE_IDLE);
+  if (gpa::modbus::master::retry::write::force(GOT_PI_FORCE_IDLE) ==
+    gpam::types::result::success) {
+    std::lock_guard<std::mutex> guard(notify::_lock);
+    if (notify::_instance) {
+      notify::_instance->notifyForce(GOT_PI_FORCE_IDLE);
+    }
+  }
 }
 
 void load(
@@ -209,6 +242,12 @@ void cycle(
             /* Stop the controller and force zero */
             if (gpam::master::retry::write::force(GOT_PI_FORCE_IDLE) ==
               gpam::types::result::success) {
+                {
+                  std::lock_guard<std::mutex> guard(notify::_lock);
+                  if (notify::_instance) {
+                    notify::_instance->notifyForce(GOT_PI_FORCE_IDLE);
+                  }
+                }
               if (gpto::isverbose()) {
                 std::cout << "Stable Duration Completed at "
                   << elapsed << " data are ready" << std::endl;
@@ -339,6 +378,14 @@ void cycle(
       gpam::master::retry::write::force(GOT_PI_FORCE_AUTO)
       == gpam::types::result::success;
     if (updateresult) {
+      {
+        std::lock_guard<std::mutex> guard(notify::_lock);
+        if (notify::_instance) {
+          notify::_instance->notifyKp(variables.Kp);
+          notify::_instance->notifyKi(variables.Ki);
+          notify::_instance->notifyForce(GOT_PI_FORCE_AUTO);
+        }
+      }
       if (gpto::isverbose()) {
         std::cout << "The tuning parameters with Kp as " << variables.Kp
           << " and " << variables.Ki

@@ -1,6 +1,6 @@
 #include <QStringList>
 
-#include <model/tuning.h>
+#include <gos/pid/ui/tuning.h>
 
 namespace gptt = ::gos::pid::tuning::types;
 

@@ -15,6 +15,18 @@ enum class TuningMode {
   blackbox
 };
 
+enum class TuningState {
+  undefined,
+  initialize,
+  reach,
+  over,
+  under,
+  balance,
+  cooldown,
+//evaluation,
+  completed
+};
+
 typedef boost::optional<::gos::pid::arduino::types::Real> OptionalReal;
 typedef boost::optional<::gos::pid::arduino::types::Unsigned> OptionalUnsigned;
 
@@ -51,7 +63,11 @@ struct Variables {
   int Round;
 };
 
+typedef std::unique_ptr<Initialized> InitializedPointer;
 typedef std::unique_ptr<Evaluation> EvaluationPointer;
+typedef std::unique_ptr<Initialized> InitializedPointer;
+typedef std::unique_ptr<Parameters> ParametersPointer;
+typedef std::unique_ptr<Variables> VariablesPointer;
 
 } // namespace types
 } // namespace tuning

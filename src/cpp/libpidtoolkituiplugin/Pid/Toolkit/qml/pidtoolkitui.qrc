@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="/pidtoolkit">
+    <file>ConnectionSettings.qml</file>
+    <file>ControllerSettings.qml</file>
+    <file>LoggingSettings.qml</file>
+    <file>TuningSettings.qml</file>
+    <file>TimingSettings.qml</file>
+    <file>PidSettings.qml</file>
+    <file>RealSpinBox.qml</file>
+  </qresource>
+</RCC>

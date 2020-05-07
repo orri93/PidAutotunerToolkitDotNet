@@ -1,8 +1,0 @@
-<RCC>
-  <qresource prefix="/">
-    <file>qml/pid/PidPanel.qml</file>
-    <file>qml/pid/RealSpinBox.qml</file>
-    <file>qml/pid/PidChart.qml</file>
-    <file>qml/pid/main.qml</file>
-  </qresource>
-</RCC>

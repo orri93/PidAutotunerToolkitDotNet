@@ -1,6 +1,6 @@
 #include <QStringList>
 
-#include <model/mode.h>
+#include <gos/pid/ui/mode.h>
 
 namespace gos {
 namespace pid {

@@ -24,7 +24,9 @@ public:
 
   /* Communication items */
   virtual const QString& serialPort() const;
+  virtual const int serialPortIndex() const;
   virtual const int& serialBaud() const;
+  virtual const int serialBaudIndex() const;
 
   /* Modbus items */
   virtual const int& slaveId() const;
@@ -38,12 +40,15 @@ public:
   virtual const ::gos::pid::tuning::types::TuningMode& tuning() const;
   virtual const int tuningIndex() const;
   virtual const QString tuningText() const;
+  virtual const bool isTuning() const;
 
 protected:
 
   /* Communication items */
   virtual bool applySerialPort(const QString& value);
+  virtual bool applySerialPortIndex(const int& index);
   virtual bool applySerialBaud(const int& value);
+  virtual bool applySerialBaudIndex(const int& index);
 
   /* Modbus items */
   virtual bool applySlaveId(const int& value);

@@ -15,7 +15,8 @@
 
 #include <orchestration.h>
 
-#define GOS_QML_MAIN "qrc:/qml/pid/main.qml"
+#define GOS_QM_IMPORT_PATH "pidtoolkitplugin"
+#define GOS_QML_MAIN "qrc:/main.qml"
 
 namespace gptu = ::gos::pid::toolkit::ui;
 
@@ -47,7 +48,7 @@ int main(int argc, char* argv[]) {
   QQmlContext* context = viewer.rootContext();
   if (context != nullptr) {
     if (orchestration::create(*context)) {
-      viewer.setSource(QUrl("qrc:/qml/pid/main.qml"));
+      viewer.setSource(QUrl(GOS_QML_MAIN));
       viewer.setResizeMode(QQuickView::SizeRootObjectToView);
       viewer.setColor(QColor("#404040"));
       viewer.show();
@@ -57,6 +58,7 @@ int main(int argc, char* argv[]) {
   return EXIT_FAILURE;
 #else
   QQmlApplicationEngine engine;
+  //engine.addImportPath(GOS_QM_IMPORT_PATH);
   QQmlContext* context = engine.rootContext();
   if (context != nullptr) {
     if (gptu::orchestration::create(*context)) {

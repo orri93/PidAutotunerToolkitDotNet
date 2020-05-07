@@ -1,6 +1,8 @@
 #ifndef GOS_PID_ARDUINO_MODBUS_TYPES_H_
 #define GOS_PID_ARDUINO_MODBUS_TYPES_H_
 
+#include <memory>
+
 #include <gos/pid/arduino/types.h>
 
 namespace gos {
@@ -41,6 +43,9 @@ struct Holding {
   ::gos::pid::arduino::types::Unsigned TimeTune;
   ::gos::pid::arduino::types::Unsigned Force;
 };
+
+typedef std::unique_ptr<Input> InputPointer;
+typedef std::unique_ptr<Holding> HoldingPointer;
 
 } // namespace registry
 

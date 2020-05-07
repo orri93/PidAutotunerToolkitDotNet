@@ -214,6 +214,16 @@ const QString Configuration::modeText() const {
   }
 }
 
+/* Modbus configuration */
+void Configuration::setSlaveId(const int& value) {
+  if (applySlaveId(value)) {
+    std::function<void()> changed =
+      std::bind(&Configuration::slaveIdChanged, this);
+    qDebug() << "Setting slave id to " << value;
+    handle(changed);
+  }
+}
+
 /* Communication configuration */
 void Configuration::setSerialPort(const QString& value) {
   if (applySerialPort(value)) {
@@ -228,16 +238,6 @@ void Configuration::setSerialBaud(const int& value) {
     std::function<void()> changed =
       std::bind(&Configuration::serialBaudChanged, this);
     qDebug() << "Setting serial baud to " << value;
-    handle(changed);
-  }
-}
-
-/* Modbus configuration */
-void Configuration::setSlaveId(const int& value) {
-  if (applySlaveId(value)) {
-    std::function<void()> changed =
-      std::bind(&Configuration::slaveIdChanged, this);
-    qDebug() << "Setting slave id to " << value;
     handle(changed);
   }
 }
