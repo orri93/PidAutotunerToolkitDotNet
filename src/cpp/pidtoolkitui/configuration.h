@@ -10,20 +10,22 @@
 #include <QFileSystemWatcher>
 #include <QDebug>
 
+#include <blackbox.h>
 #include <gos/pid/tuning/types.h>
+#include <gos/pid/ui/types.h>
 
 #include <items.h>
 
 #define GOS_CONFIGURATION_FILE_PATH "configuration.ini"
 
+
+#define GOS_QML_TYPE_CONFIGURATION_NAME "PidToolkitConfiguration"
+#define GOS_QML_TYPE_CONFIGURATION_URI GOS_QML_TYPE_CONFIGURATION_NAME
+
 namespace gos {
 namespace pid {
 namespace toolkit {
 namespace ui {
-
-namespace configuration {
-enum class mode { normal, write, initializing };
-}
 
 class Configuration : public Items {
   Q_OBJECT
@@ -43,6 +45,10 @@ class Configuration : public Items {
   Q_PROPERTY(::gos::pid::tuning::types::TuningMode tuning READ tuning WRITE setTuning NOTIFY tuningChanged)
   Q_PROPERTY(QString tuningText READ tuningText WRITE setTuningText)
 
+  /* Black Box configuration */
+  //Q_PROPERTY(::gos::pid::toolkit::ui::configuration::BlackBox* blackBox READ blackBox WRITE setBlackBox NOTIFY blackBoxChanged)
+
+  /* Configuration mode */
   Q_PROPERTY(QString modeText READ modeText NOTIFY modeTextChanged)
 
   /* Chart*/
@@ -62,10 +68,9 @@ public:
   virtual QSettings* read(const bool& sync = false);
   virtual QSettings* write(const bool& sync = false);
 
-  const configuration::mode& mode() const;
-  void setMode(const configuration::mode& mode);
-
-  const QString modeText() const;
+  /* Black Box configuration */
+  //::gos::pid::toolkit::ui::configuration::BlackBox* blackBox();
+  ::gos::pid::toolkit::ui::configuration::BlackBox& blackBox();
 
 signals:
   void modeTextChanged();
@@ -81,7 +86,8 @@ signals:
   /* Tuning configuration */
   void tuningChanged();
 
-  /* UI configuration */
+  /* Black Box configuration */
+  void blackBoxChanged();
 
 public slots:
   /* Communication configuration */
@@ -94,6 +100,9 @@ public slots:
   /* Tuning configuration */
   void setTuning(const ::gos::pid::tuning::types::TuningMode& value);
   void setTuningText(const QString& value);
+
+  /* Black Box configuration */
+  //void setBlackBox(::gos::pid::toolkit::ui::configuration::BlackBox* blackBox);
 
 private slots:
   void onFileChanged(const QString& path);
@@ -114,23 +123,25 @@ private:
   QSettings* startWriting();
   void writeTuning();
   void writeTimers();
+  void writeBlackBox();
   virtual QSettings* completeWriting(const bool& sync = false);
 
   /* Modbus configuration */
   void setSlaveId(const int& value);
 
-  /* UI configuration */
+  /* Black box configuration */
+  ::gos::pid::toolkit::ui::configuration::BlackBox blackBox_;
 
   /* Functions */
   std::function<void()> fWriteTuning_;
   std::function<void()> fWriteTimers_;
+  std::function<void()> fWriteBlackBox_;
 
   /* Private */
   SettingsPointer settings_;
   WatcherPointer watcher_;
 
   QString filepath_;
-  configuration::mode mode_;
 };
 
 } // namespace ui

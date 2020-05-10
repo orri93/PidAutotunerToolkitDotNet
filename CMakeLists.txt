@@ -11,6 +11,7 @@ option(GOS_PID_TOOLKIT_CPP "Build C++ version of PID Toolkit" ON)
 option(GOS_PID_TOOLKIT_TEST "Build and execute the unit tests" OFF)
 option(GOS_PID_TOOLKIT_UI "Build PID Toolkit UI components" ON)
 option(GOS_PID_ARDUINO_BASED_TUNING "Build the Arduino Based auto-tuning" ON)
+option(GOS_PID_TOOLKIT_INSTALL_CONFIGURATION "Install the configuration file with the target" ON)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
 
@@ -166,16 +167,24 @@ if (GOS_PID_TOOLKIT_CPP)
   if (GOS_PID_TOOLKIT_UI)
     list(APPEND gos_pid_toolkit_ui_cpp_plugin_source
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/floatvalidator.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/pathvalidator.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/connection.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/plugin.h")
     list(APPEND gos_pid_toolkit_ui_cpp_plugin_public_header
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/connection.h")
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/connection.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/items.h")
+
+    list(APPEND gos_pid_toolkit_ui_cpp_library_source
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/configuration.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/range.h")
     list(APPEND gos_pid_toolkit_ui_cpp_library_public_header
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/configuration.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/formatting.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/interval.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/models.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/status.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/tuning.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/range.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/types.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/mode.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/baud.h"

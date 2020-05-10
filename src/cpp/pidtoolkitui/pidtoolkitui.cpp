@@ -24,6 +24,10 @@ int main(int argc, char* argv[]) {
   // Qt Charts uses Qt Graphics View Framework for drawing, therefore QApplication must be used.
   QApplication app(argc, argv);
 
+  app.setOrganizationName("Geirmundur Orri Sigurdsson");
+  app.setOrganizationDomain("fds.is");
+  app.setApplicationName("PID Toolkit User Interface");
+
 #ifdef GOS_QML_USE_QUICK_VIEW
   QQuickView viewer;
 

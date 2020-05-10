@@ -3,5 +3,12 @@
     <file>main.qml</file>
     <file>PidChart.qml</file>
     <file>PidPanel.qml</file>
+    <file>RightPanel.qml</file>
+    <file>RealTimePanel.qml</file>
+    <file>TuningPanel.qml</file>
+    <file>BlackBoxDialog.qml</file>
+    <file>BlackBoxTabView.qml</file>
+    <file>BlackBoxTabStartRange.qml</file>
+    <file>BlackBoxTabTimersOther.qml</file>
   </qresource>
 </RCC>

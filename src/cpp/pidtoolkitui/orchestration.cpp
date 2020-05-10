@@ -12,6 +12,7 @@
 #include <QtCore/QRandomGenerator>
 #include <QtCore/QtMath>
 
+#include <gos/pid/toolkit/exception.h>
 #include <gos/pid/arduino/modbus/master.h>
 #include <gos/pid/arduino/modbus/retry.h>
 
@@ -27,14 +28,19 @@
 #define GOS_QML_ORCHESTRATION "orchestration"
 
 namespace gp = ::gos::pid;
+namespace gpt = ::gos::pid::toolkit;
 
 namespace gptt = ::gos::pid::tuning::types;
 
 namespace gpa = ::gos::pid::arduino;
 namespace gpam = ::gos::pid::arduino::modbus;
+namespace gpat = ::gos::pid::arduino::types;
 
 namespace gptu = ::gos::pid::toolkit::ui;
 namespace gptum = ::gos::pid::toolkit::ui::model;
+namespace gptut = ::gos::pid::toolkit::ui::types;
+namespace gptutc = ::gos::pid::toolkit::ui::types::configuration;
+namespace gptuc = ::gos::pid::toolkit::ui::configuration;
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -53,6 +59,15 @@ static OrchestrationPointer _orchestration;
 bool create(QQmlContext& context) {
 
   //_plugin.registerTypes("");
+ // qmlRegisterType<gptu::Range>(
+  //  GOS_QML_TYPE_RANGE_URI, 1, 0, GOS_QML_TYPE_RANGE_NAME);
+
+  qRegisterMetaType<::gos::pid::toolkit::ui::Range*>(
+    "::gos::pid::toolkit::ui::Range*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::configuration::BlackBox*>(
+    "::gos::pid::toolkit::ui::configuration::BlackBox*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::Configuration*>(
+    "::gos::pid::toolkit::ui::Configuration*");
 
   _orchestration = std::make_unique<Orchestration>(context);
   if (_orchestration) {
@@ -75,12 +90,12 @@ template<typename T> void general(
   const T& value) {
   qDebug() << "Setting configuration to 'write' mode";
   if (watcher) {
-    configuration.setMode(configuration::mode::write);
+    configuration.setMode(gptutc::mode::write);
     setter(value);
   } else {
-    configuration.setMode(configuration::mode::write);
+    configuration.setMode(gptutc::mode::write);
     setter(value);
-    configuration.setMode(configuration::mode::normal);
+    configuration.setMode(gptutc::mode::normal);
   }
 }
 }
@@ -95,14 +110,22 @@ Orchestration::Orchestration(QQmlContext& context, QObject* parent) :
   tuningRound_(0),
   isNotifyHandedOver_(false),
   tuningState_(gp::tuning::types::TuningState::undefined),
+  /* Status items */
   status_(gptu::types::status::undefined),
-  manual_(0),
+  isInitialize_(false),
+  /* Controller input items */
   setpoint_(0.0),
-  kp_(0.0),
-  ki_(0.0),
-  kd_(0.0),
+  manual_(0),
+  /* Controller settings items */
   force_(0),
-  integral_(NAN) {
+  /* Controller tuning items */
+  kp_(0.0F),
+  ki_(0.0F),
+  kd_(0.0F),
+  /* Controller output items */
+  temperature_(0.0),
+  output_(0.0),
+  integral_(0.0F) {
   qRegisterMetaType<QAbstractSeries*>();
   qRegisterMetaType<QAbstractAxis*>();
 }
@@ -141,8 +164,17 @@ bool Orchestration::initialize(const bool& watcher) {
     QSettings* settings = configuration_->initialize(watcher);
     if (settings != nullptr) {
       applyConfiguration();
-      status_ = gptu::types::status::disconnected;
-      return true;
+      gptuc::BlackBox& ref = configuration_->blackBox();
+      blackBoxForDialog_ = std::make_unique<gptuc::BlackBox>(ref);
+      if (blackBoxForDialog_) {
+        status_ = gptu::types::status::disconnected;
+        isInitialize_ = true;
+        emit isInitializeChanged();
+        qInfo() << "Initialize completed";
+        return isInitialize_;
+      } else {
+        qCritical() << "Failed to Black Box Settings for Dialog";
+      }
     } else {
       qCritical() << "Failed to initialize configuration";
     }
@@ -169,11 +201,13 @@ int Orchestration::update(
       }
       if (input.Output >= 0 && input.Output <= 255) {
         if (input.Temperature >= 0.0 && input.Temperature <= 300.0) {
+          setTemperature(input.Temperature);
+          setOutput(input.Output);
           float x = static_cast<float>(count_);
-          outputs_.append(QPointF(x, static_cast<double>(input.Output)));
-          temperature_.append(QPointF(x, static_cast<double>(
+          outputsList_.append(QPointF(x, static_cast<double>(input.Output)));
+          temperatureList_.append(QPointF(x, static_cast<double>(
             input.Temperature)));
-          setpoints_.append(QPointF(x, setpoint_));
+          setpointsList_.append(QPointF(x, setpoint_));
           count_++;
         }
       }
@@ -189,15 +223,15 @@ int Orchestration::update(
   if (count_ > 2) {
     if (output) {
       QXYSeries* xySeries = static_cast<QXYSeries*>(output);
-      xySeries->replace(outputs_);
+      xySeries->replace(outputsList_);
     }
     if (temperature) {
       QXYSeries* xySeries = static_cast<QXYSeries*>(temperature);
-      xySeries->replace(temperature_);
+      xySeries->replace(temperatureList_);
     }
     if (setpoints) {
       QXYSeries* xySeries = static_cast<QXYSeries*>(setpoints);
-      xySeries->replace(setpoints_);
+      xySeries->replace(setpointsList_);
     }
   }
   return count_;
@@ -305,6 +339,33 @@ void Orchestration::panelCompleted() {
   qDebug() << "Panel Completed";
   notify();
   iscompleted_ = true;
+  emit blackBoxChanged();
+  emit isCompletedChanged();
+  emit completed();
+}
+
+void Orchestration::applyBlackBoxDialog() {
+  if (blackBoxForDialog_ && configuration_) {
+    gptuc::BlackBox& ref = configuration_->blackBox();
+    if (&ref != blackBoxForDialog_.get()) {
+      if (::compare(ref, *blackBoxForDialog_) != 0) {
+        ref = *blackBoxForDialog_;
+        configuration_->setMode(gptutc::mode::write);
+        configuration_->write(true);
+        configuration_->setMode(gptutc::mode::normal);
+      }
+    }
+  }
+}
+
+void Orchestration::rejectBlackBoxDialog() {
+  if (blackBoxForDialog_ && configuration_) {
+    gptuc::BlackBox& ref = configuration_->blackBox();
+    if (::compare(ref, *blackBoxForDialog_) != 0) {
+      *blackBoxForDialog_ = ref;
+      emit blackBoxChanged();
+    }
+  }
 }
 
 const QString Orchestration::configurationModeText() const {
@@ -335,6 +396,23 @@ void Orchestration::notifyKd(const gpa::types::Real& kd) {
   if (kd_ != kd) {
     kd_ = kd;
     emit kdChanged();
+  }
+}
+
+/* Configuration Access */
+Configuration* Orchestration::configuration() {
+  if (configuration_) {
+    return configuration_.get();
+  }
+  return nullptr;
+}
+
+gptu::configuration::BlackBox* Orchestration::blackBox() {
+  if (blackBoxForDialog_) {
+    return blackBoxForDialog_.get();
+  } else {
+    qWarning() << "Undefined Black Box from Orchestration";
+    return nullptr;
   }
 }
 
@@ -369,6 +447,12 @@ const QString Orchestration::tuningStateText() const {
 const gp::toolkit::ui::item::Connection::Status Orchestration::status() const {
   return gp::toolkit::ui::status::convert(status_);
 }
+const bool& Orchestration::isInitialize() const {
+  return isInitialize_;
+}
+const bool& Orchestration::isCompleted() const {
+  return iscompleted_;
+}
 const QString Orchestration::statusText() const {
   return QString::fromStdString(gp::toolkit::ui::types::to::string(status_));
 }
@@ -391,13 +475,23 @@ const bool Orchestration::isLogging() const {
   }
 }
 
-/* Other items */
+/* Controller input items */
 const int& Orchestration::manual() const {
   return manual_;
 }
 const double& Orchestration::setpoint() const {
   return setpoint_;
 }
+
+/* Controller settings items */
+const int& Orchestration::force() const {
+  return force_;
+}
+const int Orchestration::forceIndex() const {
+  return gptum::mode::index(force_);
+}
+
+/* Controller tuning items */
 const float& Orchestration::kp() const { return kp_; }
 const float& Orchestration::ki() const { return ki_; }
 const float& Orchestration::kd() const { return kd_; }
@@ -422,18 +516,25 @@ const QString Orchestration::kdText() const {
   return gptu::formatting::real::format(kd_);
 #endif
 }
-const int& Orchestration::force() const {
-  return force_;
+
+/* Controller output items */
+const double& Orchestration::temperature() const {
+  return temperature_;
 }
-const int Orchestration::forceIndex() const {
-  return gptum::mode::index(force_);
+const QString Orchestration::temperatureText() const {
+  return gptu::formatting::real::format(temperature_);
+}
+const double& Orchestration::output() const {
+  return output_;
 }
 const float& Orchestration::integral() const {
   return integral_;
 }
 const QString Orchestration::integralText() const {
-  return QString::number(integral_);
+  return gptu::formatting::real::format(integral_);
 }
+
+/* Other items */
 
 /* Communication items */
 void Orchestration::setSerialPortIndex(const int& value) {
@@ -513,8 +614,7 @@ void Orchestration::setTuningState(const gp::tuning::types::TuningState& state) 
   }
 }
 
-
-/* Other items */
+/* Controller input items */
 void Orchestration::setManual(const int& manual) {
   bool result;
   if (manual_ != manual && manual >= 0 && manual <= 255) {
@@ -539,7 +639,6 @@ void Orchestration::setManual(const int& manual) {
     emit manualChanged();
   }
 }
-
 void Orchestration::setSetpoint(const double& setpoint) {
   bool result;
   if (setpoint_ != setpoint && setpoint >= 0.0 && setpoint <= 300.0) {
@@ -565,6 +664,39 @@ void Orchestration::setSetpoint(const double& setpoint) {
   }
 }
 
+/* Controller settings items */
+void Orchestration::setForce(const int& value) {
+  bool result;
+  if (force_ != value && value > 0 && value <= 3) {
+    switch (status_) {
+    case gptu::types::status::connected:
+      result = writeForce(static_cast<gpa::types::Unsigned>(value));
+      if (result) {
+        qDebug() << "Successfully set Force to " << value;
+      } else {
+        qWarning() << "Failed to set Force to " << value << " error is " <<
+          QString::fromStdString(gpam::master::report::error::last());
+      }
+      break;
+    case gptu::types::status::connecting:
+      break;
+    default:
+      qDebug() << "Not connected when Force changed from "
+        << force_ << " to " << value;
+      break;
+    }
+    force_ = value;
+    emit forceChanged();
+  }
+}
+void Orchestration::setForceIndex(const int& value) {
+  int force = gptum::mode::mode(value);
+  if (force >= 0) {
+    setForce(force);
+  }
+}
+
+/* Controller tuning items */
 void Orchestration::setKp(const float& value) {
   bool result;
   if (kp_ != value && value >= 0.0 && value <= 100.0) {
@@ -616,7 +748,6 @@ void Orchestration::setKi(const float& value) {
     emit kiTextChanged();
   }
 }
-
 void Orchestration::setKd(const float& value) {
   bool result;
   if (kd_ != value && value >= 0.0 && value <= 100.0) {
@@ -642,7 +773,6 @@ void Orchestration::setKd(const float& value) {
     emit kdTextChanged();
   }
 }
-
 void Orchestration::setKpText(const QString& value) {
   bool ok;
   float kp = value.toFloat(&ok);
@@ -650,7 +780,6 @@ void Orchestration::setKpText(const QString& value) {
     setKp(kp);
   }
 }
-
 void Orchestration::setKiText(const QString& value) {
   bool ok;
   float ki = value.toFloat(&ok);
@@ -658,7 +787,6 @@ void Orchestration::setKiText(const QString& value) {
     setKi(ki);
   }
 }
-
 void Orchestration::setKdText(const QString& value) {
   bool ok;
   float kd = value.toFloat(&ok);
@@ -667,37 +795,9 @@ void Orchestration::setKdText(const QString& value) {
   }
 }
 
-void Orchestration::setForce(const int& value) {
-  bool result;
-  if (force_ != value && value > 0 && value <= 3) {
-    switch (status_) {
-    case gptu::types::status::connected:
-      result = writeForce(static_cast<gpa::types::Unsigned>(value));
-      if (result) {
-        qDebug() << "Successfully set Force to " << value;
-      } else {
-        qWarning() << "Failed to set Force to " << value << " error is " <<
-          QString::fromStdString(gpam::master::report::error::last());
-      }
-      break;
-    case gptu::types::status::connecting:
-      break;
-    default:
-      qDebug() << "Not connected when Force changed from "
-        << force_ << " to " << value;
-      break;
-    }
-    force_ = value;
-    emit forceChanged();
-  }
-}
+/* Controller output items */
 
-void Orchestration::setForceIndex(const int& value) {
-  int force = gptum::mode::mode(value);
-  if (force >= 0) {
-    setForce(force);
-  }
-}
+/* Other items */
 
 void Orchestration::onConfigurationModeTextChanged() {
   qDebug() << " Configuration Mode Text Changed";
@@ -810,7 +910,27 @@ void Orchestration::setLastError(const QString& message) {
   setLastMessage(message, true);
 }
 
-/* Other items */
+/* Controller input items */
+
+/* Controller settings items */
+
+/* Controller tuning items */
+
+/* Controller output items */
+void Orchestration::setTemperature(const gpat::Real& value) {
+  double asdouble = static_cast<double>(value);
+  if (temperature_ != asdouble) {
+    temperature_ = asdouble;
+    emit temperatureChanged();
+  }
+}
+void Orchestration::setOutput(const gpat::Unsigned& value) {
+  double asdouble = static_cast<double>(value);
+  if (output_ != asdouble) {
+    output_ = asdouble;
+    emit outputChanged();
+  }
+}
 void Orchestration::setIntegral(const float& value) {
   if (integral_ != value) {
     integral_ = value;
@@ -818,6 +938,9 @@ void Orchestration::setIntegral(const float& value) {
     emit integralTextChanged();
   }
 }
+
+
+/* Other items */
 
 bool Orchestration::writeManual(const gpa::types::Unsigned& manual) {
   return gpam::master::retry::write::manual(manual) ==
@@ -903,14 +1026,18 @@ void Orchestration::logging(const gpam::types::registry::Input& input) {
 void Orchestration::executetuning(
   const gpam::types::registry::Input& input,
   const bool& issuccessful) {
-  const bool IsInternal = true;
-  const std::string Separator = ",";
-  gpa::types::Real lkp = static_cast<gpa::types::Real>(kp_);
-  gpa::types::Real lki = static_cast<gpa::types::Real>(ki_);
-  gpa::types::Real lkd = static_cast<gpa::types::Real>(kd_);
-  gp::tuning::setting::window::size = 15;
-  gp::tuning::setting::stable::duration::minutes = 10;
-  gp::tuning::setting::output::file::path = "black-box-tuning.csv";
+  QString separator = blackBoxForDialog_->separator();
+  QString outputfile = blackBoxForDialog_->file();
+  std::string stdseparator = separator.toStdString();
+  std::string stdoutputfile = outputfile.toStdString();
+  bool isinternal = blackBoxForDialog_->internalVariables();
+  gpa::types::Real lkp = static_cast<gpa::types::Real>(blackBoxForDialog_->kp());
+  gpa::types::Real lki = static_cast<gpa::types::Real>(blackBoxForDialog_->ki());
+  gpa::types::Real lkd = static_cast<gpa::types::Real>(blackBoxForDialog_->kd());
+  gp::tuning::setting::window::size = blackBoxForDialog_->windowSize();
+  gp::tuning::setting::stable::duration::minutes = 
+    blackBoxForDialog_->stableDuration();
+  gp::tuning::setting::output::file::path = stdoutputfile;
   switch (tuningState_) {
   case gp::tuning::types::TuningState::undefined:
     setLastError("Undefined tuning state");
@@ -918,8 +1045,10 @@ void Orchestration::executetuning(
   case gp::tuning::types::TuningState::initialize:
     tuningInitialized_ = std::make_unique<gp::tuning::types::Initialized>();
     if (tuningInitialized_) {
-      tuningInitialized_->Setpoint = static_cast<gpa::types::Real>(setpoint_);
-      tuningInitialized_->Manual = static_cast<gpa::types::Unsigned>(manual_);
+      tuningInitialized_->Setpoint = 
+        static_cast<gpa::types::Real>(blackBoxForDialog_->setpoint());
+      tuningInitialized_->Manual =
+        static_cast<gpa::types::Unsigned>(blackBoxForDialog_->manual());
       tuningInitialized_->Kp = lkp;
       tuningInitialized_->Ki = lki;
       tuningInitialized_->Kd = lkd;
@@ -927,18 +1056,34 @@ void Orchestration::executetuning(
       tuningBlackBoxVariables_ =
         std::make_unique<gp::tuning::black::box::Variables>();
       if (tuningVariables_ && tuningBlackBoxVariables_) {
-        gp::tuning::setting::parameters.Sd = 0.125F;
-        gp::tuning::setting::parameters.Kp.lowest = lkp * 0.25F;
-        gp::tuning::setting::parameters.Kp.highest = lkp * 1.75F;
-        gp::tuning::setting::parameters.Ki.lowest = lki * 0.25F;
-        gp::tuning::setting::parameters.Ki.highest = lki * 1.75F;
+        gp::tuning::setting::parameters.Sd = blackBoxForDialog_->sd();
+        gptu::Range* kprp = blackBoxForDialog_->kpRange();
+        if (kprp != nullptr) {
+          gp::tuning::setting::parameters.Kp.lowest =
+            static_cast<gpa::types::Real>(kprp->minimum());
+          gp::tuning::setting::parameters.Kp.highest = 
+            static_cast<gpa::types::Real>(kprp->maximum());
+        }
+        gptu::Range* kirp = blackBoxForDialog_->kiRange();
+        if (kirp != nullptr) {
+          gp::tuning::setting::parameters.Ki.lowest =
+            static_cast<gpa::types::Real>(kirp->minimum());
+          gp::tuning::setting::parameters.Ki.highest =
+            static_cast<gpa::types::Real>(kirp->maximum());
+        }
+        if (blackBoxForDialog_->isBase()) {
+          gp::tuning::setting::parameters.BaseLine =
+            static_cast<gpa::types::Real>(blackBoxForDialog_->base());
+        } else {
+          gp::tuning::setting::parameters.BaseLine = ::boost::none;
+        }
         if (lastHolding_) {
           gp::tuning::black::box::load(
             *tuningBlackBoxVariables_,
             *tuningInitialized_,
             *lastHolding_,
-            Separator,
-            IsInternal);
+            stdseparator,
+            isinternal);
           gp::tuning::black::box::initialize(
             *tuningVariables_,
             *tuningBlackBoxVariables_,
@@ -1001,9 +1146,9 @@ void Orchestration::executetuning(
         input,
         elapsed,
         time,
-        Separator,
+        stdseparator,
         issuccessful,
-        IsInternal);
+        isinternal);
       break;
     default:
       setLastError("Unknown tuning state again");

@@ -1,11 +1,25 @@
 <RCC>
   <qresource prefix="/pidtoolkit">
-    <file>ConnectionSettings.qml</file>
-    <file>ControllerSettings.qml</file>
-    <file>LoggingSettings.qml</file>
-    <file>TuningSettings.qml</file>
-    <file>TimingSettings.qml</file>
-    <file>PidSettings.qml</file>
-    <file>RealSpinBox.qml</file>
+    <file>ControlFilePath.qml</file>
+    <file>ControlRange.qml</file>
+    <file>ControlRealSpinBox.qml</file>
+    <file>DialogController.qml</file>
+    <file>DialogLogging.qml</file>
+    <file>DialogPid.qml</file>
+    <file>DialogSettings.qml</file>
+    <file>DialogTiming.qml</file>
+    <file>SettingsConnection.qml</file>
+    <file>SettingsController.qml</file>
+    <file>SettingsLogging.qml</file>
+    <file>SettingsTuning.qml</file>
+    <file>SettingsTiming.qml</file>
+    <file>SettingsPid.qml</file>
+    <file>SettingsUi.qml</file>
+    <file>DialogTuning.qml</file>
+    <file>DialogEvaluation.qml</file>
+    <file>ControlFactor.qml</file>
+    <file>ShowControllerOutput.qml</file>
+    <file>ShowTuningStatus.qml</file>
+    <file>ShowTuningVariables.qml</file>
   </qresource>
 </RCC>

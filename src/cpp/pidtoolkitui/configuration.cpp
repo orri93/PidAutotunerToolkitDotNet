@@ -30,6 +30,10 @@
 #define GROUP_UI "Ui"
 
 namespace gp = ::gos::pid;
+namespace gptu = ::gos::pid::toolkit::ui;
+namespace gptuc = ::gos::pid::toolkit::ui::configuration;
+namespace gptutc = ::gos::pid::toolkit::ui::types::configuration;
+namespace gptut = ::gos::pid::toolkit::ui::types;
 
 namespace gos {
 namespace pid {
@@ -38,15 +42,13 @@ namespace ui {
 
 Configuration::Configuration(const QString& filepath, QObject* parent) :
   Items(parent),
-  filepath_(filepath),
-  mode_(configuration::mode::normal) {
+  filepath_(filepath){
   create();
 }
 
 Configuration::Configuration(QObject* parent) :
   Items(parent),
-  filepath_(GOS_CONFIGURATION_FILE_PATH),
-  mode_(configuration::mode::normal) {
+  filepath_(GOS_CONFIGURATION_FILE_PATH) {
   create();
 }
 
@@ -55,9 +57,9 @@ QSettings* Configuration::initialize(const bool& watcher) {
   //QString filepath = QDir::cleanPath(path_ + QDir::separator() + filename_);
   settings_ = std::make_unique<QSettings>(filepath_, SettingsFormat);
   if (settings_) {
-    setMode(configuration::mode::initializing);
-    iscompleted_ = true;
-    result = read(false);
+    gptuc::Base::initialize();
+    blackBox_.initialize();
+    result = read();
     if (!QFile::exists(settings_->fileName())) {
       qInfo() << "Creating a default Configuration file at '"
         << settings_->fileName() << "'";
@@ -96,7 +98,8 @@ QSettings* Configuration::initialize(const bool& watcher) {
     qCritical() << "Out of memory when trying to create a Qt Setting";
     result = nullptr;
   }
-  setMode(configuration::mode::normal);
+  setNormal();
+  blackBox_.setNormal();
   return result;
 }
 
@@ -109,7 +112,6 @@ QSettings* Configuration::read(const bool& sync) {
   }
 
   QVariant value;
-  //  ndb::type::
 
   /* Communication configuration */
   settings_->beginGroup(GROUP_COMMUNICATION);
@@ -139,6 +141,8 @@ QSettings* Configuration::read(const bool& sync) {
   setTuningText(value.toString());
   settings_->endGroup();
 
+  blackBox_.read(settings_.get());
+
   return settings_.get();
 }
 
@@ -160,6 +164,7 @@ QSettings* Configuration::write(const bool& sync) {
 
   writeTuning();
   writeTimers();
+  writeBlackBox();
 
   return completeWriting(sync);
 }
@@ -185,6 +190,9 @@ void Configuration::writeTimers() {
   settings_->setValue(KEY_APPLY_TO_CONTROLLER, applyIntervalToController_);
   settings_->endGroup();
 }
+void Configuration::writeBlackBox() {
+  blackBox_.write(settings_.get());
+}
 QSettings* Configuration::completeWriting(const bool& sync) {
   if (sync) {
     settings_->sync();
@@ -192,26 +200,9 @@ QSettings* Configuration::completeWriting(const bool& sync) {
   return settings_.get();
 }
 
-const configuration::mode& Configuration::mode() const {
-  return mode_;
-}
-void Configuration::setMode(const configuration::mode& mode) {
-  if (mode_ != mode) {
-    mode_ = mode;
-    emit modeTextChanged();
-  }
-}
-const QString Configuration::modeText() const {
-  switch (mode_) {
-  case configuration::mode::normal:
-    return "Normal";
-  case configuration::mode::initializing:
-    return "Initializing";
-  case configuration::mode::write:
-    return "Write";
-  default:
-    return "Unknown";
-  }
+/* Black Box configuration */
+gptuc::BlackBox& Configuration::blackBox() {
+  return blackBox_;
 }
 
 /* Modbus configuration */
@@ -273,20 +264,30 @@ void Configuration::setTuningText(const QString& value) {
   setTuning(Items::tuningMode(value));
 }
 
+/* Black Box configuration */
+//void Configuration::setBlackBox(gptuc::BlackBox* blackBox) {
+//  if (applyPointer(blackBox_, blackBox)) {
+//    std::function<void()> changed =
+//      std::bind(&Configuration::blackBoxChanged, this);
+//    qDebug() << "Setting new Black Box Settings";
+//    handle(changed, fWriteBlackBox_);
+//  }
+//}
+
 void Configuration::onFileChanged(const QString& path) {
   switch (mode_) {
-  case configuration::mode::normal:
+  case gptutc::mode::normal:
     qDebug() << "Configuration file at '" << path
              << "' change and in 'read' mode";
     read(true);
     break;
-  case configuration::mode::write:
+  case gptutc::mode::write:
     qDebug() << "Ignoring Configuration file at '" << path
              << "' change because in 'write' mode";
     qDebug() << "Configuration Setting mode back to 'normal'";
-    setMode(configuration::mode::normal);
+    setMode(gptutc::mode::normal);
     break;
-  case configuration::mode::initializing:
+  case gptutc::mode::initializing:
     qDebug() << "Ignoring Configuration file at '" << path
              << "' change because in 'initializing' mode";
     break;
@@ -300,15 +301,16 @@ void Configuration::onFileChanged(const QString& path) {
 void Configuration::create() {
   fWriteTuning_ = std::bind(&Configuration::writeTuning, this);
   fWriteTimers_ = std::bind(&Configuration::writeTimers, this);
+  fWriteBlackBox_ = std::bind(&Configuration::writeBlackBox, this);
 }
 
 void Configuration::handle(std::function<void()>& changed) {
   switch (mode_) {
-  case configuration::mode::normal:
+  case gptutc::mode::normal:
     emit changed();
     break;
-  case configuration::mode::write:
-  case configuration::mode::initializing:
+  case gptutc::mode::write:
+  case gptutc::mode::initializing:
   default:
     break;
   }
@@ -318,11 +320,11 @@ void Configuration::handle(
   std::function<void()>& changed,
   std::function<void()>& write) {
   switch (mode_) {
-  case configuration::mode::normal:
+  case gptutc::mode::normal:
     qDebug() << "Configuration handling mode 'normal'";
     emit changed();
     break;
-  case configuration::mode::write:
+  case gptutc::mode::write:
     qDebug() << "Configuration handling mode 'write'";
     if (startWriting()) {
       write();
@@ -330,7 +332,7 @@ void Configuration::handle(
       qDebug() << "Configuration writing completed";
     }
     break;
-  case configuration::mode::initializing:
+  case gptutc::mode::initializing:
   default:
     break;
   }
@@ -340,13 +342,13 @@ void Configuration::handle(
   std::vector<std::function<void()>>& changed,
   std::function<void()>& write) {
   switch (mode_) {
-  case configuration::mode::normal:
+  case gptutc::mode::normal:
     qDebug() << "Configuration handling mode 'normal'";
     for (std::function<void()> f : changed) {
       emit f();
     }
     break;
-  case configuration::mode::write:
+  case gptutc::mode::write:
     qDebug() << "Configuration handling mode 'write'";
     if (startWriting()) {
       write();
@@ -354,7 +356,7 @@ void Configuration::handle(
       qDebug() << "Configuration writing completed";
     }
     break;
-  case configuration::mode::initializing:
+  case gptutc::mode::initializing:
   default:
     break;
   }

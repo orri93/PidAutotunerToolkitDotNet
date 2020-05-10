@@ -6,6 +6,8 @@ list(APPEND gos_pid_toolkit_ui_source
   "pidtoolkitui.cpp"
   "orchestration.h"
   "configuration.h"
+  "blackbox.cpp"
+  "blackbox.h"
   "items.cpp"
   "items.h")
 
@@ -71,10 +73,14 @@ target_link_libraries(${gos_pid_toolkit_ui_target} PRIVATE
 target_compile_definitions(${gos_pid_toolkit_ui_target} PRIVATE
   ${gos_pid_toolkit_ui_definitions})
 
-add_custom_command(TARGET ${gos_pid_toolkit_ui_target} POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    ${CMAKE_CURRENT_SOURCE_DIR}/configuration.ini
-    $<TARGET_FILE_DIR:${gos_pid_toolkit_ui_target}>)
+if (GOS_PID_TOOLKIT_INSTALL_CONFIGURATION)
+  add_custom_command(TARGET ${gos_pid_toolkit_ui_target} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      ${CMAKE_CURRENT_SOURCE_DIR}/configuration.ini
+      $<TARGET_FILE_DIR:${gos_pid_toolkit_ui_target}>)
+endif ()
 
 install(TARGETS ${gos_pid_toolkit_ui_target} DESTINATION bin/ui)
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/configuration.ini DESTINATION bin/ui)
+if (GOS_PID_TOOLKIT_INSTALL_CONFIGURATION)
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/configuration.ini DESTINATION bin/ui)
+endif ()

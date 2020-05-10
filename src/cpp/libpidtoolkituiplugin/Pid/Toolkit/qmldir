@@ -2,10 +2,27 @@ module Pid.Toolkit
 
 plugin pidtoolkitplugin
 
-ConnectionSettings 1.0 qrc:/pidtoolkit/ConnectionSettings.qml
-ControllerSettings 1.0 qrc:/pidtoolkit/ControllerSettings.qml
-LoggingSettings 1.0 qrc:/pidtoolkit/LoggingSettings.qml
-TuningSettings 1.0 qrc:/pidtoolkit/TuningSettings.qml
-TimingSettings 1.0 qrc:/pidtoolkit/TimingSettings.qml
-PidSettings 1.0 qrc:/pidtoolkit/PidSettings.qml
-RealSpinBox 1.0 qrc:/pidtoolkit/RealSpinBox.qml
+EvaluationFactor 1.0 qrc:/pidtoolkit/ControlFactor.qml
+RealSpinBox 1.0 qrc:/pidtoolkit/ControlRealSpinBox.qml
+TuningRange 1.0 qrc:/pidtoolkit/ControlRange.qml
+FilePath 1.0 qrc:/pidtoolkit/ControlFilePath.qml
+
+ControllerItems 1.0 qrc:/pidtoolkit/DialogController.qml
+EvaluationItems 1.0 qrc:/pidtoolkit/DialogEvaluation.qml
+LoggingItems 1.0 qrc:/pidtoolkit/DialogLogging.qml
+PidItems 1.0 qrc:/pidtoolkit/DialogPid.qml
+SettingItems 1.0 qrc:/pidtoolkit/DialogSettings.qml
+TimingItems 1.0 qrc:/pidtoolkit/DialogTiming.qml
+TuningItems 1.0 qrc:/pidtoolkit/DialogTuning.qml
+
+ConnectionSettings 1.0 qrc:/pidtoolkit/SettingsConnection.qml
+ControllerSettings 1.0 qrc:/pidtoolkit/SettingsController.qml
+LoggingSettings 1.0 qrc:/pidtoolkit/SettingsLogging.qml
+TuningSettings 1.0 qrc:/pidtoolkit/SettingsTuning.qml
+TimingSettings 1.0 qrc:/pidtoolkit/SettingsTiming.qml
+PidSettings 1.0 qrc:/pidtoolkit/SettingsPid.qml
+UiSettings 1.0 qrc:/pidtoolkit/SettingsUi.qml
+
+ControllerOutput 1.0 qrc:/pidtoolkit/ShowControllerOutput.qml
+TuningStatus 1.0 qrc:/pidtoolkit/ShowTuningStatus.qml
+TuningVariables 1.0 qrc:/pidtoolkit/ShowTuningVariables.qml

@@ -1,9 +1,11 @@
 list(APPEND gos_pid_toolkit_ui_cpp_library_source
+  "configuration.cpp"
   "formatting.cpp"
   "interval.cpp"
   "tuning.cpp"
   "status.cpp"
   "types.cpp"
+  "range.cpp"
   "mode.cpp"
   "baud.cpp"
   "port.cpp")
@@ -34,7 +36,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC OFF)
 
 add_library(${gos_pid_toolkit_ui_cpp_library_target}
-  ${gos_pid_toolkit_ui_cpp_library_source})
+  ${gos_pid_toolkit_ui_cpp_library_source} "range.cpp")
 
 list(APPEND gos_pid_toolkit_ui_cpp_library_include ${Boost_INCLUDE_DIRS})
 

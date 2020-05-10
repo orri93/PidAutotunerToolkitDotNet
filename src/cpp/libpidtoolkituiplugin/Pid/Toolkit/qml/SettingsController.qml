@@ -109,7 +109,7 @@ GroupBox {
       PidToolkit.RealSpinBox {
         id: setpointInput
         Layout.fillWidth: true
-        decimals: 1
+        decimals: 2
         onValueChanged: {
           setpointChanged(value / 1000);
         }

@@ -4,6 +4,7 @@
 
 namespace gp = ::gos::pid;
 namespace gptum = ::gos::pid::toolkit::ui::model;
+namespace gptuc = ::gos::pid::toolkit::ui::configuration;
 
 namespace gos {
 namespace pid {
@@ -11,8 +12,7 @@ namespace toolkit {
 namespace ui {
 
 Items::Items(QObject* parent) :
-  QObject(parent),
-  iscompleted_(false),
+  gptuc::Base(parent),
   serialBaud_(0),
   slaveId_(0),
   interval_(0),

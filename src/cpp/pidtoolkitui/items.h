@@ -7,6 +7,8 @@
 
 #include <gos/pid/tuning/types.h>
 
+#include <gos/pid/ui/configuration.h>
+
 #define TUNING_TEXT_OFF "Off"
 #define TUNING_TEXT_BLACK_BOX "BlackBox"
 
@@ -15,7 +17,7 @@ namespace pid {
 namespace toolkit {
 namespace ui {
 
-class Items : public QObject {
+class Items : public ::gos::pid::toolkit::ui::configuration::Base {
   Q_OBJECT
 public:
   Items(QObject* parent = nullptr);
@@ -66,8 +68,6 @@ protected:
   /* Tuning methods */
   static const ::gos::pid::tuning::types::TuningMode tuningMode(const QString& text);
   static const QString tuningText(const ::gos::pid::tuning::types::TuningMode& mode);
-
-  bool iscompleted_;
 
   /* Communication configuration */
   QString serialPort_;

@@ -4,6 +4,9 @@
 #include <chrono>
 #include <string>
 
+#define GOS_PID_TUNING_COMPARE_PTR(l,r) ( ( (l) != nullptr && (r) != nullptr) ? \
+  ( *l == *r ) :  ( (l) == nullptr && (r) == nullptr ) )
+
 namespace gos {
 namespace pid {
 namespace toolkit {
@@ -26,6 +29,19 @@ typedef Clock::time_point Time;
 namespace to {
 std::string string(const status& status);
 } // namespace to
+
+namespace configuration {
+enum class mode { normal, write, initializing };
+}
+
+namespace compare {
+template<typename T> inline bool pointers(const T* l, const T* r) {
+  return 
+    (l != nullptr && r != nullptr) ?
+    (*l == *r) :
+    l == nullptr && r == nullptr;
+}
+}
 
 } // namespace types
 } // namespace ui
