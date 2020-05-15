@@ -64,8 +64,14 @@ bool create(QQmlContext& context) {
 
   qRegisterMetaType<::gos::pid::toolkit::ui::Range*>(
     "::gos::pid::toolkit::ui::Range*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::Factor*>(
+    "::gos::pid::toolkit::ui::Factor*");
+  qRegisterMetaType< ::gos::pid::toolkit::ui::Number*>(
+    "::gos::pid::toolkit::ui::Number*");
   qRegisterMetaType<::gos::pid::toolkit::ui::configuration::BlackBox*>(
     "::gos::pid::toolkit::ui::configuration::BlackBox*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::configuration::Ui*>(
+    "::gos::pid::toolkit::ui::configuration::Ui*");
   qRegisterMetaType<::gos::pid::toolkit::ui::Configuration*>(
     "::gos::pid::toolkit::ui::Configuration*");
 
@@ -159,21 +165,25 @@ bool Orchestration::initialize(const bool& watcher) {
   context_.setContextProperty(GOS_QML_MODEL_PORT, portmodel_);
   baudmodel_ = gptum::baud::create();
   context_.setContextProperty(GOS_QML_MODEL_BAUD, baudmodel_);
+  operationmodel_ = gptum::operation::create();
+  context_.setContextProperty(GOS_QML_MODEL_OPERATION, operationmodel_);
   configuration_ = std::make_unique<Configuration>(this);
   if (configuration_) {
     QSettings* settings = configuration_->initialize(watcher);
     if (settings != nullptr) {
       applyConfiguration();
-      gptuc::BlackBox& ref = configuration_->blackBox();
-      blackBoxForDialog_ = std::make_unique<gptuc::BlackBox>(ref);
-      if (blackBoxForDialog_) {
+      gptuc::BlackBox& refbb = configuration_->blackBox();
+      blackBoxForDialog_ = std::make_unique<gptuc::BlackBox>(refbb);
+      gptuc::Ui* uip = configuration_->ui();
+      uiForDialog_ = std::make_unique<gptuc::Ui>(*uip);
+      if (blackBoxForDialog_ && uiForDialog_) {
         status_ = gptu::types::status::disconnected;
         isInitialize_ = true;
         emit isInitializeChanged();
         qInfo() << "Initialize completed";
         return isInitialize_;
       } else {
-        qCritical() << "Failed to Black Box Settings for Dialog";
+        qCritical() << "Failed to Black Box or UI Settings for Dialog";
       }
     } else {
       qCritical() << "Failed to initialize configuration";
@@ -339,8 +349,10 @@ void Orchestration::panelCompleted() {
   qDebug() << "Panel Completed";
   notify();
   iscompleted_ = true;
+  emit uiChanged();
   emit blackBoxChanged();
   emit isCompletedChanged();
+  emit configurationChanged();
   emit completed();
 }
 
@@ -367,6 +379,25 @@ void Orchestration::rejectBlackBoxDialog() {
     }
   }
 }
+
+void Orchestration::applyUiDialog() {
+  if (uiForDialog_ && configuration_) {
+    if (configuration_->applyUiDialog(uiForDialog_.get())) {
+      emit configurationChanged();
+    }
+  }
+}
+
+void Orchestration::rejectUiDialog() {
+  if (uiForDialog_ && configuration_) {
+    gptuc::Ui* uip = configuration_->ui();
+    if (::compare(*uip, *uiForDialog_) != 0) {
+      *uiForDialog_ = *uip;
+      emit uiChanged();
+    }
+  }
+}
+
 
 const QString Orchestration::configurationModeText() const {
   return configuration_->modeText();
@@ -410,6 +441,15 @@ Configuration* Orchestration::configuration() {
 gptu::configuration::BlackBox* Orchestration::blackBox() {
   if (blackBoxForDialog_) {
     return blackBoxForDialog_.get();
+  } else {
+    qWarning() << "Undefined Black Box from Orchestration";
+    return nullptr;
+  }
+}
+
+gptu::configuration::Ui* Orchestration::ui() {
+  if (uiForDialog_) {
+    return uiForDialog_.get();
   } else {
     qWarning() << "Undefined Black Box from Orchestration";
     return nullptr;
@@ -988,6 +1028,7 @@ void Orchestration::notify() {
   emit applyIntervalToControllerChanged();
   emit forceChanged();
   emit tuningChanged();
+  emit setpointChanged();
 }
 
 bool Orchestration::initializemodbus() {

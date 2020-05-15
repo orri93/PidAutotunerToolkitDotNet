@@ -27,3 +27,5 @@ target_link_libraries(${gos_pid_toolkit_cpp_test_target}
 
 add_test(NAME gos_pid_toolkit_cpp_test COMMAND
   ${gos_pid_toolkit_cpp_test_target})
+
+add_subdirectory(ui)

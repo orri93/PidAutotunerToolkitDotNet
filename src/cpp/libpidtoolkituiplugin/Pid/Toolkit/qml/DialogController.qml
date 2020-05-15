@@ -42,7 +42,7 @@ GroupBox {
     manualInput.value = value;
   }
   function setSetpoint(value) {
-    setpointRealSpinBox.value = 1000 * value;
+    setpointRealSpinBox.realValue = value;
   }
   function setEnabledCurrent(enable) {
     useCurrentButton.enabled = enable;
@@ -93,10 +93,9 @@ GroupBox {
       PidToolkit.RealSpinBox {
         id: setpointRealSpinBox
         Layout.fillWidth: true
-        decimals: 2
-        onValueChanged: {
+        onRealValueChanged: {
           if(enableSignalling) {
-            setpointChanged(value / 1000);
+            setpointChanged(realValue);
           }
         }
       }

@@ -3,6 +3,8 @@
 /* Black Box configuration group */
 #define GROUP_BLACK_BOX "BlackBox"
 
+#define GROUP_EVALUATION "Evaluation"
+
 /* PID configuration */
 #define KEY_BB_KP "Kp"
 #define KEY_BB_KI "Ki"
@@ -22,10 +24,8 @@
 #define DEFAULT_BB_MANUAL 0
 
 /* Tuning configuration */
-#define KEY_BB_KP_RANGE_MIN "KpRangeMinimum"
-#define KEY_BB_KP_RANGE_MAX "KpRangeMaximum"
-#define KEY_BB_KI_RANGE_MIN "KiRangeMinimum"
-#define KEY_BB_KI_RANGE_MAX "KiRangeMaximum"
+#define KEY_BB_KP_RANGE "KpRange"
+#define KEY_BB_KI_RANGE "KiRange"
 #define DEFAULT_BB_KP_RANGE_MIN 0.0
 #define DEFAULT_BB_KP_RANGE_MAX 10.0
 #define DEFAULT_BB_KI_RANGE_MIN 0.0
@@ -45,6 +45,12 @@
 #define DEFAULT_BB_LOG_FILE "tuning.csv"
 #define DEFAULT_BB_LOG_TUNING_FILE "blackbox.csv"
 
+  /* Evaluation configuration */
+#define KEY_BB_FACTOR_TARGET_TIME_FACTOR "TargetTime"
+#define KEY_BB_FACTOR_INTEGRAL_BUILDUP "IntegralBuildup"
+#define KEY_BB_FACTOR_PEAK_ERROR "PeakError"
+#define KEY_BB_FACTOR_STABLE "Stable"
+
 /* Other configuration */
 #define KEY_BB_WINDOW_SIZE "WindowSize"
 #define KEY_BB_STANDARD_DEVIATION "StandardDeviation"
@@ -54,6 +60,7 @@
 namespace gpt = ::gos::pid::toolkit;
 namespace gptu = ::gos::pid::toolkit::ui;
 namespace gptuc = ::gos::pid::toolkit::ui::configuration;
+namespace gptumo = ::gos::pid::toolkit::ui::model::operation;
 
 namespace gos {
 namespace pid {
@@ -62,55 +69,83 @@ namespace ui {
 namespace configuration {
 
 BlackBox::BlackBox(QObject* parent) :
-  ::gos::pid::toolkit::ui::configuration::Base(parent),
+  gptuc::Base(parent),
+  /* PID configuration */
   kp_(0.0),
   ki_(0.0),
   kd_(0.0),
+  /* Controller configuration  */
   base_(0.0),
   isBase_(false),
   setpoint_(0.0),
   manual_(0),
+  /* Timers configuration */
   stableDuration_(0),
+  /* Logging configuration */
   internalVariables_(false),
+  /* Evaluation configuration */
+  /* Other configuration */
   windowSize_(0),
   sd_(0.0) {
 }
 
 BlackBox::BlackBox(const BlackBox& blackBox) :
+  /* PID configuration */
   kp_(blackBox.kp_),
   ki_(blackBox.ki_),
   kd_(blackBox.kd_),
+  /* Tuning configuration */
   kpRange_(blackBox.kpRange_),
   kiRange_(blackBox.kiRange_),
+  /* Controller configuration  */
   base_(blackBox.base_),
   isBase_(blackBox.isBase_),
   setpoint_(blackBox.setpoint_),
   manual_(blackBox.manual_),
+  /* Timers configuration */
   stableDuration_(blackBox.stableDuration_),
+  /* Logging configuration */
   internalVariables_(blackBox.internalVariables_),
   separator_(blackBox.separator_),
   file_(blackBox.file_),
   tuningFile_(blackBox.tuningFile_),
+  /* Evaluation configuration */
+  targetTimeFactor_(blackBox.targetTimeFactor_),
+  integralBuildupFactor_(blackBox.integralBuildupFactor_),
+  peakErrorFactor_(blackBox.peakErrorFactor_),
+  stableFactor_(blackBox.stableFactor_),
+  /* Other configuration */
   windowSize_(blackBox.windowSize_),
   sd_(blackBox.sd_) {
 }
 
 BlackBox& BlackBox::operator=(const BlackBox& blackBox) {
   if (this != &blackBox) {
+    /* PID configuration */
     kp_ = blackBox.kp_;
     ki_ = blackBox.ki_;
     kd_ = blackBox.kd_;
+    /* Tuning configuration */
     kpRange_ = blackBox.kpRange_;
     kiRange_ = blackBox.kiRange_;
+    /* Controller configuration  */
     base_ = blackBox.base_;
     isBase_ = blackBox.isBase_;
     setpoint_ = blackBox.setpoint_;
     manual_ = blackBox.manual_;
+    /* Timers configuration */
     stableDuration_ = blackBox.stableDuration_;
+    /* Logging configuration */
     internalVariables_ = blackBox.internalVariables_;
     separator_ = blackBox.separator_;
     file_ = blackBox.file_;
     tuningFile_ = blackBox.tuningFile_;
+    /* Evaluation configuration */
+    targetTimeFactor_ = blackBox.targetTimeFactor_;
+    integralBuildupFactor_ = blackBox.integralBuildupFactor_;
+    peakErrorFactor_ = blackBox.peakErrorFactor_;
+    stableFactor_ = blackBox.stableFactor_;
+    /* Other configuration */
     windowSize_ = blackBox.windowSize_;
     sd_ = blackBox.sd_;
   }
@@ -118,7 +153,7 @@ BlackBox& BlackBox::operator=(const BlackBox& blackBox) {
 }
 
 QSettings* BlackBox::read(QSettings* settings) {
-  QVariant value, minimum, maximum;
+  QVariant value;
 
   /* Black Box configuration group */
   settings->beginGroup(GROUP_BLACK_BOX);
@@ -132,12 +167,18 @@ QSettings* BlackBox::read(QSettings* settings) {
   setKd(value.toFloat());
 
   /* Tuning configuration */
-  minimum = settings->value(KEY_BB_KP_RANGE_MIN, DEFAULT_BB_KP_RANGE_MIN);
-  maximum = settings->value(KEY_BB_KP_RANGE_MAX, DEFAULT_BB_KP_RANGE_MAX);
-  setKpRange(minimum.toFloat(), maximum.toFloat());
-  minimum = settings->value(KEY_BB_KI_RANGE_MIN, DEFAULT_BB_KI_RANGE_MIN);
-  maximum = settings->value(KEY_BB_KI_RANGE_MAX, DEFAULT_BB_KI_RANGE_MAX);
-  setKiRange(minimum.toFloat(), maximum.toFloat());
+  gptu::read(
+    settings,
+    KEY_BB_KP_RANGE,
+    this->kpRange_,
+    DEFAULT_BB_KP_RANGE_MIN,
+    DEFAULT_BB_KP_RANGE_MAX);
+  gptu::read(
+    settings,
+    KEY_BB_KI_RANGE,
+    this->kiRange_,
+    DEFAULT_BB_KI_RANGE_MIN,
+    DEFAULT_BB_KI_RANGE_MAX);
 
   /* Controller configuration  */
   value = settings->value(KEY_BB_BASE, DEFAULT_BB_BASE);
@@ -176,6 +217,14 @@ QSettings* BlackBox::read(QSettings* settings) {
   /* Black Box configuration group */
   settings->endGroup();
 
+  /* Evaluation configuration */
+  settings->beginGroup(GROUP_EVALUATION);
+  gptu::read(settings, KEY_BB_FACTOR_TARGET_TIME_FACTOR, targetTimeFactor_);
+  gptu::read(settings, KEY_BB_FACTOR_INTEGRAL_BUILDUP, integralBuildupFactor_);
+  gptu::read(settings, KEY_BB_FACTOR_PEAK_ERROR, peakErrorFactor_);
+  gptu::read(settings, KEY_BB_FACTOR_STABLE, stableFactor_);
+  settings->endGroup();
+
   return settings;
 }
 QSettings* BlackBox::write(QSettings* settings) {
@@ -189,10 +238,8 @@ QSettings* BlackBox::write(QSettings* settings) {
   settings->setValue(KEY_BB_KD, kd_);
 
   /* Tuning configuration */
-  settings->setValue(KEY_BB_KP_RANGE_MIN, kpRange_.minimum());
-  settings->setValue(KEY_BB_KP_RANGE_MAX, kpRange_.maximum());
-  settings->setValue(KEY_BB_KI_RANGE_MIN, kiRange_.minimum());
-  settings->setValue(KEY_BB_KI_RANGE_MAX, kiRange_.maximum());
+  gptu::write(settings, KEY_BB_KP_RANGE, this->kpRange_);
+  gptu::write(settings, KEY_BB_KI_RANGE, this->kiRange_);
 
   /* Controller configuration  */
   settings->setValue(KEY_BB_BASE, base_);
@@ -214,6 +261,14 @@ QSettings* BlackBox::write(QSettings* settings) {
   settings->setValue(KEY_BB_STANDARD_DEVIATION, sd_);
 
   /* Black Box configuration group */
+  settings->endGroup();
+
+  /* Evaluation configuration */
+  settings->beginGroup(GROUP_EVALUATION);
+  gptu::write(settings, KEY_BB_FACTOR_TARGET_TIME_FACTOR, targetTimeFactor_);
+  gptu::write(settings, KEY_BB_FACTOR_INTEGRAL_BUILDUP, integralBuildupFactor_);
+  gptu::write(settings, KEY_BB_FACTOR_PEAK_ERROR, peakErrorFactor_);
+  gptu::write(settings, KEY_BB_FACTOR_STABLE, stableFactor_);
   settings->endGroup();
 
   return settings;
@@ -243,6 +298,21 @@ const bool& BlackBox::internalVariables() const { return internalVariables_; }
 const QString& BlackBox::separator() const { return separator_; }
 const QString& BlackBox::file() const { return file_; }
 const QString& BlackBox::tuningFile() const { return tuningFile_; }
+
+/* Evaluation configuration */
+gptu::Factor* BlackBox::targetTimeFactor() {
+  return &targetTimeFactor_;
+}
+gptu::Factor* BlackBox::integralBuildupFactor() {
+  return &integralBuildupFactor_;
+}
+gptu::Factor* BlackBox::peakErrorFactor() {
+  return &peakErrorFactor_;
+}
+gptu::Factor* BlackBox::stableFactor() {
+  return &stableFactor_;
+}
+
 
 /* Other configuration */
 const int& BlackBox::windowSize() const { return windowSize_; }
@@ -324,7 +394,6 @@ void BlackBox::setManual(const quint16& value) {
   }
 }
 
-
 /* Timers configuration */
 void BlackBox::setStableDuration(const int& value) {
   if (stableDuration_ != value) {
@@ -359,6 +428,33 @@ void BlackBox::setTuningFile(const QString& value) {
   }
 }
 
+/* Evaluation configuration */
+void BlackBox::setTargetTimeFactor(gptu::Factor* value) {
+  if (value != nullptr && compare(targetTimeFactor_, *value) != 0) {
+    targetTimeFactor_.set(*value);
+    emit targetTimeFactorChanged();
+  }
+}
+void BlackBox::setIntegralBuildupFactor(gptu::Factor* value) {
+  if (value != nullptr && compare(integralBuildupFactor_, *value) != 0) {
+    integralBuildupFactor_.set(*value);
+    emit integralBuildupFactorChanged();
+  }
+}
+void BlackBox::setPeakErrorFactor(gptu::Factor* value) {
+  if (value != nullptr && compare(peakErrorFactor_, *value) != 0) {
+    peakErrorFactor_.set(*value);
+    emit peakErrorFactorChanged();
+  }
+}
+void BlackBox::setStableFactor(gptu::Factor* value) {
+  if (value != nullptr && compare(stableFactor_, *value) != 0) {
+    stableFactor_.set(*value);
+    emit stableFactorChanged();
+  }
+}
+
+
 /* Other configuration */
 void BlackBox::setWindowSize(const int& value) {
   if (windowSize_ != value) {
@@ -387,20 +483,32 @@ bool operator!=(const gptuc::BlackBox& lhs, const gptuc::BlackBox& rhs) {
 }
 
 int compare(const gptuc::BlackBox& first, const gptuc::BlackBox& second) {
-  return (first.kp_ == second.kp_ &&
+  return (
+    /* PID configuration */
+    first.kp_ == second.kp_ &&
     first.ki_ == second.ki_ &&
     first.kd_ == second.kd_ &&
+    /* Tuning configuration */
     first.kpRange_ == second.kpRange_ &&
     first.kiRange_ == second.kiRange_ &&
+    /* Controller configuration  */
     first.base_ == second.base_ &&
     first.isBase_ == second.isBase_ &&
     first.setpoint_ == second.setpoint_ &&
     first.manual_ == second.manual_ &&
+    /* Timers configuration */
     first.stableDuration_ == second.stableDuration_ &&
+    /* Logging configuration */
     first.internalVariables_ == second.internalVariables_ &&
     first.separator_ == second.separator_ &&
     first.file_ == second.file_ &&
     first.tuningFile_ == second.tuningFile_ &&
+    /* Evaluation configuration */
+    first.targetTimeFactor_ == second.targetTimeFactor_ &&
+    first.integralBuildupFactor_ == second.integralBuildupFactor_ &&
+    first.peakErrorFactor_ == second.peakErrorFactor_ &&
+    first.stableFactor_ == second.stableFactor_ &&
+    /* Other configuration */
     first.windowSize_ == second.windowSize_ &&
     first.sd_ == second.sd_) ? 0 : 1;
 }

@@ -10,6 +10,12 @@
 #define GOS_QML_TYPE_RANGE_NAME "PidRange"
 #define GOS_QML_TYPE_RANGE_URI GOS_QML_TYPE_RANGE_NAME
 
+#define KEY_BB_RANGE_MINIMUM "Minimum"
+#define KEY_BB_RANGE_MAXIMUM "Maximum"
+
+#define DEFAULT_BB_RANGE_MINIMUM 0.0
+#define DEFAULT_BB_RANGE_MAXIMUM 10.0
+
 namespace gos { namespace pid { namespace toolkit { namespace ui {
 class Range; } } } }
 
@@ -29,8 +35,18 @@ namespace pid {
 namespace toolkit {
 namespace ui {
 
+QSettings* read(QSettings* settings, const QString& key, Range& range);
+QSettings* read(
+  QSettings* settings,
+  const QString& key,
+  Range& range,
+  const double& minimum,
+  const double& maximum);
+QSettings* write(QSettings* settings, const QString& key, const Range& range);
+
 class Range : public ::gos::pid::toolkit::ui::configuration::Base {
   Q_OBJECT
+
   Q_PROPERTY(double minimum READ minimum WRITE setMinimum NOTIFY minimumChanged)
   Q_PROPERTY(double maximum READ maximum WRITE setMaximum NOTIFY maximumChanged)
 
@@ -38,13 +54,30 @@ class Range : public ::gos::pid::toolkit::ui::configuration::Base {
   friend bool(::operator!=) (const Range& lhs, const Range& rhs);
   friend int(::compare) (const Range& first, const Range& second);
 
+  friend QSettings* read(QSettings* settings, const QString& key, Range& range);
+  friend QSettings* read(
+    QSettings* settings,
+    const QString& key,
+    Range& range,
+    const double& minimum,
+    const double& maximum);
+  friend QSettings* write(
+    QSettings* settings,
+    const QString& key,
+    const Range& range);
+
 public:
   explicit Range(QObject* parent = nullptr);
-  Range(const double& minimum, const double& maximum, QObject* parent = nullptr);
-  Range(const Range& range);
 
-  Range& operator=(const Range& range);
+  Range(
+    const double& minimum,
+    const double& maximum,
+    QObject* parent = nullptr);
+    Range(const Range& range);
 
+  virtual Range& operator=(const Range& range);
+
+  virtual Range& set(const Range& range);
   void set(const double& minimum, const double& maximum);
   
   const double& minimum() const;
@@ -58,7 +91,7 @@ public slots:
   void setMinimum(const double& value);
   void setMaximum(const double& value);
 
-private:
+protected:
   double minimum_;
   double maximum_;
 };
@@ -69,13 +102,5 @@ Range make_range(const double& minimum, const double& maximum);
 } // namespace toolkit
 } // namespace pid
 } // namespace gos
-
-bool operator==(
-  const ::gos::pid::toolkit::ui::Range& lhs,
-  const ::gos::pid::toolkit::ui::Range& rhs);
-bool operator!=(
-  const ::gos::pid::toolkit::ui::Range& lhs,
-  const ::gos::pid::toolkit::ui::Range& rhs);
-
 
 #endif

@@ -87,6 +87,12 @@ Tab {
         loggingItemsHandle = loggingItems;
         handleOrchestration("Logging Items ready");
       }
+      onChildDialog: {
+        bbtto.enabled = false;
+      }
+      onChildDialogCompleted: {
+        bbtto.enabled = true;
+      }
 
       onInternalVariablesChanged: {
         if(blackSettings) {

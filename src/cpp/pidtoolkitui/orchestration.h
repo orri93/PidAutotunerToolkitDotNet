@@ -45,8 +45,9 @@ public:
   Q_PROPERTY(QString configurationModeText READ configurationModeText NOTIFY configurationModeTextChanged)
 
   /* Configuration Access */
-  Q_PROPERTY(Configuration* configuration READ configuration)
+  Q_PROPERTY(Configuration* configuration READ configuration NOTIFY configurationChanged)
   Q_PROPERTY(::gos::pid::toolkit::ui::configuration::BlackBox* blackBox READ blackBox NOTIFY blackBoxChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::configuration::Ui* ui READ ui NOTIFY uiChanged)
 
   /* Communication items */
   Q_PROPERTY(QString serialPort READ serialPort NOTIFY serialPortChanged)
@@ -118,6 +119,8 @@ public:
   Q_INVOKABLE void panelCompleted();
   Q_INVOKABLE void applyBlackBoxDialog();
   Q_INVOKABLE void rejectBlackBoxDialog();
+  Q_INVOKABLE void applyUiDialog();
+  Q_INVOKABLE void rejectUiDialog();
 
   const QString configurationModeText() const;
 
@@ -129,7 +132,8 @@ public:
 
   /* Configuration Access */
   Configuration* configuration();
-  gos::pid::toolkit::ui::configuration::BlackBox* blackBox();
+  ::gos::pid::toolkit::ui::configuration::BlackBox* blackBox();
+  ::gos::pid::toolkit::ui::configuration::Ui* ui();
 
   /* Tuning items */
   const ::gos::pid::tuning::types::TuningState& tuningState() const;
@@ -175,7 +179,10 @@ public:
 signals:
   void completed();
 
+  /* Configuration Access */
+  void configurationChanged();
   void blackBoxChanged();
+  void uiChanged();
 
   void configurationModeTextChanged();
   /* Communication items */
@@ -328,6 +335,7 @@ private:
 
   ConfigurationPointer configuration_;
   ::gos::pid::toolkit::ui::configuration::BlackBoxPointer blackBoxForDialog_;
+  ::gos::pid::toolkit::ui::configuration::UiPointer uiForDialog_;
   bool watcher_;
 
   /* Modbus items */
@@ -375,6 +383,7 @@ private:
   /* Other items */
 
   /* Models */
+  QVariant operationmodel_;
   QVariant intervalmodel_;
   QVariant tuningmodel_;
   QVariant modemodel_;

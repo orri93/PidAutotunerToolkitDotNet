@@ -4,3 +4,6 @@
 [submodule "extern/libmodbus"]
 	path = extern/libmodbus
 	url = https://github.com/orri93/libmodbus.git
+[submodule "extern/qml-file-dialog-demo"]
+	path = extern/qml-file-dialog-demo
+	url = git@github.com:orri93/qml-file-dialog-demo.git

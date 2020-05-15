@@ -7,11 +7,11 @@
 #include <QObject>
 #include <QSettings>
 #include <QMetaType>
-#include <QFileSystemWatcher>
 #include <QDebug>
 
 #include <gos/pid/tuning/blackbox.h>
 #include <gos/pid/ui/configuration.h>
+#include <gos/pid/ui/factor.h>
 #include <gos/pid/ui/range.h>
 
 #define GOS_QML_TYPE_BLACK_BOX_NAME "BlackBoxSetting"
@@ -65,6 +65,12 @@ class BlackBox : public ::gos::pid::toolkit::ui::configuration::Base {
   Q_PROPERTY(QString file READ file WRITE setFile NOTIFY fileChanged)
   Q_PROPERTY(QString tuningFile READ tuningFile WRITE setTuningFile NOTIFY tuningFileChanged)
 
+  /* Evaluation configuration */
+  Q_PROPERTY(::gos::pid::toolkit::ui::Factor* targetTimeFactor READ targetTimeFactor WRITE setTargetTimeFactor NOTIFY targetTimeFactorChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::Factor* integralBuildupFactor READ integralBuildupFactor WRITE setIntegralBuildupFactor NOTIFY integralBuildupFactorChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::Factor* peakErrorFactor READ peakErrorFactor WRITE setPeakErrorFactor NOTIFY peakErrorFactorChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::Factor* stableFactor READ stableFactor WRITE setStableFactor NOTIFY stableFactorChanged)
+
   /* Other configuration */
   Q_PROPERTY(int windowSize READ windowSize WRITE setWindowSize NOTIFY windowSizeChanged)
   Q_PROPERTY(double sd READ sd WRITE setSd NOTIFY sdChanged);
@@ -108,6 +114,12 @@ public:
   const QString& file() const;
   const QString& tuningFile() const;
 
+  /* Evaluation configuration */
+  ::gos::pid::toolkit::ui::Factor* targetTimeFactor();
+  ::gos::pid::toolkit::ui::Factor* integralBuildupFactor();
+  ::gos::pid::toolkit::ui::Factor* peakErrorFactor();
+  ::gos::pid::toolkit::ui::Factor* stableFactor();
+
   /* Other configuration */
   const int& windowSize() const;
   const double& sd() const;
@@ -132,6 +144,11 @@ signals:
   void separatorChanged();
   void fileChanged();
   void tuningFileChanged();
+  /* Evaluation configuration */
+  void targetTimeFactorChanged();
+  void integralBuildupFactorChanged();
+  void peakErrorFactorChanged();
+  void stableFactorChanged();
   /* Other configuration */
   void windowSizeChanged();
   void sdChanged();
@@ -162,6 +179,12 @@ public slots:
   void setSeparator(const QString&);
   void setFile(const QString&);
   void setTuningFile(const QString&);
+
+  /* Evaluation configuration */
+  void setTargetTimeFactor(::gos::pid::toolkit::ui::Factor* value);
+  void setIntegralBuildupFactor(::gos::pid::toolkit::ui::Factor* value);
+  void setPeakErrorFactor(::gos::pid::toolkit::ui::Factor* value);
+  void setStableFactor(::gos::pid::toolkit::ui::Factor* value);
 
   /* Other configuration */
   void setWindowSize(const int& value);
@@ -199,6 +222,12 @@ protected:
   QString separator_;
   QString file_;
   QString tuningFile_;
+
+  /* Evaluation configuration */
+  ::gos::pid::toolkit::ui::Factor targetTimeFactor_;
+  ::gos::pid::toolkit::ui::Factor integralBuildupFactor_;
+  ::gos::pid::toolkit::ui::Factor peakErrorFactor_;
+  ::gos::pid::toolkit::ui::Factor stableFactor_;
 
   /* Other configuration */
   int windowSize_;

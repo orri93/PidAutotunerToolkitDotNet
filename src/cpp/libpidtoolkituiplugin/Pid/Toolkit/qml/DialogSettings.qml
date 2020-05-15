@@ -25,7 +25,7 @@ GroupBox {
   property real preferredWidth: 140.0
 
   function setStandardDeviation(value) {
-    standardDeviationSpinBox.value = 1000 * value;
+    standardDeviationSpinBox.realValue = 1000;
   }
 
   function setWindowSize(value) {
@@ -33,6 +33,7 @@ GroupBox {
   }
 
   Component.onCompleted: {
+    standardDeviationSpinBox.setRealUiNumber(orchestration.configuration.ui.sd);
     ready();
   }
 
@@ -54,10 +55,9 @@ GroupBox {
       PidToolkit.RealSpinBox {
         id: standardDeviationSpinBox
         Layout.fillWidth: true
-        decimals: 2
-        onValueChanged: {
+        onRealValueChanged: {
           //if(enableSignalling) {
-            standardDeviationChanged(value / 1000);
+          standardDeviationChanged(value);
           //}
         }
       }

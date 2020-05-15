@@ -10,6 +10,7 @@
 #include <QFileSystemWatcher>
 #include <QDebug>
 
+#include <ui.h>
 #include <blackbox.h>
 #include <gos/pid/tuning/types.h>
 #include <gos/pid/ui/types.h>
@@ -48,6 +49,9 @@ class Configuration : public Items {
   /* Black Box configuration */
   //Q_PROPERTY(::gos::pid::toolkit::ui::configuration::BlackBox* blackBox READ blackBox WRITE setBlackBox NOTIFY blackBoxChanged)
 
+  /* UI configuration */
+  Q_PROPERTY(::gos::pid::toolkit::ui::configuration::Ui* ui READ ui NOTIFY uiChanged)
+
   /* Configuration mode */
   Q_PROPERTY(QString modeText READ modeText NOTIFY modeTextChanged)
 
@@ -69,8 +73,12 @@ public:
   virtual QSettings* write(const bool& sync = false);
 
   /* Black Box configuration */
-  //::gos::pid::toolkit::ui::configuration::BlackBox* blackBox();
   ::gos::pid::toolkit::ui::configuration::BlackBox& blackBox();
+
+  /* Ui configuration */
+  ::gos::pid::toolkit::ui::configuration::Ui* ui();
+
+  bool applyUiDialog(::gos::pid::toolkit::ui::configuration::Ui* ui);
 
 signals:
   void modeTextChanged();
@@ -89,6 +97,9 @@ signals:
   /* Black Box configuration */
   void blackBoxChanged();
 
+  /* UI configuration */
+  void uiChanged();
+
 public slots:
   /* Communication configuration */
   void setSerialPort(const QString& value);
@@ -100,9 +111,6 @@ public slots:
   /* Tuning configuration */
   void setTuning(const ::gos::pid::tuning::types::TuningMode& value);
   void setTuningText(const QString& value);
-
-  /* Black Box configuration */
-  //void setBlackBox(::gos::pid::toolkit::ui::configuration::BlackBox* blackBox);
 
 private slots:
   void onFileChanged(const QString& path);
@@ -124,6 +132,7 @@ private:
   void writeTuning();
   void writeTimers();
   void writeBlackBox();
+  void writeUi();
   virtual QSettings* completeWriting(const bool& sync = false);
 
   /* Modbus configuration */
@@ -131,6 +140,9 @@ private:
 
   /* Black box configuration */
   ::gos::pid::toolkit::ui::configuration::BlackBox blackBox_;
+  /* Ui configuration */
+  ::gos::pid::toolkit::ui::configuration::Ui ui_;
+
 
   /* Functions */
   std::function<void()> fWriteTuning_;

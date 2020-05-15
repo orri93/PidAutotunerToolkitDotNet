@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.2
 import QtQuick.Dialogs 1.2
 
 TabView {
+  id: blackBoxDialogTabView
   width: parent.width
   height: parent.height
 
@@ -24,5 +25,9 @@ TabView {
 
   BlackBoxTabTimersOther {
     id: blackBoxTabTimersOther 
+  }
+
+  BlackBoxTabEvaluation {
+    id: blackBoxTabEvaluation
   }
 }

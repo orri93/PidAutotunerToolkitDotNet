@@ -5,13 +5,19 @@ import QtQuick.Dialogs 1.2
 
 ColumnLayout {
 
-  property string fileNameText: qsTr("file")
+  property alias fileDialogBrowse: fileDialog
+  property alias fileNameText: filePathLabel.text
+  property alias fileDialogTitle: fileDialog.title
+  property alias filePathValidator: filePathTextInput.validator
 
   signal filePathChanged(string path)
+  signal filePathBrowse()
+  signal filePathBrowseCompleted(bool result, string path)
 
   property color groupTextColor: "navy"
   property color labelTextColor: "midnightblue"
   property color inputTextColor: "darkslateblue"
+  property color inputTextErrorColor: "red"
 
   property int labelFontPointSize:  8
   property int inputFontPointSize: 10
@@ -22,7 +28,7 @@ ColumnLayout {
   property real fileTextInputWidth: 320.0
 
   function setFilePath(path) {
-    filePathTextEdit.text = path;
+    filePathTextInput.text = path;
   }
 
   FileDialog {
@@ -32,45 +38,56 @@ ColumnLayout {
     width: 800
     selectExisting: false
     selectMultiple: false
-    defaultSuffix: "log"
-    title: "Please choose a " + fileNameText
+    title: qsTr("Please choose a file")
     folder: shortcuts.home
     onAccepted: {
-      filePathTextEdit.text = fileDialog.fileUrl;
-      console.log("You chose: " + fileDialog.fileUrl)
-      Qt.quit()
+      var urltext = fileDialog.fileUrl.toString();
+      // Remove prefixed "file://"
+      var path = urltext.replace(/^(file:\/{3})|(qrc:\/{2})|(http:\/{2})/,"");
+      // Unescape html code like '%23' for '#'
+      var cleanpath = decodeURIComponent(path);
+      filePathTextInput.text = cleanpath;
+      filePathChanged(filePathTextInput.text);
+      filePathBrowseCompleted(true, filePathTextInput.text);
+      filePathBrowseButton.enabled = true;
+      filePathTextInput.enabled = true;
     }
     onRejected: {
-      console.log("Canceled")
-      Qt.quit()
+      filePathBrowseCompleted(false, "");
+      filePathBrowseButton.enabled = true;
+      filePathTextInput.enabled = true;
     }
   }
 
   ColumnLayout {
     Label {
-      text: qsTr("File Path")
+      id: filePathLabel
+      text: qsTr("file")
       color: labelTextColor
       Layout.leftMargin: labelLeftMargin
       font.pointSize: labelFontPointSize
     }
 
     RowLayout {
-      TextEdit {
-        id: filePathTextEdit
+      TextInput {
+        id: filePathTextInput
         Layout.preferredWidth: fileTextInputWidth
         Layout.leftMargin: inputTextLeftMargin
         Layout.fillHeight: true
-        color: inputTextColor
-        font.pointSize: inputFontPointSize
+        color: inputTextColor 
+        //color: acceptableInput ? inputTextColor : inputTextErrorColor
+        font.pointSize: inputFontPointSize;
         onEditingFinished: {
-          filePathChanged(filePathTextEdit.text);
+          filePathChanged(filePathTextInput.text);
         }
       }
       Button {
         id: filePathBrowseButton
         text: qsTr("Browse")
         onClicked: {
-          fileDialog.fileUrl = filePathTextEdit.text
+          filePathBrowseButton.enabled = false;
+          filePathTextInput.enabled = false;
+          filePathBrowse();
           fileDialog.open();
         }
       }

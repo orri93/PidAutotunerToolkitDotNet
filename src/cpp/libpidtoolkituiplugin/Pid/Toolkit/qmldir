@@ -2,9 +2,13 @@ module Pid.Toolkit
 
 plugin pidtoolkitplugin
 
+PidToolkitScript 1.0 qrc:/pidtoolkit/PidToolkit.js
+
 EvaluationFactor 1.0 qrc:/pidtoolkit/ControlFactor.qml
 RealSpinBox 1.0 qrc:/pidtoolkit/ControlRealSpinBox.qml
 TuningRange 1.0 qrc:/pidtoolkit/ControlRange.qml
+UiNumber 1.0 qrc:/pidtoolkit/ControlNumber.qml
+UiRange 1.0 qrc:/pidtoolkit/ControlUiRange.qml
 FilePath 1.0 qrc:/pidtoolkit/ControlFilePath.qml
 
 ControllerItems 1.0 qrc:/pidtoolkit/DialogController.qml
@@ -14,6 +18,8 @@ PidItems 1.0 qrc:/pidtoolkit/DialogPid.qml
 SettingItems 1.0 qrc:/pidtoolkit/DialogSettings.qml
 TimingItems 1.0 qrc:/pidtoolkit/DialogTiming.qml
 TuningItems 1.0 qrc:/pidtoolkit/DialogTuning.qml
+UiNumberItems 1.0 qrc:/pidtoolkit/DialogUiNumber.qml
+UiRangeItems 1.0 qrc:/pidtoolkit/DialogUiRange.qml
 
 ConnectionSettings 1.0 qrc:/pidtoolkit/SettingsConnection.qml
 ControllerSettings 1.0 qrc:/pidtoolkit/SettingsController.qml

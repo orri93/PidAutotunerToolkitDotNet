@@ -22,6 +22,12 @@ enum class status {
   unknown
 };
 
+enum class operation {
+  undefined,
+  add,
+  subtract
+};
+
 typedef std::chrono::steady_clock Clock;
 typedef Clock::duration Duration;
 typedef Clock::time_point Time;

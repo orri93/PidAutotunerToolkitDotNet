@@ -30,6 +30,10 @@ GroupBox {
 
   property real preferredWidth: 140.0
 
+  function setUpdatedUiConfiguration(ui) {
+    setpointInput.setRealUiNumber(ui.setpoint);
+  }
+
   label: Label {
     x: groupTitleLocation
     text: groupTitle
@@ -37,7 +41,7 @@ GroupBox {
   }
 
   function setSetpoint(value) {
-    setpointInput.value = 1000 * value;
+    setpointInput.setRealValue(value);
   }
 
   function setManual(value) {
@@ -109,9 +113,8 @@ GroupBox {
       PidToolkit.RealSpinBox {
         id: setpointInput
         Layout.fillWidth: true
-        decimals: 2
-        onValueChanged: {
-          setpointChanged(value / 1000);
+        onRealValueChanged: {
+          setpointChanged(realValue);
         }
       }
     }

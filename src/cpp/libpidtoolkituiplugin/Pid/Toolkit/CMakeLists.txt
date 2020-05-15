@@ -10,6 +10,22 @@ find_package(Qt5 COMPONENTS REQUIRED
   Core
   Qml)
 
+if (GOS_PID_TOOLKIT_USE_ADVANCED_FILEDIALOG)
+  list(APPEND gos_pid_toolkit_ui_cpp_plugin_definitions
+    GOS_PID_TUNING_UI_PLUGIN_USE_ADVANCED_FILEDIALOG
+    GOS_IGNORE_SOME_INCLUDES
+    )
+  #  GOS_PID_TUNING_UI_LIB_LIBRARY
+  #  GOS_PID_TUNING_UI_LIB_SHARED)
+  list(APPEND gos_pid_toolkit_ui_cpp_plugin_libraries
+    Qt5::Widgets
+    Qt5::Gui)
+
+  find_package(Qt5 COMPONENTS REQUIRED
+    Widgets
+    Gui)
+endif ()
+
 qt5_add_resources(gos_pid_toolkit_ui_cpp_plugin_resources
   ${CMAKE_CURRENT_LIST_DIR}/qml/pidtoolkitui.qrc)
 
@@ -20,18 +36,26 @@ list(APPEND gos_pid_toolkit_ui_cpp_plugin_include
   ${gos_pid_toolkit_cpp_include}
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${Qt5Core_INCLUDE_DIRS}
-  ${QtQml_INCLUDE_DIRS}
+  ${Qt5Qml_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS})
 
-#list(APPEND gos_pid_toolkit_ui_cpp_plugin_definitions
-#  GOS_PID_TUNING_UI_LIB_LIBRARY
-#  GOS_PID_TUNING_UI_LIB_SHARED)
+if (GOS_PID_TOOLKIT_USE_ADVANCED_FILEDIALOG)
+  list(APPEND gos_pid_toolkit_ui_cpp_plugin_definitions
+    GOS_IGNORE_SOME_INCLUDES)
+  #  GOS_PID_TUNING_UI_LIB_LIBRARY
+  #  GOS_PID_TUNING_UI_LIB_SHARED)
+  list(APPEND gos_pid_toolkit_ui_cpp_plugin_libraries
+    Qt5::Widgets
+    Qt5::Gui)
+endif ()
 
 list(APPEND gos_pid_toolkit_ui_cpp_plugin_libraries
   Qt5::QuickControls2
   Qt5::Quick  
   Qt5::Core
   Qt5::Qml)
+
+message(STATUS "Qt5Gui_INCLUDE_DIRS: ${Qt5Gui_INCLUDE_DIRS}")
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -50,8 +74,11 @@ endif()
 target_include_directories(${gos_pid_toolkit_ui_cpp_plugin_target} PUBLIC
   ${gos_pid_toolkit_ui_cpp_plugin_include})
 
-#target_compile_definitions(${gos_pid_toolkit_ui_cpp_plugin_target} PRIVATE
-#  ${gos_pid_toolkit_ui_cpp_plugin_definitions})
+if (gos_pid_toolkit_ui_cpp_plugin_definitions)
+  target_compile_definitions(${gos_pid_toolkit_ui_cpp_plugin_target} PRIVATE
+    ${gos_pid_toolkit_ui_cpp_plugin_definitions})
+endif ()
+
 target_compile_features(${gos_pid_toolkit_ui_cpp_plugin_target} PRIVATE
   cxx_auto_type
   cxx_generic_lambdas)

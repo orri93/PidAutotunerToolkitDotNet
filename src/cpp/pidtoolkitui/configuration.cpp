@@ -59,6 +59,7 @@ QSettings* Configuration::initialize(const bool& watcher) {
   if (settings_) {
     gptuc::Base::initialize();
     blackBox_.initialize();
+    ui_.initialize();
     result = read();
     if (!QFile::exists(settings_->fileName())) {
       qInfo() << "Creating a default Configuration file at '"
@@ -100,6 +101,7 @@ QSettings* Configuration::initialize(const bool& watcher) {
   }
   setNormal();
   blackBox_.setNormal();
+  ui_.setNormal();
   return result;
 }
 
@@ -142,6 +144,7 @@ QSettings* Configuration::read(const bool& sync) {
   settings_->endGroup();
 
   blackBox_.read(settings_.get());
+  ui_.read(settings_.get());
 
   return settings_.get();
 }
@@ -165,6 +168,7 @@ QSettings* Configuration::write(const bool& sync) {
   writeTuning();
   writeTimers();
   writeBlackBox();
+  writeUi();
 
   return completeWriting(sync);
 }
@@ -193,6 +197,9 @@ void Configuration::writeTimers() {
 void Configuration::writeBlackBox() {
   blackBox_.write(settings_.get());
 }
+void Configuration::writeUi() {
+  ui_.write(settings_.get());
+}
 QSettings* Configuration::completeWriting(const bool& sync) {
   if (sync) {
     settings_->sync();
@@ -203,6 +210,25 @@ QSettings* Configuration::completeWriting(const bool& sync) {
 /* Black Box configuration */
 gptuc::BlackBox& Configuration::blackBox() {
   return blackBox_;
+}
+
+/* Ui configuration */
+gptuc::Ui* Configuration::ui() {
+  return &ui_;
+}
+
+bool Configuration::applyUiDialog(gptuc::Ui* ui) {
+  if (&ui_ != ui) {
+    if (::compare(ui_, *ui) != 0) {
+      ui_ = *ui;
+      setMode(gptutc::mode::write);
+      write(true);
+      setMode(gptutc::mode::normal);
+      emit uiChanged();
+      return true;
+    }
+  }
+  return false;
 }
 
 /* Modbus configuration */

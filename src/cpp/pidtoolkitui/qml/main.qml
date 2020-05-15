@@ -29,6 +29,9 @@ Window {
     onRightPanelChanged: {
       rightTimePanel.showRightPanel(panelIndex);
     }
+    onUiConfigurationChanged: {
+      pidChart.setUpdatedUiConfiguration(ui);
+    }
   }
 
   RightPanel {

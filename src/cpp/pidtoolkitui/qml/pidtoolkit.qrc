@@ -10,5 +10,9 @@
     <file>BlackBoxTabView.qml</file>
     <file>BlackBoxTabStartRange.qml</file>
     <file>BlackBoxTabTimersOther.qml</file>
+    <file>BlackBoxTabEvaluation.qml</file>
+    <file>UiDialog.qml</file>
+    <file>UiTabView.qml</file>
+    <file>UiTab.qml</file>
   </qresource>
 </RCC>

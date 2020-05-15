@@ -1,11 +1,14 @@
 list(APPEND gos_pid_toolkit_ui_cpp_library_source
   "configuration.cpp"
   "formatting.cpp"
+  "operation.cpp"
   "interval.cpp"
   "tuning.cpp"
   "status.cpp"
+  "number.cpp"
   "types.cpp"
   "range.cpp"
+  "factor.cpp"
   "mode.cpp"
   "baud.cpp"
   "port.cpp")
@@ -20,8 +23,9 @@ find_package(Qt5 COMPONENTS REQUIRED
 
 list(APPEND gos_pid_toolkit_ui_cpp_library_include
   ${gos_pid_toolkit_cpp_include}
+  ${QtSerialPort_INCLUDE_DIRS}
   ${Qt5Core_INCLUDE_DIRS}
-  ${QtSerialPort_INCLUDE_DIRS})
+  ${Qt5Qml_INCLUDE_DIRS})
 
 #list(APPEND gos_pid_toolkit_ui_cpp_library_libraries
 #  Qt5::QuickControls2
@@ -36,7 +40,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC OFF)
 
 add_library(${gos_pid_toolkit_ui_cpp_library_target}
-  ${gos_pid_toolkit_ui_cpp_library_source} "range.cpp")
+  ${gos_pid_toolkit_ui_cpp_library_source})
 
 list(APPEND gos_pid_toolkit_ui_cpp_library_include ${Boost_INCLUDE_DIRS})
 

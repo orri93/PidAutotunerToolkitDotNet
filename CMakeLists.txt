@@ -12,6 +12,7 @@ option(GOS_PID_TOOLKIT_TEST "Build and execute the unit tests" OFF)
 option(GOS_PID_TOOLKIT_UI "Build PID Toolkit UI components" ON)
 option(GOS_PID_ARDUINO_BASED_TUNING "Build the Arduino Based auto-tuning" ON)
 option(GOS_PID_TOOLKIT_INSTALL_CONFIGURATION "Install the configuration file with the target" ON)
+option(GOS_PID_TOOLKIT_USE_ADVANCED_FILEDIALOG "Use Advanced FileDialog in QML" OFF)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
 
@@ -165,6 +166,19 @@ if (GOS_PID_TOOLKIT_CPP)
   endif (GOS_PID_ARDUINO_BASED_TUNING)
 
   if (GOS_PID_TOOLKIT_UI)
+    set(gos_pid_toolkit_ui_cpp_plugin_source_dir
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/libpidtoolkituiplugin/Pid/Toolkit")
+    set(gos_pid_toolkit_ui_cpp_plugin_include_dir
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui")
+    if (GOS_PID_TOOLKIT_USE_ADVANCED_FILEDIALOG)
+      list(APPEND gos_pid_toolkit_ui_cpp_plugin_include
+        "${CMAKE_CURRENT_SOURCE_DIR}/extern/qml-file-dialog-demo")
+      list(APPEND gos_pid_toolkit_ui_cpp_plugin_source
+        "${CMAKE_CURRENT_SOURCE_DIR}/extern/qml-file-dialog-demo/fileopendialog.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extern/qml-file-dialog-demo/filesavedialog.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extern/qml-file-dialog-demo/fileopendialog.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extern/qml-file-dialog-demo/filesavedialog.h")
+    endif ()
     list(APPEND gos_pid_toolkit_ui_cpp_plugin_source
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/floatvalidator.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/pathvalidator.h"
@@ -176,6 +190,8 @@ if (GOS_PID_TOOLKIT_CPP)
 
     list(APPEND gos_pid_toolkit_ui_cpp_library_source
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/configuration.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/number.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/factor.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/range.h")
     list(APPEND gos_pid_toolkit_ui_cpp_library_public_header
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/configuration.h"
@@ -184,6 +200,7 @@ if (GOS_PID_TOOLKIT_CPP)
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/models.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/status.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/tuning.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/factor.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/range.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/types.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/mode.h"

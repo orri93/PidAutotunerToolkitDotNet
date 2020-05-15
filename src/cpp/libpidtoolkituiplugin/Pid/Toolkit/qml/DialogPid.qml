@@ -23,6 +23,7 @@ GroupBox {
   property color groupTextColor: "navy"
   property color labelTextColor: "midnightblue"
   property color inputTextColor: "darkslateblue"
+  property color inputTextErrorColor: "red"
 
   property int labelFontPointSize:  8
   property int inputFontPointSize: 10
@@ -108,7 +109,7 @@ GroupBox {
         id: kpTextInput
         Layout.leftMargin: inputTextLeftMargin
         Layout.fillWidth: true
-        color: inputTextColor
+        color: acceptableInput ? inputTextColor : inputTextErrorColor
         font.pointSize: inputFontPointSize
         validator: floatValidator
         onEditingFinished: {
@@ -136,7 +137,7 @@ GroupBox {
         id: kiTextInput
         Layout.leftMargin: inputTextLeftMargin
         Layout.fillWidth: true
-        color: inputTextColor
+        color: acceptableInput ? inputTextColor : inputTextErrorColor
         font.pointSize: inputFontPointSize
         validator: floatValidator
         onEditingFinished: {
@@ -174,7 +175,7 @@ GroupBox {
         id: kdTextInput
         Layout.leftMargin: inputTextLeftMargin
         Layout.fillWidth: true
-        color: inputTextColor
+        color: acceptableInput ? inputTextColor : inputTextErrorColor
         font.pointSize: inputFontPointSize
         validator: floatValidator
         onEditingFinished: {

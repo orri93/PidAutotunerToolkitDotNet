@@ -3,6 +3,8 @@ import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.12
 import Pid.Toolkit 1.0 as PidToolkit
 
+import "PidToolkit.js" as PidToolkitScript
+
 GroupBox {
   property string groupTitle: qsTr("Logging")
 
@@ -12,6 +14,8 @@ GroupBox {
   signal loggingTuningFileChanged(string value)
 
   signal ready()
+  signal childDialog()
+  signal childDialogCompleted()
 
   property color groupTextColor: "navy"
   property color labelTextColor: "midnightblue"
@@ -25,7 +29,7 @@ GroupBox {
 
   property real groupTitleLocation: 10.0
 
-  property real fileTextInputWidth: 320.0
+  property real preferredSeparatorInputWidth: 40.0
 
   function setInternalVariables(value) {
     internalVariablesCheckBox.checked = value;
@@ -64,6 +68,9 @@ GroupBox {
       }
       TextInput {
         id: loggingSeparatorTextInput
+        Layout.leftMargin: inputTextLeftMargin
+        Layout.fillWidth: true
+        Layout.preferredWidth: preferredSeparatorInputWidth
         color: inputTextColor
         font.pointSize: inputFontPointSize
         onEditingFinished: {
@@ -80,8 +87,25 @@ GroupBox {
       }
     }
 
+    /*
+    PidToolkit.PathValidator {
+      id: pathValidator
+      typeNumber: PidToolkitScript.PathValidatorType("File")
+      restrictionNumber: PidToolkitScript.PathValidatorRestriction("Absolute")
+    }
+    */
+
     PidToolkit.FilePath {
       id: loggingFilePath
+      //filePathValidator: pathValidator
+      fileNameText: qsTr("Logging file path")
+      fileDialogTitle: qsTr("Choose a file for the logging")
+      onFilePathBrowse: {
+        childDialog();
+      }
+      onFilePathBrowseCompleted: {
+        childDialogCompleted();
+      }
       onFilePathChanged: {
         loggingFileChanged(path);
       }
@@ -89,6 +113,15 @@ GroupBox {
 
     PidToolkit.FilePath {
       id: loggingTuningFilePath
+      //filePathValidator: pathValidator
+      fileNameText: qsTr("Tuning Logging file path")
+      fileDialogTitle: qsTr("Choose a file for the tuning logging")
+      onFilePathBrowse: {
+        childDialog();
+      }
+      onFilePathBrowseCompleted: {
+        childDialogCompleted();
+      }
       onFilePathChanged: {
         loggingTuningFileChanged(path);
       }

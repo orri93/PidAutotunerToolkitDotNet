@@ -10,6 +10,10 @@ ChartView {
   property bool openGl: true
   property bool openGlSupported: true
 
+  function setUpdatedUiConfiguration(ui) {
+    axisY.max = ui.chartMaximum;
+  }
+
   onOpenGlChanged: {
     if (openGlSupported) {
       series("output").useOpenGL = openGl
@@ -28,7 +32,7 @@ ChartView {
   ValueAxis {
     id: axisY
     min: 0
-    max: 300
+    max: orchestration.configuration.ui.chart.maximum;
   }
 
   ValueAxis {
@@ -61,7 +65,7 @@ ChartView {
 
   Connections {
     target: orchestration
-    onStatusChanged: {
+    onIntervalChanged: {
       refreshTimer.interval = orchestration.interval;
     }
   }
@@ -75,7 +79,7 @@ ChartView {
 
   Timer {
     id: refreshTimer
-    interval: 1000
+    interval: orchestration.interval
     running: false
     repeat: true
     onTriggered: {

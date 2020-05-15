@@ -1,5 +1,10 @@
 #include <QtQml/QtQml>
 
+#ifdef GOS_PID_TUNING_UI_PLUGIN_USE_ADVANCED_FILEDIALOG
+#include <fileopendialog.h>
+#include <filesavedialog.h>
+#endif
+
 #include <gos/pid/ui/plugin.h>
 #include <gos/pid/ui/floatvalidator.h>
 #include <gos/pid/ui/pathvalidator.h>

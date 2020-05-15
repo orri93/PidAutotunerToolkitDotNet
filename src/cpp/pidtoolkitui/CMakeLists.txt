@@ -9,7 +9,8 @@ list(APPEND gos_pid_toolkit_ui_source
   "blackbox.cpp"
   "blackbox.h"
   "items.cpp"
-  "items.h")
+  "items.h"
+  "ui.cpp")
 
 list(APPEND gos_pid_toolkit_ui_include
   ${gos_pid_toolkit_tune_cpp_library_dir}

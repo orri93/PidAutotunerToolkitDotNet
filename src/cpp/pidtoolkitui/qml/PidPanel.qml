@@ -16,6 +16,7 @@ ColumnLayout {
   property alias rightPanelIndex: uiSettings.userInterfaceBoxIndex 
 
   signal rightPanelChanged(int panelIndex)
+  signal uiConfigurationChanged(var ui)
 
   property string realPlaceholderText: qsTr("0.0")
 
@@ -61,9 +62,23 @@ ColumnLayout {
     id: blackBoxDialog
   }
 
+  UiDialog {
+    id: uiDialog
+    onUiAccepted: {
+      console.log("UI Accepted");
+    }
+  }
+
   MenuBar {
+    Layout.fillWidth: true
     Menu {
-      title: qsTr("Tuning")
+      title: qsTr("Settings")
+      Action {
+        text: qsTr("UI Settings")
+        onTriggered: {
+          uiDialog.open();
+        }
+      }
       Action {
         text: qsTr("Black Box settings")
         onTriggered: {
@@ -103,6 +118,7 @@ ColumnLayout {
   PidToolkit.ControllerSettings {
     id: controllerSettings
     modeBoxModel: modeModel
+
     onModeIndexChanged: {
       orchestration.forceIndex = value;
     }
@@ -111,6 +127,13 @@ ColumnLayout {
     }
     onManualChanged: {
       orchestration.manual = value;
+    }
+    Connections {
+      target: orchestration
+      onConfigurationChanged: {
+        console.log("Configuration Changed");
+        controllerSettings.setUpdatedUiConfiguration(orchestration.configuration.ui);
+      }
     }
     Connections {
       target: orchestration
@@ -320,6 +343,10 @@ ColumnLayout {
         configurationModeText.text = orchestration.configurationModeText;
       }
     }
+  }
+
+  function setUpdatedUiConfiguration(ui) {
+    controllerSettings.setUpdatedUiConfiguration(ui);
   }
 
   function resolveEnable() {
