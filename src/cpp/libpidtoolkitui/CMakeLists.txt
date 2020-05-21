@@ -1,17 +1,6 @@
 list(APPEND gos_pid_toolkit_ui_cpp_library_source
-  "configuration.cpp"
   "formatting.cpp"
-  "operation.cpp"
-  "interval.cpp"
-  "tuning.cpp"
-  "status.cpp"
-  "number.cpp"
-  "types.cpp"
-  "range.cpp"
-  "factor.cpp"
-  "mode.cpp"
-  "baud.cpp"
-  "port.cpp")
+  "types.cpp")
 
 find_package(Qt5 COMPONENTS REQUIRED
   QuickControls2

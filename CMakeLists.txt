@@ -182,31 +182,48 @@ if (GOS_PID_TOOLKIT_CPP)
     list(APPEND gos_pid_toolkit_ui_cpp_plugin_source
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/floatvalidator.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/pathvalidator.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/connection.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/plugin.h")
-    list(APPEND gos_pid_toolkit_ui_cpp_plugin_public_header
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/connection.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/items.h")
+    #list(APPEND gos_pid_toolkit_ui_cpp_plugin_public_header
+    #  "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/items.h")
 
-    list(APPEND gos_pid_toolkit_ui_cpp_library_source
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/configuration.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/number.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/factor.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/range.h")
+    list(APPEND gos_pid_toolkit_ui_model_cpp_library_source
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/restriction.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/operation.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/accuracy.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/format.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/status.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/factor.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/range.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/ptu.h")
+    list(APPEND gos_pid_toolkit_ui_model_cpp_library_public_header
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/restriction.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/operation.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/enumerate.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/accuracy.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/interval.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/format.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/status.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/models.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/status.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/tuning.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/factor.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/models.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/tuning.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/range.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/types.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/mode.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/baud.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/port.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/ptu.h")
+    set(gos_pid_toolkit_ui_model_cpp_library_target libpidtoolkituimodel)
+
+    #list(APPEND gos_pid_toolkit_ui_cpp_library_source )
     list(APPEND gos_pid_toolkit_ui_cpp_library_public_header
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/configuration.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/formatting.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/interval.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/models.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/status.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/tuning.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/factor.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/range.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/types.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/mode.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/baud.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/port.h")
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/types.h")
     set(gos_pid_toolkit_ui_cpp_library_target libpidtoolkitui)
+
+
   endif (GOS_PID_TOOLKIT_UI)
 
 endif (GOS_PID_TOOLKIT_CPP)

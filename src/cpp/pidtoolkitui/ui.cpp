@@ -9,7 +9,6 @@
 #define DEFAULT_BB_SETPOINT_MINIMUM 0.0
 #define DEFAULT_BB_SETPOINT_MAXIMUM 320.0
 #define DEFAULT_BB_SETPOINT_PRECISION 1
-#define DEFAULT_BB_SETPOINT_STEP_SIZE 0.1
 
 /* Controller output items */
 #define KEY_BB_TEMPERATURE "NumberTemperature"
@@ -17,9 +16,7 @@
 #define DEFAULT_BB_TEMPERATURE_MINIMUM 0.0
 #define DEFAULT_BB_TEMPERATURE_MAXIMUM 320.0
 #define DEFAULT_BB_TEMPERATURE_PRECISION 1
-#define DEFAULT_BB_TEMPERATURE_STEP_SIZE 0.1
 #define DEFAULT_BB_INTEGRAL_PRECISION 0
-#define DEFAULT_BB_INTEGRAL_STEP_SIZE 1
 
 /* PID configuration */
 #define KEY_BB_KP "NumberKp"
@@ -28,15 +25,12 @@
 #define DEFAULT_BB_KP_MINIMUM 0.0
 #define DEFAULT_BB_KP_MAXIMUM 10.0
 #define DEFAULT_BB_KP_PRECISION 2
-#define DEFAULT_BB_KP_STEP_SIZE 0.01
 #define DEFAULT_BB_KI_MINIMUM 0.0
 #define DEFAULT_BB_KI_MAXIMUM 1.0
 #define DEFAULT_BB_KI_PRECISION 4
-#define DEFAULT_BB_KI_STEP_SIZE 0.0001
 #define DEFAULT_BB_KD_MINIMUM 0.0
 #define DEFAULT_BB_KD_MAXIMUM 10.0
 #define DEFAULT_BB_KD_PRECISION 3
-#define DEFAULT_BB_KD_STEP_SIZE 0.001
 
 /* Tuning configuration */
 #define KEY_BB_KP_TUNING "RangeKpTuning"
@@ -49,7 +43,6 @@
 /* Evaluation configuration */
 #define KEY_BB_FACTOR "NumberFactor"
 #define DEFAULT_BB_FACTOR_PRECISION 3
-#define DEFAULT_BB_FACTOR_STEP_SIZE 0.001
 
 /* Other UI configuration */
 #define KEY_BB_SD "NumberSd"
@@ -57,14 +50,13 @@
 #define DEFAULT_BB_SD_MINIMUM 0.0
 #define DEFAULT_BB_SD_MAXIMUM 10.0
 #define DEFAULT_BB_SD_PRECISION 4
-#define DEFAULT_BB_SD_STEP_SIZE 0.0001
 #define DEFAULT_BB_CHART_MINIMUM 0.0
 #define DEFAULT_BB_CHART_MAXIMUM 320.0
 #define DEFAULT_BB_CHART_PRECISION 1
-#define DEFAULT_BB_CHART_STEP_SIZE 0.1
 
 namespace gpt = ::gos::pid::toolkit;
 namespace gptu = ::gos::pid::toolkit::ui;
+namespace gptum = ::gos::pid::toolkit::ui::model;
 namespace gptuc = ::gos::pid::toolkit::ui::configuration;
 
 namespace gos {
@@ -74,11 +66,7 @@ namespace ui {
 namespace configuration {
 
 Ui::Ui(QObject* parent) :
-  gptuc::Base(parent),
-  /* Controller output items */
-  integral_(false),
-  /* Evaluation configuration */
-  factor_(false) {
+  gptum::Ptu(parent) {
 }
 
 Ui::Ui(const Ui& ui) :
@@ -140,65 +128,69 @@ QSettings* Ui::read(QSettings* settings) {
   settings->beginGroup(GROUP_UI);
 
   /* Controller input items */
-  gptu::read(
+  gptum::read(
     settings,
     KEY_BB_SETPOINT,
     setpoint_,
-    DEFAULT_BB_SETPOINT_MINIMUM,
-    DEFAULT_BB_SETPOINT_MAXIMUM,
-    DEFAULT_BB_SETPOINT_PRECISION,
-    DEFAULT_BB_SETPOINT_STEP_SIZE);
+    gptum::make_accuracy(
+      gptum::Restriction::Enum::Both,
+      gptum::make_range(
+        DEFAULT_BB_SETPOINT_MINIMUM,
+        DEFAULT_BB_SETPOINT_MAXIMUM),
+      DEFAULT_BB_SETPOINT_PRECISION));
 
   /* Controller output items */
-  gptu::read(
+  gptum::read(
     settings,
     KEY_BB_TEMPERATURE,
     temperature_,
-    DEFAULT_BB_TEMPERATURE_MINIMUM,
-    DEFAULT_BB_TEMPERATURE_MAXIMUM,
-    DEFAULT_BB_TEMPERATURE_PRECISION,
-    DEFAULT_BB_TEMPERATURE_STEP_SIZE);
-  gptu::read(
+    DEFAULT_BB_TEMPERATURE_PRECISION);
+  gptum::read(
     settings,
     KEY_BB_INTEGRAL,
     integral_,
-    DEFAULT_BB_INTEGRAL_PRECISION,
-    DEFAULT_BB_INTEGRAL_STEP_SIZE);
+    DEFAULT_BB_INTEGRAL_PRECISION);
 
   /* PID configuration */
-  gptu::read(
+  gptum::read(
     settings,
     KEY_BB_KP,
     kp_,
-    DEFAULT_BB_KP_MINIMUM,
-    DEFAULT_BB_KP_MAXIMUM,
-    DEFAULT_BB_KP_PRECISION,
-    DEFAULT_BB_KP_STEP_SIZE);
-  gptu::read(
+    gptum::make_accuracy(
+      gptum::Restriction::Enum::Both,
+      gptum::make_range(
+        DEFAULT_BB_KP_MINIMUM,
+        DEFAULT_BB_KP_MAXIMUM),
+      DEFAULT_BB_KP_PRECISION));
+  gptum::read(
     settings,
     KEY_BB_KI,
     ki_,
-    DEFAULT_BB_KI_MINIMUM,
-    DEFAULT_BB_KI_MAXIMUM,
-    DEFAULT_BB_KI_PRECISION,
-    DEFAULT_BB_KI_STEP_SIZE);
-  gptu::read(
+    gptum::make_accuracy(
+      gptum::Restriction::Enum::Both,
+      gptum::make_range(
+        DEFAULT_BB_KI_MINIMUM,
+        DEFAULT_BB_KI_MAXIMUM),
+      DEFAULT_BB_KI_PRECISION));
+  gptum::read(
     settings,
     KEY_BB_KD,
     kd_,
-    DEFAULT_BB_KD_MINIMUM,
-    DEFAULT_BB_KD_MAXIMUM,
-    DEFAULT_BB_KD_PRECISION,
-    DEFAULT_BB_KD_STEP_SIZE);
+    gptum::make_accuracy(
+      gptum::Restriction::Enum::Both,
+      gptum::make_range(
+        DEFAULT_BB_KD_MINIMUM,
+        DEFAULT_BB_KD_MAXIMUM),
+      DEFAULT_BB_KD_PRECISION));
 
   /* Tuning configuration */
-  gptu::read(
+  gptum::read(
     settings,
     KEY_BB_KP_TUNING,
     this->kpTuning_,
     DEFAULT_BB_KP_TUNING_MINIMUM,
     DEFAULT_BB_KP_TUNING_MAXIMUM);
-  gptu::read(
+  gptum::read(
     settings,
     KEY_BB_KI_TUNING,
     this->kiTuning_,
@@ -206,30 +198,34 @@ QSettings* Ui::read(QSettings* settings) {
     DEFAULT_BB_KI_TUNING_MAXIMUM);
 
   /* Evaluation configuration */
-  gptu::read(
-    settings,
-    KEY_BB_FACTOR,
-    factor_,
-    DEFAULT_BB_FACTOR_PRECISION,
-    DEFAULT_BB_FACTOR_STEP_SIZE);
+  //gptum::read(
+  //  settings,
+  //  KEY_BB_FACTOR,
+  //  factor_,
+  //  DEFAULT_BB_FACTOR_PRECISION,
+  //  DEFAULT_BB_FACTOR_STEP_SIZE);
 
   /* Other UI configuration */
-  gptu::read(
+  gptum::read(
     settings,
     KEY_BB_SD,
     sd_,
-    DEFAULT_BB_SD_MINIMUM,
-    DEFAULT_BB_SD_MAXIMUM,
-    DEFAULT_BB_SD_PRECISION,
-    DEFAULT_BB_SD_STEP_SIZE);
-  gptu::read(
+    gptum::make_accuracy(
+      gptum::Restriction::Enum::Both,
+      gptum::make_range(
+        DEFAULT_BB_SD_MINIMUM,
+        DEFAULT_BB_SD_MAXIMUM),
+      DEFAULT_BB_SD_PRECISION));
+  gptum::read(
     settings,
     KEY_BB_CHART,
     chart_,
-    DEFAULT_BB_CHART_MINIMUM,
-    DEFAULT_BB_CHART_MAXIMUM,
-    DEFAULT_BB_CHART_PRECISION,
-    DEFAULT_BB_CHART_STEP_SIZE);
+    gptum::make_accuracy(
+      gptum::Restriction::Enum::Both,
+      gptum::make_range(
+        DEFAULT_BB_CHART_MINIMUM,
+        DEFAULT_BB_CHART_MAXIMUM),
+      DEFAULT_BB_CHART_PRECISION));
 
   /* UI configuration group */
   settings->endGroup();
@@ -238,109 +234,110 @@ QSettings* Ui::read(QSettings* settings) {
 }
 
 QSettings* Ui::write(QSettings* settings) {
-  return settings;
 
   /* Ui configuration group */
   settings->beginGroup(GROUP_UI);
 
   /* Controller input items */
-  gptu::write(settings, KEY_BB_SETPOINT, setpoint_);
+  gptum::write(settings, KEY_BB_SETPOINT, setpoint_);
 
   /* Controller output items */
-  gptu::write(settings, KEY_BB_TEMPERATURE, temperature_);
-  gptu::write(settings, KEY_BB_INTEGRAL, integral_);
+  gptum::write(settings, KEY_BB_TEMPERATURE, temperature_);
+  gptum::write(settings, KEY_BB_INTEGRAL, integral_);
 
   /* PID configuration */
-  gptu::write(settings, KEY_BB_KP, kp_);
-  gptu::write(settings, KEY_BB_KI, ki_);
-  gptu::write(settings, KEY_BB_KD, kd_);
+  gptum::write(settings, KEY_BB_KP, kp_);
+  gptum::write(settings, KEY_BB_KI, ki_);
+  gptum::write(settings, KEY_BB_KD, kd_);
 
   /* Tuning configuration */
-  gptu::write(settings, KEY_BB_KP_TUNING, this->kpTuning_);
-  gptu::write(settings, KEY_BB_KI_TUNING, this->kiTuning_);
+  gptum::write(settings, KEY_BB_KP_TUNING, this->kpTuning_);
+  gptum::write(settings, KEY_BB_KI_TUNING, this->kiTuning_);
 
   /* Evaluation configuration */
-  gptu::write(settings, KEY_BB_FACTOR, factor_);
+  gptum::write(settings, KEY_BB_FACTOR, this->factor_);
 
   /* Other UI configuration */
-  gptu::write(settings, KEY_BB_SD, sd_);
-  gptu::write(settings, KEY_BB_CHART, chart_);
+  gptum::write(settings, KEY_BB_SD, sd_);
+  gptum::write(settings, KEY_BB_CHART, chart_);
 
   /* UI configuration group */
   settings->endGroup();
+
+  return settings;
 }
 
 /* Controller input items */
-gptu::Number* Ui::setpoint() { return &setpoint_; }
+gptum::Accuracy* Ui::setpoint() { return &setpoint_; }
 /* Controller output items */
-gptu::Number* Ui::temperature() { return &temperature_; }
-gptu::Number* Ui::integral() { return &integral_; }
+gptum::Format* Ui::temperature() { return &temperature_; }
+gptum::Format* Ui::integral() { return &integral_; }
 /* PID configuration */
-gptu::Number* Ui::kp() { return &kp_; }
-gptu::Number* Ui::ki() { return &ki_; }
-gptu::Number* Ui::kd() { return &kd_; }
+gptum::Accuracy* Ui::kp() { return &kp_; }
+gptum::Accuracy* Ui::ki() { return &ki_; }
+gptum::Accuracy* Ui::kd() { return &kd_; }
 /* Tuning configuration */
-gptu::Range* Ui::kpTuning() { return &kpTuning_; }
-gptu::Range* Ui::kiTuning() { return &kiTuning_; }
+gptum::Range* Ui::kpTuning() { return &kpTuning_; }
+gptum::Range* Ui::kiTuning() { return &kiTuning_; }
 /* Evaluation configuration */
-gptu::Number* Ui::factor() { return &factor_; }
+gptum::Accuracy* Ui::factor() { return &factor_; }
 /* Other UI configuration */
-gptu::Number* Ui::sd() { return &sd_; }
-gptu::Number* Ui::chart() { return &chart_; }
+gptum::Accuracy* Ui::sd() { return &sd_; }
+gptum::Accuracy* Ui::chart() { return &chart_; }
 
 /* Controller input items */
-void Ui::setSetpoint(gptu::Number* number) {
-  if (number != nullptr) {
-    if (setpoint_ != *number) {
-      setpoint_ = *number;
+void Ui::setSetpoint(gptum::Accuracy* accuracy) {
+  if (accuracy != nullptr) {
+    if (setpoint_ != *accuracy) {
+      setpoint_ = *accuracy;
       emit setpointChanged();
     }
   }
 }
 /* Controller output items */
-void Ui::setTemperature(gptu::Number* number) {
-  if (number != nullptr) {
-    if (temperature_ != *number) {
-      temperature_ = *number;
+void Ui::setTemperature(gptum::Format* format) {
+  if (format != nullptr) {
+    if (temperature_ != *format) {
+      temperature_ = *format;
       emit temperatureChanged();
     }
   }
 }
-void Ui::setIntegral(gptu::Number* number) {
-  if (number != nullptr) {
-    if (integral_ != *number) {
-      integral_ = *number;
+void Ui::setIntegral(gptum::Format* format) {
+  if (format != nullptr) {
+    if (integral_ != *format) {
+      integral_ = *format;
       emit integralChanged();
     }
   }
 }
 /* PID configuration */
-void Ui::setKp(gptu::Number* number) {
-  if (number != nullptr) {
-    if (kp_ != *number) {
-      kp_ = *number;
+void Ui::setKp(gptum::Accuracy* accuracy) {
+  if (accuracy != nullptr) {
+    if (kp_ != *accuracy) {
+      kp_ = *accuracy;
       emit kpChanged();
     }
   }
 }
-void Ui::setKi(gptu::Number* number) {
-  if (number != nullptr) {
-    if (ki_ != *number) {
-      ki_ = *number;
+void Ui::setKi(gptum::Accuracy* accuracy) {
+  if (accuracy != nullptr) {
+    if (ki_ != *accuracy) {
+      ki_ = *accuracy;
       emit kiChanged();
     }
   }
 }
-void Ui::setKd(gptu::Number* number) {
-  if (number != nullptr) {
-    if (kd_ != *number) {
-      kd_ = *number;
+void Ui::setKd(gptum::Accuracy* accuracy) {
+  if (accuracy != nullptr) {
+    if (kd_ != *accuracy) {
+      kd_ = *accuracy;
       emit kdChanged();
     }
   }
 }
 /* Tuning configuration */
-void Ui::setKpTuning(gptu::Range* range) {
+void Ui::setKpTuning(gptum::Range* range) {
   if (range != nullptr) {
     if (kpTuning_ != *range) {
       kpTuning_ = *range;
@@ -348,7 +345,7 @@ void Ui::setKpTuning(gptu::Range* range) {
     }
   }
 }
-void Ui::setKiTuning(gptu::Range* range) {
+void Ui::setKiTuning(gptum::Range* range) {
   if (range != nullptr) {
     if (kiTuning_ != *range) {
       kiTuning_ = *range;
@@ -357,27 +354,27 @@ void Ui::setKiTuning(gptu::Range* range) {
   }
 }
 /* Evaluation configuration */
-void Ui::setFactor(gptu::Number* number) {
-  if (number != nullptr) {
-    if (factor_ != *number) {
-      factor_ = *number;
+void Ui::setFactor(gptum::Accuracy* accuracy) {
+  if (accuracy != nullptr) {
+    if (factor_ != *accuracy) {
+      factor_ = *accuracy;
       emit factorChanged();
     }
   }
 }
 /* Other UI configuration */
-void Ui::setSd(gptu::Number* number) {
-  if (number != nullptr) {
-    if (sd_ != *number) {
-      sd_ = *number;
+void Ui::setSd(gptum::Accuracy* accuracy) {
+  if (accuracy != nullptr) {
+    if (sd_ != *accuracy) {
+      sd_ = *accuracy;
       emit sdChanged();
     }
   }
 }
-void Ui::setChart(gptu::Number* number) {
-  if (number != nullptr) {
-    if (chart_ != *number) {
-      chart_ = *number;
+void Ui::setChart(gptum::Accuracy* accuracy) {
+  if (accuracy != nullptr) {
+    if (chart_ != *accuracy) {
+      chart_ = *accuracy;
       emit chartChanged();
     }
   }

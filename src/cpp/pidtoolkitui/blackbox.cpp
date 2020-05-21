@@ -59,8 +59,8 @@
 
 namespace gpt = ::gos::pid::toolkit;
 namespace gptu = ::gos::pid::toolkit::ui;
+namespace gptum = ::gos::pid::toolkit::ui::model;
 namespace gptuc = ::gos::pid::toolkit::ui::configuration;
-namespace gptumo = ::gos::pid::toolkit::ui::model::operation;
 
 namespace gos {
 namespace pid {
@@ -69,7 +69,7 @@ namespace ui {
 namespace configuration {
 
 BlackBox::BlackBox(QObject* parent) :
-  gptuc::Base(parent),
+  gptum::Ptu(parent),
   /* PID configuration */
   kp_(0.0),
   ki_(0.0),
@@ -167,13 +167,13 @@ QSettings* BlackBox::read(QSettings* settings) {
   setKd(value.toFloat());
 
   /* Tuning configuration */
-  gptu::read(
+  gptum::read(
     settings,
     KEY_BB_KP_RANGE,
     this->kpRange_,
     DEFAULT_BB_KP_RANGE_MIN,
     DEFAULT_BB_KP_RANGE_MAX);
-  gptu::read(
+  gptum::read(
     settings,
     KEY_BB_KI_RANGE,
     this->kiRange_,
@@ -219,10 +219,10 @@ QSettings* BlackBox::read(QSettings* settings) {
 
   /* Evaluation configuration */
   settings->beginGroup(GROUP_EVALUATION);
-  gptu::read(settings, KEY_BB_FACTOR_TARGET_TIME_FACTOR, targetTimeFactor_);
-  gptu::read(settings, KEY_BB_FACTOR_INTEGRAL_BUILDUP, integralBuildupFactor_);
-  gptu::read(settings, KEY_BB_FACTOR_PEAK_ERROR, peakErrorFactor_);
-  gptu::read(settings, KEY_BB_FACTOR_STABLE, stableFactor_);
+  gptum::read(settings, KEY_BB_FACTOR_TARGET_TIME_FACTOR, targetTimeFactor_);
+  gptum::read(settings, KEY_BB_FACTOR_INTEGRAL_BUILDUP, integralBuildupFactor_);
+  gptum::read(settings, KEY_BB_FACTOR_PEAK_ERROR, peakErrorFactor_);
+  gptum::read(settings, KEY_BB_FACTOR_STABLE, stableFactor_);
   settings->endGroup();
 
   return settings;
@@ -238,8 +238,8 @@ QSettings* BlackBox::write(QSettings* settings) {
   settings->setValue(KEY_BB_KD, kd_);
 
   /* Tuning configuration */
-  gptu::write(settings, KEY_BB_KP_RANGE, this->kpRange_);
-  gptu::write(settings, KEY_BB_KI_RANGE, this->kiRange_);
+  gptum::write(settings, KEY_BB_KP_RANGE, this->kpRange_);
+  gptum::write(settings, KEY_BB_KI_RANGE, this->kiRange_);
 
   /* Controller configuration  */
   settings->setValue(KEY_BB_BASE, base_);
@@ -265,10 +265,10 @@ QSettings* BlackBox::write(QSettings* settings) {
 
   /* Evaluation configuration */
   settings->beginGroup(GROUP_EVALUATION);
-  gptu::write(settings, KEY_BB_FACTOR_TARGET_TIME_FACTOR, targetTimeFactor_);
-  gptu::write(settings, KEY_BB_FACTOR_INTEGRAL_BUILDUP, integralBuildupFactor_);
-  gptu::write(settings, KEY_BB_FACTOR_PEAK_ERROR, peakErrorFactor_);
-  gptu::write(settings, KEY_BB_FACTOR_STABLE, stableFactor_);
+  gptum::write(settings, KEY_BB_FACTOR_TARGET_TIME_FACTOR, targetTimeFactor_);
+  gptum::write(settings, KEY_BB_FACTOR_INTEGRAL_BUILDUP, integralBuildupFactor_);
+  gptum::write(settings, KEY_BB_FACTOR_PEAK_ERROR, peakErrorFactor_);
+  gptum::write(settings, KEY_BB_FACTOR_STABLE, stableFactor_);
   settings->endGroup();
 
   return settings;
@@ -281,8 +281,8 @@ const double& BlackBox::ki() const { return ki_; }
 const double& BlackBox::kd() const { return kd_; }
 
 /* Tuning configuration */
-gptu::Range* BlackBox::kpRange() { return &kpRange_; }
-gptu::Range* BlackBox::kiRange() { return &kiRange_; }
+gptum::Range* BlackBox::kpRange() { return &kpRange_; }
+gptum::Range* BlackBox::kiRange() { return &kiRange_; }
 
 /* Controller configuration  */
 const double& BlackBox::base() const { return base_; }
@@ -300,19 +300,18 @@ const QString& BlackBox::file() const { return file_; }
 const QString& BlackBox::tuningFile() const { return tuningFile_; }
 
 /* Evaluation configuration */
-gptu::Factor* BlackBox::targetTimeFactor() {
+gptum::Factor* BlackBox::targetTimeFactor() {
   return &targetTimeFactor_;
 }
-gptu::Factor* BlackBox::integralBuildupFactor() {
+gptum::Factor* BlackBox::integralBuildupFactor() {
   return &integralBuildupFactor_;
 }
-gptu::Factor* BlackBox::peakErrorFactor() {
+gptum::Factor* BlackBox::peakErrorFactor() {
   return &peakErrorFactor_;
 }
-gptu::Factor* BlackBox::stableFactor() {
+gptum::Factor* BlackBox::stableFactor() {
   return &stableFactor_;
 }
-
 
 /* Other configuration */
 const int& BlackBox::windowSize() const { return windowSize_; }
@@ -339,7 +338,7 @@ void BlackBox::setKd(const double& value) {
 }
 
 /* Tuning configuration */
-void BlackBox::setKpRange(gptu::Range* value) {
+void BlackBox::setKpRange(gptum::Range* value) {
   if (value != nullptr) {
     if (kpRange_ != *value) {
       kpRange_ = *value;
@@ -347,7 +346,7 @@ void BlackBox::setKpRange(gptu::Range* value) {
     }
   }
 }
-void BlackBox::setKiRange(gptu::Range* value) {
+void BlackBox::setKiRange(gptum::Range* value) {
   if (value != nullptr) {
     if (kiRange_ != *value) {
       kiRange_ = *value;
@@ -355,15 +354,15 @@ void BlackBox::setKiRange(gptu::Range* value) {
     }
   }
 }
-void BlackBox::setKpRange(const double& minimum, const double& maximum) {
-  if (kpRange_.minimum() != minimum || kpRange_.maximum() != maximum) {
-    kpRange_.set(minimum, maximum);
+void BlackBox::setKpRange(const double& from, const double& to) {
+  if (kpRange_.from() != from || kpRange_.to() != to) {
+    kpRange_.set(from, to);
     emit kpRangeChanged();
   }
 }
-void BlackBox::setKiRange(const double& minimum, const double& maximum) {
-  if (kiRange_.minimum() != minimum || kiRange_.maximum() != maximum) {
-    kiRange_.set(minimum, maximum);
+void BlackBox::setKiRange(const double& from, const double& to) {
+  if (kiRange_.from() != from || kiRange_.to() != to) {
+    kiRange_.set(from, to);
     emit kiRangeChanged();
   }
 }
@@ -429,31 +428,30 @@ void BlackBox::setTuningFile(const QString& value) {
 }
 
 /* Evaluation configuration */
-void BlackBox::setTargetTimeFactor(gptu::Factor* value) {
+void BlackBox::setTargetTimeFactor(gptum::Factor* value) {
   if (value != nullptr && compare(targetTimeFactor_, *value) != 0) {
     targetTimeFactor_.set(*value);
     emit targetTimeFactorChanged();
   }
 }
-void BlackBox::setIntegralBuildupFactor(gptu::Factor* value) {
+void BlackBox::setIntegralBuildupFactor(gptum::Factor* value) {
   if (value != nullptr && compare(integralBuildupFactor_, *value) != 0) {
     integralBuildupFactor_.set(*value);
     emit integralBuildupFactorChanged();
   }
 }
-void BlackBox::setPeakErrorFactor(gptu::Factor* value) {
+void BlackBox::setPeakErrorFactor(gptum::Factor* value) {
   if (value != nullptr && compare(peakErrorFactor_, *value) != 0) {
     peakErrorFactor_.set(*value);
     emit peakErrorFactorChanged();
   }
 }
-void BlackBox::setStableFactor(gptu::Factor* value) {
+void BlackBox::setStableFactor(gptum::Factor* value) {
   if (value != nullptr && compare(stableFactor_, *value) != 0) {
     stableFactor_.set(*value);
     emit stableFactorChanged();
   }
 }
-
 
 /* Other configuration */
 void BlackBox::setWindowSize(const int& value) {

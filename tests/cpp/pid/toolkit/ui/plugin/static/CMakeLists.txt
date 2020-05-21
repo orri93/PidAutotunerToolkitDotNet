@@ -1,8 +1,7 @@
 list(APPEND gos_pid_toolkit_ui_plugin_static_for_test_source
   "${gos_pid_toolkit_ui_cpp_plugin_include_dir}/pathvalidator.h"
   "${gos_pid_toolkit_ui_cpp_plugin_source_dir}/floatvalidator.cpp"
-  "${gos_pid_toolkit_ui_cpp_plugin_source_dir}/pathvalidator.cpp"
-  "${gos_pid_toolkit_ui_cpp_plugin_source_dir}/connection.cpp")
+  "${gos_pid_toolkit_ui_cpp_plugin_source_dir}/pathvalidator.cpp")
 
 find_package(Qt5 COMPONENTS REQUIRED
   QuickControls2

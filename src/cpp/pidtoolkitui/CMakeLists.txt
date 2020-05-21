@@ -22,6 +22,7 @@ list(APPEND gos_pid_toolkit_ui_definitions
 
 list(APPEND gos_pid_toolkit_ui_libraries
   ${gos_pid_arduino_modbus_master_library_target}
+  ${gos_pid_toolkit_ui_model_cpp_library_target}
   ${gos_pid_tuning_black_box_library_target}
   ${gos_pid_toolkit_ui_cpp_library_target}
   ${gos_pid_toolkit_ui_cpp_plugin_target}

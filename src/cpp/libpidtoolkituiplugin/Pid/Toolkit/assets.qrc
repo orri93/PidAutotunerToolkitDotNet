@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/pidtoolkit/assets">
+    <file alias="qmldir">assets/qmldir</file>
+    <file alias="Style.qml">assets/Style.qml</file>
+  </qresource>
+</RCC>

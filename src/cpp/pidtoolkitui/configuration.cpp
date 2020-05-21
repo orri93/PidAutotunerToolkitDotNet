@@ -31,6 +31,7 @@
 
 namespace gp = ::gos::pid;
 namespace gptu = ::gos::pid::toolkit::ui;
+namespace gptum = ::gos::pid::toolkit::ui::model;
 namespace gptuc = ::gos::pid::toolkit::ui::configuration;
 namespace gptutc = ::gos::pid::toolkit::ui::types::configuration;
 namespace gptut = ::gos::pid::toolkit::ui::types;
@@ -57,7 +58,7 @@ QSettings* Configuration::initialize(const bool& watcher) {
   //QString filepath = QDir::cleanPath(path_ + QDir::separator() + filename_);
   settings_ = std::make_unique<QSettings>(filepath_, SettingsFormat);
   if (settings_) {
-    gptuc::Base::initialize();
+    gptum::Ptu::initialize();
     blackBox_.initialize();
     ui_.initialize();
     result = read();

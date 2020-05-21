@@ -15,7 +15,7 @@
 #include <gos/pid/tuning/notify.h>
 
 #include <gos/pid/ui/types.h>
-#include <gos/pid/ui/items.h>
+#include <gos/pid/ui/model/models.h>
 
 #include <configuration.h>
 
@@ -56,6 +56,7 @@ public:
   Q_PROPERTY(int serialBaudIndex READ serialBaudIndex WRITE setSerialBaudIndex)
 
   /* Modbus items */
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Modbus* modbus READ modbus NOTIFY modbusChanged)
   Q_PROPERTY(int slaveId READ slaveId NOTIFY slaveIdChanged)
 
   /* Timers items */
@@ -72,10 +73,9 @@ public:
   Q_PROPERTY(QString tuningStateText READ tuningStateText)
 
   /* Status items */
-  Q_PROPERTY(::gos::pid::toolkit::ui::item::Connection::Status status READ status NOTIFY statusChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Status::Enum status READ status NOTIFY statusChanged)
   Q_PROPERTY(bool isInitialize READ isInitialize NOTIFY isInitializeChanged)
   Q_PROPERTY(bool isCompleted READ isCompleted NOTIFY isCompletedChanged)
-  Q_PROPERTY(QString statusText READ statusText)
   Q_PROPERTY(bool isConnected READ isConnected)
   Q_PROPERTY(QString lastMessage READ lastMessage NOTIFY lastMessageChanged)
   Q_PROPERTY(bool isLastMessageError READ isLastMessageError)
@@ -140,10 +140,9 @@ public:
   const QString tuningStateText() const;
 
   /* Status items */
-  const ::gos::pid::toolkit::ui::item::Connection::Status status() const;
+  const ::gos::pid::toolkit::ui::model::Status::Enum status() const;
   const bool& isInitialize() const;
   const bool& isCompleted() const;
-  const QString statusText() const;
   const bool isConnected() const;
   const QString& lastMessage() const;
   const bool& isLastMessageError() const;
@@ -272,6 +271,7 @@ private:
   typedef QVector<QPointF> VectorList;
   typedef std::unique_ptr<Configuration> ConfigurationPointer;
   typedef std::unique_ptr<std::ofstream> OutputFilePointer;
+  typedef std::unique_ptr<::gos::pid::toolkit::ui::model::Modbus> ModbusPointer;
 
   void applyConfiguration();
   void connectConfiguration();
@@ -281,7 +281,7 @@ private:
   void setSerialBaud(const int& value);
 
   /* Status items */
-  void setStatus(const ::gos::pid::toolkit::ui::types::status& status);
+  void setStatus(const ::gos::pid::toolkit::ui::model::Status::Enum& status);
   void setLastMessage(const QString& message, const bool isLastMessageError = false);
   void setLastError(const QString& message);
 
@@ -333,6 +333,7 @@ private:
   VectorList outputsList_;
   int count_;
 
+  ModbusPointer modbus_;
   ConfigurationPointer configuration_;
   ::gos::pid::toolkit::ui::configuration::BlackBoxPointer blackBoxForDialog_;
   ::gos::pid::toolkit::ui::configuration::UiPointer uiForDialog_;
@@ -355,7 +356,7 @@ private:
   ::gos::pid::tuning::black::box::VariablesPointer tuningBlackBoxVariables_;
 
   /* Status items */
-  ::gos::pid::toolkit::ui::types::status status_;
+  ::gos::pid::toolkit::ui::model::Status::Enum status_;
   bool isInitialize_;
   QString lastMessage_;
   bool isLastMessageError_;

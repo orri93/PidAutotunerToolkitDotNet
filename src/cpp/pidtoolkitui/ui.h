@@ -6,8 +6,8 @@
 #include <QMetaType>
 #include <QDebug>
 
-#include <gos/pid/ui/configuration.h>
-#include <gos/pid/ui/number.h>
+#include <gos/pid/ui/model/ptu.h>
+#include <gos/pid/ui/model/models.h>
 
 #define GOS_QML_TYPE_UI_NAME "Ui"
 #define GOS_QML_TYPE_UI_URI GOS_QML_TYPE_UI_NAME 
@@ -32,31 +32,31 @@ namespace toolkit {
 namespace ui {
 namespace configuration {
 
-class Ui : public ::gos::pid::toolkit::ui::configuration::Base {
+class Ui : public ::gos::pid::toolkit::ui::model::Ptu {
   Q_OBJECT
 
   /* Controller input items */
-  Q_PROPERTY(::gos::pid::toolkit::ui::Number* setpoint READ setpoint WRITE setSetpoint NOTIFY setpointChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Accuracy* setpoint READ setpoint WRITE setSetpoint NOTIFY setpointChanged)
 
   /* Controller output items */
-  Q_PROPERTY(::gos::pid::toolkit::ui::Number* temperature READ temperature WRITE setTemperature NOTIFY temperatureChanged)
-  Q_PROPERTY(::gos::pid::toolkit::ui::Number* integral READ integral WRITE setIntegral NOTIFY integralChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Format* temperature READ temperature WRITE setTemperature NOTIFY temperatureChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Format* integral READ integral WRITE setIntegral NOTIFY integralChanged)
 
   /* PID configuration */
-  Q_PROPERTY(::gos::pid::toolkit::ui::Number* kp READ kp WRITE setKp NOTIFY kpChanged)
-  Q_PROPERTY(::gos::pid::toolkit::ui::Number* ki READ ki WRITE setKi NOTIFY kiChanged)
-  Q_PROPERTY(::gos::pid::toolkit::ui::Number* kd READ kd WRITE setKd NOTIFY kdChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Accuracy* kp READ kp WRITE setKp NOTIFY kpChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Accuracy* ki READ ki WRITE setKi NOTIFY kiChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Accuracy* kd READ kd WRITE setKd NOTIFY kdChanged)
 
   /* Tuning configuration */
-  Q_PROPERTY(::gos::pid::toolkit::ui::Range* kpTuning READ kpTuning WRITE setKpTuning NOTIFY kpTuningChanged)
-  Q_PROPERTY(::gos::pid::toolkit::ui::Range* kiTuning READ kiTuning WRITE setKiTuning NOTIFY kiTuningChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Range* kpTuning READ kpTuning WRITE setKpTuning NOTIFY kpTuningChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Range* kiTuning READ kiTuning WRITE setKiTuning NOTIFY kiTuningChanged)
 
   /* Evaluation configuration */
-  Q_PROPERTY(::gos::pid::toolkit::ui::Number* factor READ factor WRITE setFactor NOTIFY factorChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Accuracy* factor READ factor WRITE setFactor NOTIFY factorChanged)
 
   /* Other UI configuration */
-  Q_PROPERTY(::gos::pid::toolkit::ui::Number* sd READ sd WRITE setSd NOTIFY sdChanged)
-  Q_PROPERTY(::gos::pid::toolkit::ui::Number* chart READ chart WRITE setChart NOTIFY chartChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Accuracy* sd READ sd WRITE setSd NOTIFY sdChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Accuracy* chart READ chart WRITE setChart NOTIFY chartChanged)
 
   friend bool(::operator==) (const Ui&, const Ui&);
   friend bool(::operator!=) (const Ui&, const Ui&);
@@ -76,27 +76,27 @@ public:
   QSettings* write(QSettings* settings);
 
   /* Controller input items */
-  ::gos::pid::toolkit::ui::Number* setpoint();
+  ::gos::pid::toolkit::ui::model::Accuracy* setpoint();
 
   /* Controller output items */
-  ::gos::pid::toolkit::ui::Number* temperature();
-  ::gos::pid::toolkit::ui::Number* integral();
+  ::gos::pid::toolkit::ui::model::Format* temperature();
+  ::gos::pid::toolkit::ui::model::Format* integral();
 
   /* PID configuration */
-  ::gos::pid::toolkit::ui::Number* kp();
-  ::gos::pid::toolkit::ui::Number* ki();
-  ::gos::pid::toolkit::ui::Number* kd();
+  ::gos::pid::toolkit::ui::model::Accuracy* kp();
+  ::gos::pid::toolkit::ui::model::Accuracy* ki();
+  ::gos::pid::toolkit::ui::model::Accuracy* kd();
 
   /* Tuning configuration */
-  ::gos::pid::toolkit::ui::Range* kpTuning();
-  ::gos::pid::toolkit::ui::Range* kiTuning();
+  ::gos::pid::toolkit::ui::model::Range* kpTuning();
+  ::gos::pid::toolkit::ui::model::Range* kiTuning();
 
   /* Evaluation configuration */
-  ::gos::pid::toolkit::ui::Number* factor();
+  ::gos::pid::toolkit::ui::model::Accuracy* factor();
 
   /* Other UI configuration */
-  ::gos::pid::toolkit::ui::Number* sd();
-  ::gos::pid::toolkit::ui::Number* chart();
+  ::gos::pid::toolkit::ui::model::Accuracy* sd();
+  ::gos::pid::toolkit::ui::model::Accuracy* chart();
 
 signals:
   /* Controller input items */
@@ -124,53 +124,53 @@ signals:
 
 public slots:
   /* Controller input items */
-  void setSetpoint(::gos::pid::toolkit::ui::Number* number);
+  void setSetpoint(::gos::pid::toolkit::ui::model::Accuracy* accuracy);
 
   /* Controller output items */
-  void setTemperature(::gos::pid::toolkit::ui::Number* number);
-  void setIntegral(::gos::pid::toolkit::ui::Number* number);
+  void setTemperature(::gos::pid::toolkit::ui::model::Format* format);
+  void setIntegral(::gos::pid::toolkit::ui::model::Format* format);
 
   /* PID configuration */
-  void setKp(::gos::pid::toolkit::ui::Number* number);
-  void setKi(::gos::pid::toolkit::ui::Number* number);
-  void setKd(::gos::pid::toolkit::ui::Number* number);
+  void setKp(::gos::pid::toolkit::ui::model::Accuracy* accuracy);
+  void setKi(::gos::pid::toolkit::ui::model::Accuracy* accuracy);
+  void setKd(::gos::pid::toolkit::ui::model::Accuracy* accuracy);
 
   /* Tuning configuration */
-  void setKpTuning(::gos::pid::toolkit::ui::Range* range);
-  void setKiTuning(::gos::pid::toolkit::ui::Range* range);
+  void setKpTuning(::gos::pid::toolkit::ui::model::Range* range);
+  void setKiTuning(::gos::pid::toolkit::ui::model::Range* range);
 
   /* Evaluation configuration */
-  void setFactor(::gos::pid::toolkit::ui::Number* number);
+  void setFactor(::gos::pid::toolkit::ui::model::Accuracy* accuracy);
 
   /* Other UI configuration */
-  void setSd(::gos::pid::toolkit::ui::Number* number);
-  void setChart(::gos::pid::toolkit::ui::Number* number);
+  void setSd(::gos::pid::toolkit::ui::model::Accuracy* accuracy);
+  void setChart(::gos::pid::toolkit::ui::model::Accuracy* accuracy);
 
 protected:
   void create();
 
   /* Controller input items */
-  ::gos::pid::toolkit::ui::Number setpoint_;
+  ::gos::pid::toolkit::ui::model::Accuracy setpoint_;
 
   /* Controller output items */
-  ::gos::pid::toolkit::ui::Number temperature_;
-  ::gos::pid::toolkit::ui::Number integral_;
+  ::gos::pid::toolkit::ui::model::Format temperature_;
+  ::gos::pid::toolkit::ui::model::Format integral_;
 
   /* PID configuration */
-  ::gos::pid::toolkit::ui::Number kp_;
-  ::gos::pid::toolkit::ui::Number ki_;
-  ::gos::pid::toolkit::ui::Number kd_;
+  ::gos::pid::toolkit::ui::model::Accuracy kp_;
+  ::gos::pid::toolkit::ui::model::Accuracy ki_;
+  ::gos::pid::toolkit::ui::model::Accuracy kd_;
 
   /* Tuning configuration */
-  ::gos::pid::toolkit::ui::Range kpTuning_;
-  ::gos::pid::toolkit::ui::Range kiTuning_;
+  ::gos::pid::toolkit::ui::model::Range kpTuning_;
+  ::gos::pid::toolkit::ui::model::Range kiTuning_;
 
   /* Evaluation configuration */
-  ::gos::pid::toolkit::ui::Number factor_;
+  ::gos::pid::toolkit::ui::model::Accuracy factor_;
 
   /* Other UI configuration */  
-  ::gos::pid::toolkit::ui::Number sd_;
-  ::gos::pid::toolkit::ui::Number chart_;
+  ::gos::pid::toolkit::ui::model::Accuracy sd_;
+  ::gos::pid::toolkit::ui::model::Accuracy chart_;
 };
 
 typedef std::unique_ptr<Ui> UiPointer;

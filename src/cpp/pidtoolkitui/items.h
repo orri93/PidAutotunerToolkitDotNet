@@ -7,7 +7,7 @@
 
 #include <gos/pid/tuning/types.h>
 
-#include <gos/pid/ui/configuration.h>
+#include <gos/pid/ui/model/ptu.h>
 
 #define TUNING_TEXT_OFF "Off"
 #define TUNING_TEXT_BLACK_BOX "BlackBox"
@@ -17,7 +17,7 @@ namespace pid {
 namespace toolkit {
 namespace ui {
 
-class Items : public ::gos::pid::toolkit::ui::configuration::Base {
+class Items : public ::gos::pid::toolkit::ui::model::Ptu {
   Q_OBJECT
 public:
   Items(QObject* parent = nullptr);

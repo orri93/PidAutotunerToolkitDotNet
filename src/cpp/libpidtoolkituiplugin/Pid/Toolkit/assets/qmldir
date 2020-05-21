@@ -1,0 +1,5 @@
+module Pid.Toolkit.Assets
+
+plugin pidtoolkitplugin
+
+singleton Style 1.0 qrc:/pidtoolkit/assets/Style.qml

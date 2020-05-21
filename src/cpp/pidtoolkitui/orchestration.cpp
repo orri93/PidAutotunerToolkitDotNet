@@ -17,8 +17,8 @@
 #include <gos/pid/arduino/modbus/retry.h>
 
 #include <gos/pid/ui/plugin.h>
-#include <gos/pid/ui/models.h>
-#include <gos/pid/ui/status.h>
+#include <gos/pid/ui/model/models.h>
+#include <gos/pid/ui/model/status.h>
 #include <gos/pid/ui/formatting.h>
 
 #include <gos/pid/tuning/setting.h>
@@ -62,18 +62,39 @@ bool create(QQmlContext& context) {
  // qmlRegisterType<gptu::Range>(
   //  GOS_QML_TYPE_RANGE_URI, 1, 0, GOS_QML_TYPE_RANGE_NAME);
 
-  qRegisterMetaType<::gos::pid::toolkit::ui::Range*>(
-    "::gos::pid::toolkit::ui::Range*");
-  qRegisterMetaType<::gos::pid::toolkit::ui::Factor*>(
-    "::gos::pid::toolkit::ui::Factor*");
-  qRegisterMetaType< ::gos::pid::toolkit::ui::Number*>(
-    "::gos::pid::toolkit::ui::Number*");
+  qmlRegisterUncreatableMetaObject(
+    gptum::Status::staticMetaObject,
+    "Pid.Toolkit.Model", 1, 0, "Status",
+    "Cannot create namespace Status in QML");
+  qmlRegisterUncreatableMetaObject(
+    gptum::Operation::staticMetaObject,
+    "Pid.Toolkit.Model", 1, 0, "Operation",
+    "Cannot create namespace Operation in QML");
+  qmlRegisterUncreatableMetaObject(
+    gptum::Restriction::staticMetaObject,
+    "Pid.Toolkit.Model", 1, 0, "Restriction",
+    "Cannot create namespace Restriction in QML");
+
+  qRegisterMetaType<gptum::Status::Enum>(
+    "::gos::pid::toolkit::ui::model::Status::Enum");
+  qRegisterMetaType<gptum::Operation::Enum>(
+    "::gos::pid::toolkit::ui::model::Operation::Enum");
+  qRegisterMetaType<gptum::Restriction::Enum>(
+    "::gos::pid::toolkit::ui::model::Restriction::Enum");
+  qRegisterMetaType<::gos::pid::toolkit::ui::model::Range*>(
+    "::gos::pid::toolkit::ui::model::Range*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::model::Factor*>(
+    "::gos::pid::toolkit::ui::model::Factor*");
+  qRegisterMetaType< ::gos::pid::toolkit::ui::model::Accuracy*>(
+    "::gos::pid::toolkit::ui::model::Accuracy*");
   qRegisterMetaType<::gos::pid::toolkit::ui::configuration::BlackBox*>(
     "::gos::pid::toolkit::ui::configuration::BlackBox*");
   qRegisterMetaType<::gos::pid::toolkit::ui::configuration::Ui*>(
     "::gos::pid::toolkit::ui::configuration::Ui*");
   qRegisterMetaType<::gos::pid::toolkit::ui::Configuration*>(
     "::gos::pid::toolkit::ui::Configuration*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::model::Modbus*>(
+    "::gos::pid::toolkit::ui::model::Modbus*");
 
   _orchestration = std::make_unique<Orchestration>(context);
   if (_orchestration) {
@@ -117,7 +138,7 @@ Orchestration::Orchestration(QQmlContext& context, QObject* parent) :
   isNotifyHandedOver_(false),
   tuningState_(gp::tuning::types::TuningState::undefined),
   /* Status items */
-  status_(gptu::types::status::undefined),
+  status_(gptum::Status::Enum::Undefined),
   isInitialize_(false),
   /* Controller input items */
   setpoint_(0.0),
@@ -141,9 +162,9 @@ Orchestration::~Orchestration() {
     recoverNotify();
   }
   switch (status_) {
-  case gptu::types::status::connected:
+  case gptum::Status::Enum::Connected:
     gpam::master::disconnect();
-    status_ = gptu::types::status::disconnected;
+    status_ = gptum::Status::Enum::Disconnected;
     break;
   }
   if (logfile_) {
@@ -165,25 +186,29 @@ bool Orchestration::initialize(const bool& watcher) {
   context_.setContextProperty(GOS_QML_MODEL_PORT, portmodel_);
   baudmodel_ = gptum::baud::create();
   context_.setContextProperty(GOS_QML_MODEL_BAUD, baudmodel_);
-  operationmodel_ = gptum::operation::create();
-  context_.setContextProperty(GOS_QML_MODEL_OPERATION, operationmodel_);
+
   configuration_ = std::make_unique<Configuration>(this);
   if (configuration_) {
     QSettings* settings = configuration_->initialize(watcher);
     if (settings != nullptr) {
-      applyConfiguration();
-      gptuc::BlackBox& refbb = configuration_->blackBox();
-      blackBoxForDialog_ = std::make_unique<gptuc::BlackBox>(refbb);
-      gptuc::Ui* uip = configuration_->ui();
-      uiForDialog_ = std::make_unique<gptuc::Ui>(*uip);
-      if (blackBoxForDialog_ && uiForDialog_) {
-        status_ = gptu::types::status::disconnected;
-        isInitialize_ = true;
-        emit isInitializeChanged();
-        qInfo() << "Initialize completed";
-        return isInitialize_;
+      modbus_ = std::make_unique<gptum::Modbus>(this);
+      if (modbus_) {
+        applyConfiguration();
+        gptuc::BlackBox& refbb = configuration_->blackBox();
+        blackBoxForDialog_ = std::make_unique<gptuc::BlackBox>(refbb);
+        gptuc::Ui* uip = configuration_->ui();
+        uiForDialog_ = std::make_unique<gptuc::Ui>(*uip);
+        if (blackBoxForDialog_ && uiForDialog_) {
+          status_ = gptum::Status::Enum::Disconnected;
+          isInitialize_ = true;
+          emit isInitializeChanged();
+          qInfo() << "Initialize completed";
+          return isInitialize_;
+        } else {
+          qCritical() << "Failed to Black Box or UI Settings for Dialog";
+        }
       } else {
-        qCritical() << "Failed to Black Box or UI Settings for Dialog";
+        qCritical() << "Failed to create modbus view model";
       }
     } else {
       qCritical() << "Failed to initialize configuration";
@@ -199,7 +224,7 @@ int Orchestration::update(
   QAbstractSeries* temperature,
   QAbstractSeries* setpoints) {
   switch (status_) {
-  case gptu::types::status::connected:
+  case gptum::Status::Enum::Connected:
   {
     gpam::types::registry::Input input;
     gpam::types::result result =
@@ -251,8 +276,8 @@ bool Orchestration::connectDisconnect() {
   bool bret = false;
   gpam::types::result result;
   switch (status_) {
-  case gptu::types::status::connected:
-    setStatus(gptu::types::status::disconnecting);
+  case gptum::Status::Enum::Connected:
+    setStatus(gptum::Status::Enum::Disconnecting);
     result = gpam::master::disconnect();
     if (result == gpam::types::result::success) {
       result = gpam::master::shutdown();
@@ -262,15 +287,15 @@ bool Orchestration::connectDisconnect() {
       } else {
         setLastError("Shutdown failed");
       }
-      setStatus(gptu::types::status::disconnected);
+      setStatus(gptum::Status::Enum::Disconnected);
     } else {
       setLastError("Disconnecting failed" + QString::fromStdString(
         gpam::master::report::error::last()));
-      setStatus(gptu::types::status::connected);
+      setStatus(gptum::Status::Enum::Connected);
     }
     break;
-  case gptu::types::status::disconnected:
-    setStatus(gptu::types::status::connecting);
+  case gptum::Status::Enum::Disconnected:
+    setStatus(gptum::Status::Enum::Connecting);
     result = gpam::master::initialize(
       serialPort_.toStdString().c_str(),
       serialBaud_,
@@ -295,23 +320,23 @@ bool Orchestration::connectDisconnect() {
           if (applyIntervalToController()) {
             writeInterval(static_cast<gpa::types::Unsigned>(interval()));
           }
-          setStatus(gptu::types::status::connected);
+          setStatus(gptum::Status::Enum::Connected);
           bret = true;
           setLastMessage("Connected successfully");
         } else {
           setLastError("Reading initial holdings failed: " +
             QString::fromStdString(gpam::master::report::error::last()));
-          setStatus(gptu::types::status::disconnected);
+          setStatus(gptum::Status::Enum::Disconnected);
         }
       } else {
         setLastError("Connecting failed: " +
           QString::fromStdString(gpam::master::report::error::last()));
-        setStatus(gptu::types::status::disconnected);
+        setStatus(gptum::Status::Enum::Disconnected);
       }
     } else {
       setLastError("Initializing Modbus Master failed: " +
         QString::fromStdString(gpam::master::report::error::last()));
-      setStatus(gptu::types::status::disconnected);
+      setStatus(gptum::Status::Enum::Disconnected);
     }
     break;
   default:
@@ -398,7 +423,6 @@ void Orchestration::rejectUiDialog() {
   }
 }
 
-
 const QString Orchestration::configurationModeText() const {
   return configuration_->modeText();
 }
@@ -484,8 +508,8 @@ const QString Orchestration::tuningStateText() const {
 }
 
 /* Status items */
-const gp::toolkit::ui::item::Connection::Status Orchestration::status() const {
-  return gp::toolkit::ui::status::convert(status_);
+const gptum::Status::Enum Orchestration::status() const {
+  return status_;
 }
 const bool& Orchestration::isInitialize() const {
   return isInitialize_;
@@ -493,11 +517,8 @@ const bool& Orchestration::isInitialize() const {
 const bool& Orchestration::isCompleted() const {
   return iscompleted_;
 }
-const QString Orchestration::statusText() const {
-  return QString::fromStdString(gp::toolkit::ui::types::to::string(status_));
-}
 const bool Orchestration::isConnected() const {
-  return status_ == gp::toolkit::ui::types::status::connected;
+  return status_ == gptum::Status::Enum::Connected;
 }
 const QString& Orchestration::lastMessage() const {
   return lastMessage_;
@@ -659,7 +680,7 @@ void Orchestration::setManual(const int& manual) {
   bool result;
   if (manual_ != manual && manual >= 0 && manual <= 255) {
     switch (status_) {
-    case gptu::types::status::connected:
+    case gptum::Status::Enum::Connected:
       result = writeManual(static_cast<gpa::types::Unsigned>(manual));
       if (result) {
         qDebug() << "Successfully set Manual to " << manual;
@@ -668,7 +689,7 @@ void Orchestration::setManual(const int& manual) {
           QString::fromStdString(gpam::master::report::error::last());
       }
       break;
-    case gptu::types::status::connecting:
+    case gptum::Status::Enum::Connecting:
       break;
     default:
       qDebug() << "Not connected when Manual changed from "
@@ -683,7 +704,7 @@ void Orchestration::setSetpoint(const double& setpoint) {
   bool result;
   if (setpoint_ != setpoint && setpoint >= 0.0 && setpoint <= 300.0) {
     switch (status_) {
-    case gptu::types::status::connected:
+    case gptum::Status::Enum::Connected:
       result = writeSetpoint(static_cast<gpa::types::Real>(setpoint));
       if (result) {
         qDebug() << "Successfully set Setpoint to " << setpoint;
@@ -692,7 +713,7 @@ void Orchestration::setSetpoint(const double& setpoint) {
           QString::fromStdString(gpam::master::report::error::last());
       }
       break;
-    case gptu::types::status::connecting:
+    case gptum::Status::Enum::Connecting:
       break;
     default:
       qDebug() << "Not connected when Setpoint changed from "
@@ -709,7 +730,7 @@ void Orchestration::setForce(const int& value) {
   bool result;
   if (force_ != value && value > 0 && value <= 3) {
     switch (status_) {
-    case gptu::types::status::connected:
+    case gptum::Status::Enum::Connected:
       result = writeForce(static_cast<gpa::types::Unsigned>(value));
       if (result) {
         qDebug() << "Successfully set Force to " << value;
@@ -718,7 +739,7 @@ void Orchestration::setForce(const int& value) {
           QString::fromStdString(gpam::master::report::error::last());
       }
       break;
-    case gptu::types::status::connecting:
+    case gptum::Status::Enum::Connecting:
       break;
     default:
       qDebug() << "Not connected when Force changed from "
@@ -741,7 +762,7 @@ void Orchestration::setKp(const float& value) {
   bool result;
   if (kp_ != value && value >= 0.0 && value <= 100.0) {
     switch (status_) {
-    case gptu::types::status::connected:
+    case gptum::Status::Enum::Connected:
       result = writeKp(static_cast<gpa::types::Real>(value));
       if (result) {
         qDebug() << "Successfully set Kp to " << value;
@@ -750,7 +771,7 @@ void Orchestration::setKp(const float& value) {
           QString::fromStdString(gpam::master::report::error::last());
       }
       break;
-    case gptu::types::status::connecting:
+    case gptum::Status::Enum::Connecting:
       break;
     default:
       qDebug() << "Not connected when Kp changed from "
@@ -767,7 +788,7 @@ void Orchestration::setKi(const float& value) {
   bool result;
   if (ki_ != value && value >= 0.0 && value <= 100.0) {
     switch (status_) {
-    case gptu::types::status::connected:
+    case gptum::Status::Enum::Connected:
       result = writeKi(static_cast<gpa::types::Real>(value));
       if (result) {
         qDebug() << "Successfully set Ki to " << value;
@@ -776,7 +797,7 @@ void Orchestration::setKi(const float& value) {
           QString::fromStdString(gpam::master::report::error::last());
       }
       break;
-    case gptu::types::status::connecting:
+    case gptum::Status::Enum::Connecting:
       break;
     default:
       qDebug() << "Not connected when Ki changed from "
@@ -792,7 +813,7 @@ void Orchestration::setKd(const float& value) {
   bool result;
   if (kd_ != value && value >= 0.0 && value <= 100.0) {
     switch (status_) {
-    case gptu::types::status::connected:
+    case gptum::Status::Enum::Connected:
       result = writeKd(static_cast<gpa::types::Real>(value));
       if (result) {
         qDebug() << "Successfully set Kd to " << value;
@@ -933,7 +954,7 @@ void Orchestration::setSerialBaud(const int& value) {
 }
 
 /* Status items */
-void Orchestration::setStatus(const gptu::types::status& status) {
+void Orchestration::setStatus(const gptum::Status::Enum& status) {
   if (status_ != status) {
     status_ = status;
     emit statusChanged();
@@ -1098,19 +1119,19 @@ void Orchestration::executetuning(
         std::make_unique<gp::tuning::black::box::Variables>();
       if (tuningVariables_ && tuningBlackBoxVariables_) {
         gp::tuning::setting::parameters.Sd = blackBoxForDialog_->sd();
-        gptu::Range* kprp = blackBoxForDialog_->kpRange();
+        gptum::Range* kprp = blackBoxForDialog_->kpRange();
         if (kprp != nullptr) {
           gp::tuning::setting::parameters.Kp.lowest =
-            static_cast<gpa::types::Real>(kprp->minimum());
+            static_cast<gpa::types::Real>(kprp->from());
           gp::tuning::setting::parameters.Kp.highest = 
-            static_cast<gpa::types::Real>(kprp->maximum());
+            static_cast<gpa::types::Real>(kprp->to());
         }
-        gptu::Range* kirp = blackBoxForDialog_->kiRange();
+        gptum::Range* kirp = blackBoxForDialog_->kiRange();
         if (kirp != nullptr) {
           gp::tuning::setting::parameters.Ki.lowest =
-            static_cast<gpa::types::Real>(kirp->minimum());
+            static_cast<gpa::types::Real>(kirp->from());
           gp::tuning::setting::parameters.Ki.highest =
-            static_cast<gpa::types::Real>(kirp->maximum());
+            static_cast<gpa::types::Real>(kirp->to());
         }
         if (blackBoxForDialog_->isBase()) {
           gp::tuning::setting::parameters.BaseLine =

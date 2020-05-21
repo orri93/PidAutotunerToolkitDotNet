@@ -1,7 +1,6 @@
 list(APPEND gos_pid_toolkit_ui_cpp_plugin_source
   "floatvalidator.cpp"
   "pathvalidator.cpp"
-  "connection.cpp"
   "plugin.cpp")
 
 find_package(Qt5 COMPONENTS REQUIRED

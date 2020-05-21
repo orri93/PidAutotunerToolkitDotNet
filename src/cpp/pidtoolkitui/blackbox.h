@@ -10,9 +10,9 @@
 #include <QDebug>
 
 #include <gos/pid/tuning/blackbox.h>
-#include <gos/pid/ui/configuration.h>
-#include <gos/pid/ui/factor.h>
-#include <gos/pid/ui/range.h>
+#include <gos/pid/ui/model/ptu.h>
+#include <gos/pid/ui/model/factor.h>
+#include <gos/pid/ui/model/range.h>
 
 #define GOS_QML_TYPE_BLACK_BOX_NAME "BlackBoxSetting"
 #define GOS_QML_TYPE_BLACK_BOX_URI GOS_QML_TYPE_BLACK_BOX_NAME
@@ -31,14 +31,13 @@ int compare(
   const ::gos::pid::toolkit::ui::configuration::BlackBox& first,
   const ::gos::pid::toolkit::ui::configuration::BlackBox& second);
 
-
 namespace gos {
 namespace pid {
 namespace toolkit {
 namespace ui {
 namespace configuration {
 
-class BlackBox : public ::gos::pid::toolkit::ui::configuration::Base {
+class BlackBox : public ::gos::pid::toolkit::ui::model::Ptu{
   Q_OBJECT
 
   /* PID configuration */
@@ -47,8 +46,8 @@ class BlackBox : public ::gos::pid::toolkit::ui::configuration::Base {
   Q_PROPERTY(double kd READ kd WRITE setKd NOTIFY kdChanged)
 
   /* Tuning configuration */
-  Q_PROPERTY(::gos::pid::toolkit::ui::Range* kpRange READ kpRange WRITE setKpRange NOTIFY kpRangeChanged)
-  Q_PROPERTY(::gos::pid::toolkit::ui::Range* kiRange READ kiRange WRITE setKiRange NOTIFY kiRangeChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Range* kpRange READ kpRange WRITE setKpRange NOTIFY kpRangeChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Range* kiRange READ kiRange WRITE setKiRange NOTIFY kiRangeChanged)
 
   /* Controller configuration  */
   Q_PROPERTY(double base READ base WRITE setBase NOTIFY baseChanged)
@@ -66,10 +65,10 @@ class BlackBox : public ::gos::pid::toolkit::ui::configuration::Base {
   Q_PROPERTY(QString tuningFile READ tuningFile WRITE setTuningFile NOTIFY tuningFileChanged)
 
   /* Evaluation configuration */
-  Q_PROPERTY(::gos::pid::toolkit::ui::Factor* targetTimeFactor READ targetTimeFactor WRITE setTargetTimeFactor NOTIFY targetTimeFactorChanged)
-  Q_PROPERTY(::gos::pid::toolkit::ui::Factor* integralBuildupFactor READ integralBuildupFactor WRITE setIntegralBuildupFactor NOTIFY integralBuildupFactorChanged)
-  Q_PROPERTY(::gos::pid::toolkit::ui::Factor* peakErrorFactor READ peakErrorFactor WRITE setPeakErrorFactor NOTIFY peakErrorFactorChanged)
-  Q_PROPERTY(::gos::pid::toolkit::ui::Factor* stableFactor READ stableFactor WRITE setStableFactor NOTIFY stableFactorChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Factor* targetTimeFactor READ targetTimeFactor WRITE setTargetTimeFactor NOTIFY targetTimeFactorChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Factor* integralBuildupFactor READ integralBuildupFactor WRITE setIntegralBuildupFactor NOTIFY integralBuildupFactorChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Factor* peakErrorFactor READ peakErrorFactor WRITE setPeakErrorFactor NOTIFY peakErrorFactorChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Factor* stableFactor READ stableFactor WRITE setStableFactor NOTIFY stableFactorChanged)
 
   /* Other configuration */
   Q_PROPERTY(int windowSize READ windowSize WRITE setWindowSize NOTIFY windowSizeChanged)
@@ -96,8 +95,8 @@ public:
   const double& kd() const;
 
   /* Tuning configuration */
-  ::gos::pid::toolkit::ui::Range* kpRange();
-  ::gos::pid::toolkit::ui::Range* kiRange();
+  ::gos::pid::toolkit::ui::model::Range* kpRange();
+  ::gos::pid::toolkit::ui::model::Range* kiRange();
 
   /* Controller configuration  */
   const double& base() const;
@@ -115,10 +114,10 @@ public:
   const QString& tuningFile() const;
 
   /* Evaluation configuration */
-  ::gos::pid::toolkit::ui::Factor* targetTimeFactor();
-  ::gos::pid::toolkit::ui::Factor* integralBuildupFactor();
-  ::gos::pid::toolkit::ui::Factor* peakErrorFactor();
-  ::gos::pid::toolkit::ui::Factor* stableFactor();
+  ::gos::pid::toolkit::ui::model::Factor* targetTimeFactor();
+  ::gos::pid::toolkit::ui::model::Factor* integralBuildupFactor();
+  ::gos::pid::toolkit::ui::model::Factor* peakErrorFactor();
+  ::gos::pid::toolkit::ui::model::Factor* stableFactor();
 
   /* Other configuration */
   const int& windowSize() const;
@@ -160,10 +159,10 @@ public slots:
   void setKd(const double& value);
 
   /* Tuning configuration */
-  void setKpRange(::gos::pid::toolkit::ui::Range* value);
-  void setKiRange(::gos::pid::toolkit::ui::Range* values);
-  void setKpRange(const double& minimum, const double& maximum);
-  void setKiRange(const double& minimum, const double& maximum);
+  void setKpRange(::gos::pid::toolkit::ui::model::Range* value);
+  void setKiRange(::gos::pid::toolkit::ui::model::Range* values);
+  void setKpRange(const double& from, const double& to);
+  void setKiRange(const double& from, const double& to);
 
   /* Controller configuration  */
   void setBase(const double& value);
@@ -181,10 +180,10 @@ public slots:
   void setTuningFile(const QString&);
 
   /* Evaluation configuration */
-  void setTargetTimeFactor(::gos::pid::toolkit::ui::Factor* value);
-  void setIntegralBuildupFactor(::gos::pid::toolkit::ui::Factor* value);
-  void setPeakErrorFactor(::gos::pid::toolkit::ui::Factor* value);
-  void setStableFactor(::gos::pid::toolkit::ui::Factor* value);
+  void setTargetTimeFactor(::gos::pid::toolkit::ui::model::Factor* value);
+  void setIntegralBuildupFactor(::gos::pid::toolkit::ui::model::Factor* value);
+  void setPeakErrorFactor(::gos::pid::toolkit::ui::model::Factor* value);
+  void setStableFactor(::gos::pid::toolkit::ui::model::Factor* value);
 
   /* Other configuration */
   void setWindowSize(const int& value);
@@ -205,8 +204,8 @@ protected:
   double kd_;
 
   /* Tuning configuration */
-  ::gos::pid::toolkit::ui::Range kpRange_;
-  ::gos::pid::toolkit::ui::Range kiRange_;
+  ::gos::pid::toolkit::ui::model::Range kpRange_;
+  ::gos::pid::toolkit::ui::model::Range kiRange_;
 
   /* Controller configuration  */
   double base_;
@@ -224,10 +223,10 @@ protected:
   QString tuningFile_;
 
   /* Evaluation configuration */
-  ::gos::pid::toolkit::ui::Factor targetTimeFactor_;
-  ::gos::pid::toolkit::ui::Factor integralBuildupFactor_;
-  ::gos::pid::toolkit::ui::Factor peakErrorFactor_;
-  ::gos::pid::toolkit::ui::Factor stableFactor_;
+  ::gos::pid::toolkit::ui::model::Factor targetTimeFactor_;
+  ::gos::pid::toolkit::ui::model::Factor integralBuildupFactor_;
+  ::gos::pid::toolkit::ui::model::Factor peakErrorFactor_;
+  ::gos::pid::toolkit::ui::model::Factor stableFactor_;
 
   /* Other configuration */
   int windowSize_;

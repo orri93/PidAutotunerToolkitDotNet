@@ -1,10 +1,9 @@
 #include <items.h>
 
-#include <gos/pid/ui/models.h>
+#include <gos/pid/ui/model/models.h>
 
 namespace gp = ::gos::pid;
 namespace gptum = ::gos::pid::toolkit::ui::model;
-namespace gptuc = ::gos::pid::toolkit::ui::configuration;
 
 namespace gos {
 namespace pid {
@@ -12,7 +11,7 @@ namespace toolkit {
 namespace ui {
 
 Items::Items(QObject* parent) :
-  gptuc::Base(parent),
+  gptum::Ptu(parent),
   serialBaud_(0),
   slaveId_(0),
   interval_(0),
