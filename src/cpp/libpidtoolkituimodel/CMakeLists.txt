@@ -3,17 +3,19 @@ list(APPEND gos_pid_toolkit_ui_model_cpp_library_source
   "operation.cpp"
   "accuracy.cpp"
   "interval.cpp"
+  "triplet.cpp"
+  "number.cpp"
   "modbus.cpp"
   "format.cpp"
   "tuning.cpp"
   "status.cpp"
   "status.cpp"
   "factor.cpp"
+  "serial.cpp"
+  "force.cpp"
   "range.cpp"
   "mode.cpp"
-  "baud.cpp"
-  "port.cpp"
-  "ptum.cpp"
+# "ptum.cpp"
   "ptu.cpp")
 
 find_package(Qt5 COMPONENTS REQUIRED

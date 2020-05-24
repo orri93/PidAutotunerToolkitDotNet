@@ -1,5 +1,6 @@
 #include <algorithm>
-#include <ui.h>
+
+#include <gos/pid/ui/configuration/ui.h>
 
 /* UI configuration group */
 #define GROUP_UI "Ui"
@@ -133,10 +134,11 @@ QSettings* Ui::read(QSettings* settings) {
     KEY_BB_SETPOINT,
     setpoint_,
     gptum::make_accuracy(
-      gptum::Restriction::Enum::Both,
-      gptum::make_range(
-        DEFAULT_BB_SETPOINT_MINIMUM,
-        DEFAULT_BB_SETPOINT_MAXIMUM),
+      gptum::make_number(
+        gptum::Restriction::Enum::Both,
+        gptum::make_range(
+          DEFAULT_BB_SETPOINT_MINIMUM,
+          DEFAULT_BB_SETPOINT_MAXIMUM)),
       DEFAULT_BB_SETPOINT_PRECISION));
 
   /* Controller output items */
@@ -157,30 +159,33 @@ QSettings* Ui::read(QSettings* settings) {
     KEY_BB_KP,
     kp_,
     gptum::make_accuracy(
-      gptum::Restriction::Enum::Both,
-      gptum::make_range(
-        DEFAULT_BB_KP_MINIMUM,
-        DEFAULT_BB_KP_MAXIMUM),
+      gptum::make_number(
+        gptum::Restriction::Enum::Both,
+        gptum::make_range(
+          DEFAULT_BB_KP_MINIMUM,
+          DEFAULT_BB_KP_MAXIMUM)),
       DEFAULT_BB_KP_PRECISION));
   gptum::read(
     settings,
     KEY_BB_KI,
     ki_,
     gptum::make_accuracy(
-      gptum::Restriction::Enum::Both,
-      gptum::make_range(
-        DEFAULT_BB_KI_MINIMUM,
-        DEFAULT_BB_KI_MAXIMUM),
+      gptum::make_number(
+        gptum::Restriction::Enum::Both,
+        gptum::make_range(
+          DEFAULT_BB_KI_MINIMUM,
+          DEFAULT_BB_KI_MAXIMUM)),
       DEFAULT_BB_KI_PRECISION));
   gptum::read(
     settings,
     KEY_BB_KD,
     kd_,
     gptum::make_accuracy(
-      gptum::Restriction::Enum::Both,
-      gptum::make_range(
-        DEFAULT_BB_KD_MINIMUM,
-        DEFAULT_BB_KD_MAXIMUM),
+      gptum::make_number(
+        gptum::Restriction::Enum::Both,
+        gptum::make_range(
+          DEFAULT_BB_KD_MINIMUM,
+          DEFAULT_BB_KD_MAXIMUM)),
       DEFAULT_BB_KD_PRECISION));
 
   /* Tuning configuration */
@@ -211,20 +216,22 @@ QSettings* Ui::read(QSettings* settings) {
     KEY_BB_SD,
     sd_,
     gptum::make_accuracy(
-      gptum::Restriction::Enum::Both,
-      gptum::make_range(
-        DEFAULT_BB_SD_MINIMUM,
-        DEFAULT_BB_SD_MAXIMUM),
+      gptum::make_number(
+        gptum::Restriction::Enum::Both,
+        gptum::make_range(
+          DEFAULT_BB_SD_MINIMUM,
+          DEFAULT_BB_SD_MAXIMUM)),
       DEFAULT_BB_SD_PRECISION));
   gptum::read(
     settings,
     KEY_BB_CHART,
     chart_,
     gptum::make_accuracy(
-      gptum::Restriction::Enum::Both,
-      gptum::make_range(
-        DEFAULT_BB_CHART_MINIMUM,
-        DEFAULT_BB_CHART_MAXIMUM),
+      gptum::make_number(
+        gptum::Restriction::Enum::Both,
+        gptum::make_range(
+          DEFAULT_BB_CHART_MINIMUM,
+          DEFAULT_BB_CHART_MAXIMUM)),
       DEFAULT_BB_CHART_PRECISION));
 
   /* UI configuration group */

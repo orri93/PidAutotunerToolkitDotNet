@@ -36,6 +36,11 @@ QSettings* read(
   const QString& key,
   Format& format,
   const int& precision);
+QSettings* read(
+  QSettings* settings,
+  const QString& key,
+  Format& format,
+  const Format& default);
 QSettings* write(QSettings* settings, const QString& key, const Format& format);
 
 class Format : public Ptu {
@@ -53,6 +58,11 @@ class Format : public Ptu {
     const QString& key,
     Format& format,
     const int& precision);
+  friend QSettings* read(
+    QSettings* settings,
+    const QString& key,
+    Format& format,
+    const Format& default);
   friend QSettings* write(
     QSettings* settings,
     const QString& key,

@@ -6,11 +6,8 @@ list(APPEND gos_pid_toolkit_ui_source
   "pidtoolkitui.cpp"
   "orchestration.h"
   "configuration.h"
-  "blackbox.cpp"
-  "blackbox.h"
-  "items.cpp"
-  "items.h"
-  "ui.cpp")
+  "models.cpp"
+  "models.h")
 
 list(APPEND gos_pid_toolkit_ui_include
   ${gos_pid_toolkit_tune_cpp_library_dir}
@@ -21,6 +18,8 @@ list(APPEND gos_pid_toolkit_ui_definitions
   GOS_PID_TUNING_UI_LIB_SHARED)
 
 list(APPEND gos_pid_toolkit_ui_libraries
+  ${gos_pid_toolkit_ui_configuration_cpp_library_target}
+  ${gos_pid_toolkit_ui_view_model_cpp_library_target}
   ${gos_pid_arduino_modbus_master_library_target}
   ${gos_pid_toolkit_ui_model_cpp_library_target}
   ${gos_pid_tuning_black_box_library_target}

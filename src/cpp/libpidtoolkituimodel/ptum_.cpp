@@ -1,5 +1,4 @@
 #include <gos/pid/ui/model/ptum.h>
-#include <gos/pid/ui/model/models.h>
 
 namespace gp = ::gos::pid;
 namespace gptum = ::gos::pid::toolkit::ui::model;

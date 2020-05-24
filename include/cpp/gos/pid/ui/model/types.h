@@ -8,6 +8,14 @@ namespace ui {
 namespace model {
 namespace types {
 
+enum class result {
+  undefined,
+  success,
+  warning,
+  error,
+  fatal
+};
+
 } // namespace types
 } // namespace model
 } // namespace ui

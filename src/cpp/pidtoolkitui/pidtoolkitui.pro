@@ -15,15 +15,15 @@ INCLUDEPATH += "$$(BOOST)"
 INCLUDEPATH += $$PWD
 
 HEADERS += \
-    configuration.h \
     orchestration.h \
-    items.h
+    configuration.h \
+    models.h
 
 SOURCES += \
-    pidtoolkitui.cpp \
-    configuration.cpp \
     orchestration.cpp \
-    items.cpp
+    configuration.cpp \
+    pidtoolkitui.cpp \
+    models.cpp
 
 RESOURCES += \
     qml/pidtoolkit.qrc
@@ -49,13 +49,13 @@ CONFIG(release, debug|release) {
 }
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH =
+QML_IMPORT_PATH = $$PWD/../libpidtoolkituiplugin/Pid/Toolkit
 
 # Additional import path used to resolve QML modules just for Qt Quick Designer
-QML_DESIGNER_IMPORT_PATH =
+QML_DESIGNER_IMPORT_PATH = $$PWD/../libpidtoolkituiplugin/Pid/Toolkit
 
 win32 {
-LIBS += -lws2_32
+LIBS += -lws2_32 -L"$$(BOOST)\lib64-msvc-14.2"
 } else {
 }
 
@@ -64,6 +64,9 @@ LIBS            += "$${PID_TOOLKIT_API_PATH}/lib/libpidarduinomodbusmaster.lib"
 LIBS            += "$${PID_TOOLKIT_API_PATH}/lib/libpidtuningblackbox.lib"
 LIBS            += "$${PID_TOOLKIT_API_PATH}/lib/libpidtoolkitcpp.lib"
 LIBS            += "$${PID_TOOLKIT_API_PATH}/lib/pidtoolkitplugin.lib"
+LIBS            += "$${PID_TOOLKIT_API_PATH}/lib/libpidtoolkituimodel.lib"
+LIBS            += "$${PID_TOOLKIT_API_PATH}/lib/libpidtoolkituiviewmodel.lib"
+LIBS            += "$${PID_TOOLKIT_API_PATH}/lib/libpidtoolkituiconfiguration.lib"
 LIBS            += "$${PID_TOOLKIT_API_PATH}/lib/libpidtoolkitui.lib"
 
 PRE_TARGETDEPS  += "$${PID_TOOLKIT_API_PATH}/lib/libmodbus.lib"
@@ -71,6 +74,9 @@ PRE_TARGETDEPS  += "$${PID_TOOLKIT_API_PATH}/lib/libpidarduinomodbusmaster.lib"
 PRE_TARGETDEPS  += "$${PID_TOOLKIT_API_PATH}/lib/libpidtuningblackbox.lib"
 PRE_TARGETDEPS  += "$${PID_TOOLKIT_API_PATH}/lib/libpidtoolkitcpp.lib"
 PRE_TARGETDEPS  += "$${PID_TOOLKIT_API_PATH}/lib/pidtoolkitplugin.lib"
+PRE_TARGETDEPS  += "$${PID_TOOLKIT_API_PATH}/lib/libpidtoolkituimodel.lib"
+PRE_TARGETDEPS  += "$${PID_TOOLKIT_API_PATH}/lib/libpidtoolkituiviewmodel.lib"
+PRE_TARGETDEPS  += "$${PID_TOOLKIT_API_PATH}/lib/libpidtoolkituiconfiguration.lib"
 PRE_TARGETDEPS  += "$${PID_TOOLKIT_API_PATH}/lib/libpidtoolkitui.lib"
 
 INCLUDEPATH +="$${PID_TOOLKIT_API_PATH}/include/modbus"

@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="/pidtoolkit/component">
+    <file alias="qmldir">qml/component/qmldir</file>
+    <file alias="Communication.qml">qml/component/Communication.qml</file>
+    <file alias="CommunicationForm.ui.qml">qml/component/CommunicationForm.ui.qml</file>
+  </qresource>
+</RCC>

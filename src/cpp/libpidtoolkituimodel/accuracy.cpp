@@ -10,32 +10,28 @@ namespace ui {
 namespace model {
 
 Accuracy::Accuracy(QObject* parent) :
-  Format(parent),
-  restriction_(gptum::Restriction::Enum::Undefined) {
+  QObject(parent),
+  number_(this),
+  format_(this) {
 }
 
 Accuracy::Accuracy(
-  const gptum::Restriction::Enum& restriction,
-  const Range& range,
-  const int& precision,
+  const gptum::Number& number,
+  const gptum::Format& format,
   QObject* parent) :
-  Format(precision, parent),
-  restriction_(restriction),
-  range_(range) {
+  number_(number),
+  format_(format) {
 }
 
 Accuracy::Accuracy(
-  const int& precision,
+  const gptum::Format& format,
   QObject* parent) :
-  Format(precision, parent),
-  restriction_(gptum::Restriction::Enum::None) {
+  format_(format) {
 }
-
 
 Accuracy::Accuracy(const Accuracy& accuracy) :
-  Format(accuracy),
-  restriction_(accuracy.restriction_),
-  range_(accuracy.range_) {
+  number_(accuracy.number_),
+  format_(accuracy.format_) {
 }
 
 Accuracy& Accuracy::operator=(const Accuracy& accuracy) {
@@ -44,66 +40,65 @@ Accuracy& Accuracy::operator=(const Accuracy& accuracy) {
 
 Accuracy& Accuracy::set(const Accuracy& accuracy) {
   if (this != &accuracy) {
-    Format::set(dynamic_cast<const Format&>(accuracy));
-    setRestriction(accuracy.restriction_);
-    setRange(accuracy.range_);
+    setNumber(accuracy.number_);
+    setFormat(accuracy.format_);
   }
   return *this;
 }
 
 void Accuracy::set(
-  const gptum::Restriction::Enum& restriction,
-  const Range& range,
-  const int& precision) {
-  setRestriction(restriction);
-  setRange(range);
-  setPrecision(precision);
+  const gptum::Number& number,
+  const gptum::Format& format) {
+  setNumber(number);
+  setFormat(format);
 }
 
-void Accuracy::set(const int& precision) {
-  setRestriction(gptum::Restriction::Enum::None);
-  Format::set(precision);
+void Accuracy::set(const gptum::Format& format) {
+  setNumber(make_number());
+  setFormat(format);
 }
 
-Range* Accuracy::range() { return &range_; }
+Number* Accuracy::number() { return &number_; }
+Format* Accuracy::format() { return &format_; }
 
-void Accuracy::setRange(const Range* value) {
-  if (value != nullptr) {
-    setRange(*value);
+void Accuracy::setNumber(const Number* number) {
+  if (number != nullptr) {
+    setNumber(*number);
   }
 }
 
-void Accuracy::setRange(const Range& value) {
-  if (range_ != value) {
-    range_ = value;
-    emit rangeChanged();
+void Accuracy::setFormat(const Format* format) {
+  if (format != nullptr) {
+    setFormat(*format);
   }
 }
 
-
-void Accuracy::setRestriction(const gptum::Restriction::Enum& value) {
-  if (restriction_ != value) {
-    restriction_ = value;
-    emit restrictionChanged();
+void Accuracy::setNumber(const Number& number) {
+  if (number_ != number) {
+    number_ = number;
+    emit numberChanged();
   }
 }
 
-Accuracy make_accuracy(
-  const gptum::Restriction::Enum& restriction,
-  const Range& range,
-  const int& precision) {
-  return Accuracy(restriction, range, precision);
+void Accuracy::setFormat(const Format& format) {
+  if (format_ != format) {
+    format_ = format;
+    emit formatChanged();
+  }
 }
 
-Accuracy make_accuracy(const int& precision) {
-  return Accuracy(precision);
+Accuracy make_accuracy(const Number& number, const Format& format) {
+  return Accuracy(number, format);
+}
+
+Accuracy make_accuracy(const Format& format) {
+  return Accuracy(format);
 }
 
 QSettings* read(QSettings* settings, const QString& key, Accuracy& accuracy) {
   Accuracy default = make_accuracy(
-    gptum::Restriction::Enum::None,
-    Range(),
-    DEFAULT_BB_ACCURACY_PRECISION);
+    make_number(),
+    make_format(DEFAULT_BB_ACCURACY_PRECISION));
   return read(settings, key, accuracy, default);
 }
 
@@ -112,23 +107,16 @@ QSettings* read(
   const QString& key,
   Accuracy& accuracy,
   const Accuracy& default) {
-  QVariant value;
-  gptum::Restriction::EnumerateModel& enumeratemodel =
-    gptum::Restriction::enumerateModel();
-  QString defaulttext = enumeratemodel.toString(default.restriction_);
-  value = settings->value(key + KEY_BB_ACCURACY_RESTRICTION, defaulttext);
-  gptum::Restriction::Enum restriction = enumeratemodel.parse(value.toString());
-  accuracy.setRestriction(restriction);
-  settings = gptum::read(
+  gptum::read(
     settings,
-    key + KEY_BB_ACCURACY_RANGE,
-    accuracy.range_,
-    default.range_);
-  settings = gptum::read(
+    key + KEY_BB_ACCURACY_NUMBER,
+    accuracy.number_,
+    default.number_);
+  gptum::read(
     settings,
-    key,
-    dynamic_cast<Format&>(accuracy),
-    default.precision_);
+    key + KEY_BB_ACCURACY_FORMAT,
+    accuracy.format_,
+    default.format_);
   return settings;
 }
 
@@ -136,11 +124,18 @@ QSettings* read(
   QSettings* settings,
   const QString& key,
   Accuracy& accuracy,
-  const int& precision) {
-  Accuracy default = make_accuracy(
-    gptum::Restriction::Enum::None,
-    Range(),
-    precision);
+  const Format& format) {
+  Accuracy default = make_accuracy(format);
+  return read(settings, key, accuracy, default);
+}
+
+QSettings* read(
+  QSettings* settings,
+  const QString& key,
+  Accuracy& accuracy,
+  const Number& number,
+  const Format& format) {
+  Accuracy default = make_accuracy(number, format);
   return read(settings, key, accuracy, default);
 }
 
@@ -148,13 +143,8 @@ QSettings* write(
   QSettings* settings,
   const QString& key,
   const Accuracy& accuracy) {
-  gptum::Restriction::EnumerateModel& enumeratemodel =
-    gptum::Restriction::enumerateModel();
-  settings->setValue(
-    key + KEY_BB_ACCURACY_RESTRICTION,
-    enumeratemodel.toString(accuracy.restriction_));
-  write(settings, key + KEY_BB_ACCURACY_RANGE, accuracy.range_);
-  write(settings, key, dynamic_cast<const Format&>(accuracy));
+  gptum::write(settings, key + KEY_BB_ACCURACY_NUMBER, accuracy.number_);
+  gptum::write(settings, key + KEY_BB_ACCURACY_FORMAT, accuracy.format_);
   return settings;
 }
 
@@ -174,9 +164,6 @@ bool operator!=(const gptum::Accuracy& lhs, const gptum::Accuracy& rhs) {
 
 int compare(const gptum::Accuracy& first, const gptum::Accuracy& second) {
   return (
-    compare(
-      dynamic_cast<const gptum::Format&>(first),
-      dynamic_cast<const gptum::Format&>(second)) == 0 &&
-    compare(first.range_, second.range_) == 0 &&
-    first.restriction_ == second.restriction_) ? 0 : 1;
+    compare(first.number_, second.number_) == 0 &&
+    compare(first.format_, second.format_) == 0) ? 0 : 1;
 }

@@ -1,3 +1,10 @@
+/*****************************************************************//**
+ * \file   window.h
+ * \brief  The Statistical Window include file.
+ * 
+ * \author SigurdssonGO
+ * \date   May 2020
+ *********************************************************************/
 #ifndef GOS_PID_TOOLKIT_WINDOW_H_
 #define GOS_PID_TOOLKIT_WINDOW_H_
 
@@ -10,10 +17,12 @@
 
 #define GOS_PID_TOOLKIT_WINDOW_DEFUALT_SIZE 10
 
+
 namespace gos {
 namespace pid {
 namespace toolkit {
 namespace statistics {
+
 
 template<typename T>
 class window : public virtual ::gos::pid::toolkit::Statistics<T> {

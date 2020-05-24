@@ -7,7 +7,8 @@
 #include <QDebug>
 
 #include <gos/pid/ui/model/ptu.h>
-#include <gos/pid/ui/model/models.h>
+#include <gos/pid/ui/model/accuracy.h>
+#include <gos/pid/ui/model/format.h>
 
 #define GOS_QML_TYPE_UI_NAME "Ui"
 #define GOS_QML_TYPE_UI_URI GOS_QML_TYPE_UI_NAME 

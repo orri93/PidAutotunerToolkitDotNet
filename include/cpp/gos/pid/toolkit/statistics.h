@@ -13,9 +13,13 @@ namespace gos {
 namespace pid {
 namespace toolkit {
 
-template<typename T>
-class Statistics {
+/**
+ * @brief Statistics template class.
+ * @tparam T the type for statistics.
+*/
+template<typename T> class Statistics {
 public:
+  
   typedef ::std::vector<T> Vector;
 
   Statistics() : sum_(0) {

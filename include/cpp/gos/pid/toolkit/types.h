@@ -12,6 +12,7 @@ namespace pid {
 namespace toolkit {
 namespace type {
 
+
 typedef ::std::chrono::steady_clock Clock;
 typedef Clock::time_point Time;
 typedef Clock::duration Duration;

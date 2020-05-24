@@ -1,3 +1,10 @@
+/*****************************************************************//**
+ * \file   stability.h
+ * \brief  
+ * 
+ * \author Geirmundur Orri Sigurdsson
+ * \date   May 2020
+ *********************************************************************/
 #ifndef GOS_PID_TOOLKIT_STABILITY_H_
 #define GOS_PID_TOOLKIT_STABILITY_H_
 

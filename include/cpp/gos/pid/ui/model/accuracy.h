@@ -5,13 +5,11 @@
 #include <QSettings>
 
 #include <gos/pid/ui/types.h>
-#include <gos/pid/ui/model/range.h>
 #include <gos/pid/ui/model/format.h>
-#include <gos/pid/ui/model/restriction.h>
+#include <gos/pid/ui/model/number.h>
 
-#define KEY_BB_ACCURACY_RANGE "Range"
-#define KEY_BB_ACCURACY_PRECISION "Precision"
-#define KEY_BB_ACCURACY_RESTRICTION "Restriction"
+#define KEY_BB_ACCURACY_NUMBER "Number"
+#define KEY_BB_ACCURACY_FORMAT "Format"
 
 #define DEFAULT_BB_ACCURACY_PRECISION 0
 
@@ -40,7 +38,13 @@ QSettings* read(
   QSettings* settings,
   const QString& key,
   Accuracy& accuracy,
-  const int& precision);
+  const Format& format);
+QSettings* read(
+  QSettings* settings,
+  const QString& key,
+  Accuracy& accuracy,
+  const Number& number,
+  const Format& format);
 QSettings* read(
   QSettings* settings,
   const QString& key,
@@ -51,11 +55,11 @@ QSettings* write(
   const QString & key,
   const Accuracy & accuracy);
 
-class Accuracy : public Format {
+class Accuracy : public QObject {
   Q_OBJECT
 
-  Q_PROPERTY(Range* range READ range WRITE setRange NOTIFY rangeChanged)
-  Q_PROPERTY(Restriction::Enum restriction MEMBER restriction_ WRITE setRestriction NOTIFY restrictionChanged)
+  Q_PROPERTY(Number* number READ number WRITE setNumber NOTIFY numberChanged)
+  Q_PROPERTY(Format* format READ format WRITE setFormat NOTIFY formatChanged)
 
   friend bool(::operator==) (const Accuracy& lhs, const Accuracy& rhs);
   friend bool(::operator!=) (const Accuracy& lhs, const Accuracy& rhs);
@@ -66,15 +70,21 @@ class Accuracy : public Format {
     const QString& key,
     Accuracy& accuracy);
   friend QSettings* read(
-    QSettings* settings,
-    const QString& key,
-    Accuracy& accuracy,
-    const Accuracy& default);
+    QSettings * settings,
+    const QString & key,
+    Accuracy & accuracy,
+    const Format& format);
   friend QSettings* read(
     QSettings * settings,
     const QString & key,
     Accuracy & accuracy,
-    const int& precision);
+    const Number& number,
+    const Format& format);
+  friend QSettings* read(
+    QSettings* settings,
+    const QString& key,
+    Accuracy& accuracy,
+    const Accuracy& default);
   friend QSettings* write(
     QSettings * settings,
     const QString & key,
@@ -83,46 +93,40 @@ class Accuracy : public Format {
 public:
   explicit Accuracy(QObject* parent = nullptr);
   Accuracy(
-    const ::gos::pid::toolkit::ui::model::Restriction::Enum& restriction,
-    const Range& range,
-    const int& precision,
+    const Number& number,
+    const Format& format,
     QObject* parent = nullptr);
   Accuracy(
-    const int& precision,
+    const Format& format,
     QObject* parent = nullptr);
   Accuracy(const Accuracy& accuracy);
   Accuracy& operator=(const Accuracy& accuracy);
 
   Accuracy& set(const Accuracy& accuracy);
-  void set(
-    const ::gos::pid::toolkit::ui::model::Restriction::Enum& restriction,
-    const Range& range,
-    const int& precision);
-  void set(const int& precision);
+  void set(const Number& number, const Format& format);
+  void set(const Format& format);
 
-  Range* range();
+  Number* number();
+  Format* format();
 
 signals:
-  void rangeChanged();
-  void restrictionChanged();
+  void numberChanged();
+  void formatChanged();
 
 public slots:
-  void setRange(const Range* value);
-  void setRestriction(const ::gos::pid::toolkit::ui::model::Restriction::Enum& value);
+  void setNumber(const Number* number);
+  void setFormat(const Format* format);
 
 private:
-  void setRange(const Range& value);
+  void setNumber(const Number& number);
+  void setFormat(const Format& format);
 
-  Range range_;
-  ::gos::pid::toolkit::ui::model::Restriction::Enum restriction_;
+  Number number_;
+  Format format_;
 };
 
-Accuracy make_accuracy(
-  const ::gos::pid::toolkit::ui::model::Restriction::Enum& restriction,
-  const Range& range,
-  const int& precision);
-
-Accuracy make_accuracy(const int& precision);
+Accuracy make_accuracy(const Number& number, const Format& format);
+Accuracy make_accuracy(const Format& format);
 
 } // namespace model
 } // namespace ui

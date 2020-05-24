@@ -10,9 +10,10 @@
 #include <QDebug>
 
 #include <gos/pid/tuning/blackbox.h>
-#include <gos/pid/ui/model/ptu.h>
+#include <gos/pid/ui/model/triplet.h>
 #include <gos/pid/ui/model/factor.h>
 #include <gos/pid/ui/model/range.h>
+#include <gos/pid/ui/model/ptu.h>
 
 #define GOS_QML_TYPE_BLACK_BOX_NAME "BlackBoxSetting"
 #define GOS_QML_TYPE_BLACK_BOX_URI GOS_QML_TYPE_BLACK_BOX_NAME
@@ -199,9 +200,7 @@ protected:
     std::function<void()>& write);
 
   /* PID configuration */
-  double kp_;
-  double ki_;
-  double kd_;
+  ::gos::pid::toolkit::ui::model::Triplet triplet_;
 
   /* Tuning configuration */
   ::gos::pid::toolkit::ui::model::Range kpRange_;

@@ -1,4 +1,4 @@
-#include <blackbox.h>
+#include <gos/pid/ui/configuration/blackbox.h>
 
 /* Black Box configuration group */
 #define GROUP_BLACK_BOX "BlackBox"
@@ -71,9 +71,6 @@ namespace configuration {
 BlackBox::BlackBox(QObject* parent) :
   gptum::Ptu(parent),
   /* PID configuration */
-  kp_(0.0),
-  ki_(0.0),
-  kd_(0.0),
   /* Controller configuration  */
   base_(0.0),
   isBase_(false),
@@ -91,9 +88,7 @@ BlackBox::BlackBox(QObject* parent) :
 
 BlackBox::BlackBox(const BlackBox& blackBox) :
   /* PID configuration */
-  kp_(blackBox.kp_),
-  ki_(blackBox.ki_),
-  kd_(blackBox.kd_),
+  triplet_(blackBox.triplet_),
   /* Tuning configuration */
   kpRange_(blackBox.kpRange_),
   kiRange_(blackBox.kiRange_),
@@ -122,9 +117,7 @@ BlackBox::BlackBox(const BlackBox& blackBox) :
 BlackBox& BlackBox::operator=(const BlackBox& blackBox) {
   if (this != &blackBox) {
     /* PID configuration */
-    kp_ = blackBox.kp_;
-    ki_ = blackBox.ki_;
-    kd_ = blackBox.kd_;
+    triplet_ = blackBox.triplet_;
     /* Tuning configuration */
     kpRange_ = blackBox.kpRange_;
     kiRange_ = blackBox.kiRange_;
@@ -159,12 +152,7 @@ QSettings* BlackBox::read(QSettings* settings) {
   settings->beginGroup(GROUP_BLACK_BOX);
 
   /* PID configuration */
-  value = settings->value(KEY_BB_KP, DEFAULT_BB_KP);
-  setKp(value.toFloat());
-  value = settings->value(KEY_BB_KI, DEFAULT_BB_KI);
-  setKi(value.toFloat());
-  value = settings->value(KEY_BB_KD, DEFAULT_BB_KD);
-  setKd(value.toFloat());
+  gptum::read(settings, triplet_, DEFAULT_BB_KP, DEFAULT_BB_KI, DEFAULT_BB_KD);
 
   /* Tuning configuration */
   gptum::read(
@@ -233,9 +221,7 @@ QSettings* BlackBox::write(QSettings* settings) {
   settings->beginGroup(GROUP_BLACK_BOX);
 
   /* PID configuration */
-  settings->setValue(KEY_BB_KP, kp_);
-  settings->setValue(KEY_BB_KI, ki_);
-  settings->setValue(KEY_BB_KD, kd_);
+  gptum::write(settings, triplet_);
 
   /* Tuning configuration */
   gptum::write(settings, KEY_BB_KP_RANGE, this->kpRange_);
@@ -276,9 +262,9 @@ QSettings* BlackBox::write(QSettings* settings) {
 
 
 /* PID configuration */
-const double& BlackBox::kp() const { return kp_; }
-const double& BlackBox::ki() const { return ki_; }
-const double& BlackBox::kd() const { return kd_; }
+const double& BlackBox::kp() const { return triplet_.kp(); }
+const double& BlackBox::ki() const { return triplet_.ki(); }
+const double& BlackBox::kd() const { return triplet_.kd(); }
 
 /* Tuning configuration */
 gptum::Range* BlackBox::kpRange() { return &kpRange_; }
@@ -319,20 +305,17 @@ const double& BlackBox::sd() const { return sd_; }
 
 /* PID configuration */
 void BlackBox::setKp(const double& value) {
-  if (kp_ != value) {
-    kp_ = value;
+  if (triplet_.applyKp(value)) {
     emit kpChanged();
   }
 }
 void BlackBox::setKi(const double& value) {
-  if (ki_ != value) {
-    ki_ = value;
+  if (triplet_.applyKi(value)) {
     emit kiChanged();
   }
 }
 void BlackBox::setKd(const double& value) {
-  if (kd_ != value) {
-    kd_ = value;
+  if (triplet_.applyKd(value)) {
     emit kdChanged();
   }
 }
@@ -483,9 +466,7 @@ bool operator!=(const gptuc::BlackBox& lhs, const gptuc::BlackBox& rhs) {
 int compare(const gptuc::BlackBox& first, const gptuc::BlackBox& second) {
   return (
     /* PID configuration */
-    first.kp_ == second.kp_ &&
-    first.ki_ == second.ki_ &&
-    first.kd_ == second.kd_ &&
+    compare(first.triplet_, second.triplet_) == 0 &&
     /* Tuning configuration */
     first.kpRange_ == second.kpRange_ &&
     first.kiRange_ == second.kiRange_ &&

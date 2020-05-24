@@ -25,11 +25,24 @@ if (GOS_PID_TOOLKIT_USE_ADVANCED_FILEDIALOG)
     Gui)
 endif ()
 
-qt5_add_resources(gos_pid_toolkit_ui_cpp_plugin_resources
-  ${CMAKE_CURRENT_LIST_DIR}/qml/pidtoolkitui.qrc)
+#qt5_add_resources(gos_pid_toolkit_ui_cpp_plugin_resources
+#  ${CMAKE_CURRENT_LIST_DIR}/qml/pidtoolkitui.qrc)
+
+qt5_add_resources(gos_pid_toolkit_ui_cpp_plugin_component_resources
+  ${CMAKE_CURRENT_LIST_DIR}/component.qrc)
+
+qt5_add_resources(gos_pid_toolkit_ui_cpp_plugin_model_resources
+  ${CMAKE_CURRENT_LIST_DIR}/model.qrc)
+
+qt5_add_resources(gos_pid_toolkit_ui_cpp_plugin_assets_resources
+  ${CMAKE_CURRENT_LIST_DIR}/assets.qrc)
 
 list(APPEND gos_pid_toolkit_ui_cpp_plugin_source
-  ${gos_pid_toolkit_ui_cpp_plugin_resources})
+  ${gos_pid_toolkit_ui_cpp_plugin_component_resources}
+  ${gos_pid_toolkit_ui_cpp_plugin_model_resources}
+  ${gos_pid_toolkit_ui_cpp_plugin_assets_resources}
+# ${gos_pid_toolkit_ui_cpp_plugin_resources}
+  )
 
 list(APPEND gos_pid_toolkit_ui_cpp_plugin_include
   ${gos_pid_toolkit_cpp_include}

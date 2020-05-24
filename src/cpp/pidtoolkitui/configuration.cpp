@@ -3,23 +3,23 @@
 #include <configuration.h>
 
 /* Communication configuration */
-#define GROUP_COMMUNICATION "Communication"
-#define KEY_SERIAL_PORT "SerialPort"
-#define KEY_SERIAL_BAUD "SerialBaud"
-#define DEFAULT_SERIAL_PORT "COM1"
-#define DEFAULT_SERIAL_BAUD 9600
+//#define GROUP_COMMUNICATION "Communication"
+//#define KEY_SERIAL_PORT "SerialPort"
+//#define KEY_SERIAL_BAUD "SerialBaud"
+//#define DEFAULT_SERIAL_PORT "COM1"
+//#define DEFAULT_SERIAL_BAUD 9600
 
 /* Modbus configuration */
-#define GROUP_MODBUS "Modbus"
-#define KEY_SLAVE_ID "SlaveId"
-#define DEFAULT_SLAVE_ID 1
+//#define GROUP_MODBUS "Modbus"
+//#define KEY_SLAVE_ID "SlaveId"
+//#define DEFAULT_SLAVE_ID 1
 
 /* Timers configuration */
-#define GROUP_TIMERS "Timers"
-#define KEY_INTERVAL "Interval"
-#define KEY_APPLY_TO_CONTROLLER "ApplyToController"
-#define DEFAULT_INTERVAL 250
-#define DEFAULT_APPLY_TO_CONTROLLER false
+//#define GROUP_TIMERS "Timers"
+//#define KEY_INTERVAL "Interval"
+//#define KEY_APPLY_TO_CONTROLLER "ApplyToController"
+//#define DEFAULT_INTERVAL 250
+//#define DEFAULT_APPLY_TO_CONTROLLER false
 
 /* Tuning configuration */
 #define GROUP_TUNING "Tuning"
@@ -42,15 +42,38 @@ namespace toolkit {
 namespace ui {
 
 Configuration::Configuration(const QString& filepath, QObject* parent) :
-  Items(parent),
+  gptum::Ptu(parent),
   filepath_(filepath){
   create();
 }
 
 Configuration::Configuration(QObject* parent) :
-  Items(parent),
+  gptum::Ptu(parent),
   filepath_(GOS_CONFIGURATION_FILE_PATH) {
   create();
+}
+
+Configuration::Configuration(const Configuration& configuration) :
+  controller_(configuration.controller_),
+  tuning_(configuration.tuning_),
+  modbus_(configuration.modbus_),
+  timer_(configuration.timer_),
+  ui_(configuration.ui_) {
+}
+
+Configuration& Configuration::operator=(const Configuration& configuration) {
+  return set(configuration);
+}
+
+Configuration& Configuration::set(const Configuration& configuration) {
+  if (this != &configuration) {
+    controller_ = configuration.controller_;
+    tuning_ = configuration.tuning_;
+    modbus_ = configuration.modbus_;
+    timer_ = configuration.timer_;
+    ui_ = configuration.ui_;
+  }
+  return *this;
 }
 
 QSettings* Configuration::initialize(const bool& watcher) {
@@ -58,8 +81,11 @@ QSettings* Configuration::initialize(const bool& watcher) {
   //QString filepath = QDir::cleanPath(path_ + QDir::separator() + filename_);
   settings_ = std::make_unique<QSettings>(filepath_, SettingsFormat);
   if (settings_) {
-    gptum::Ptu::initialize();
-    blackBox_.initialize();
+    gptum::Ptu::initializing();
+    controller_.initialize();
+    tuning_.initialize();
+    modbus_.initialize();
+    timer_.initialize();
     ui_.initialize();
     result = read();
     if (!QFile::exists(settings_->fileName())) {
@@ -100,9 +126,7 @@ QSettings* Configuration::initialize(const bool& watcher) {
     qCritical() << "Out of memory when trying to create a Qt Setting";
     result = nullptr;
   }
-  setNormal();
-  blackBox_.setNormal();
-  ui_.setNormal();
+  idle();
   return result;
 }
 
@@ -117,35 +141,38 @@ QSettings* Configuration::read(const bool& sync) {
   QVariant value;
 
   /* Communication configuration */
-  settings_->beginGroup(GROUP_COMMUNICATION);
-  value = settings_->value(KEY_SERIAL_PORT, DEFAULT_SERIAL_PORT);
-  setSerialPort(value.toString());
-  value = settings_->value(KEY_SERIAL_BAUD, DEFAULT_SERIAL_BAUD);
-  setSerialBaud(value.toInt());
-  settings_->endGroup();
+  //settings_->beginGroup(GROUP_COMMUNICATION);
+  //value = settings_->value(KEY_SERIAL_PORT, DEFAULT_SERIAL_PORT);
+  //setSerialPort(value.toString());
+  //value = settings_->value(KEY_SERIAL_BAUD, DEFAULT_SERIAL_BAUD);
+  //setSerialBaud(value.toInt());
+  //settings_->endGroup();
 
   /* Modbus configuration */
-  settings_->beginGroup(GROUP_MODBUS);
-  value = settings_->value(KEY_SLAVE_ID, DEFAULT_SLAVE_ID);
-  setSlaveId(value.toInt());
-  settings_->endGroup();
+  //settings_->beginGroup(GROUP_MODBUS);
+  //value = settings_->value(KEY_SLAVE_ID, DEFAULT_SLAVE_ID);
+  //setSlaveId(value.toInt());
+  //settings_->endGroup();
 
   /* Timers configuration */
-  settings_->beginGroup(GROUP_TIMERS);
-  value = settings_->value(KEY_INTERVAL, DEFAULT_INTERVAL);
-  setInterval(value.toInt());
-  value = settings_->value(KEY_APPLY_TO_CONTROLLER, DEFAULT_APPLY_TO_CONTROLLER);
-  setApplyIntervalToController(value.toBool());
-  settings_->endGroup();
+  //settings_->beginGroup(GROUP_TIMERS);
+  //value = settings_->value(KEY_INTERVAL, DEFAULT_INTERVAL);
+  //setInterval(value.toInt());
+  //value = settings_->value(KEY_APPLY_TO_CONTROLLER, DEFAULT_APPLY_TO_CONTROLLER);
+  //setApplyIntervalToController(value.toBool());
+  //settings_->endGroup();
 
   /* Tuning configuration */
-  settings_->beginGroup(GROUP_TUNING);
-  value = settings_->value(KEY_TUNING_TEXT, DEFAULT_TUNING_TEXT);
-  setTuningText(value.toString());
-  settings_->endGroup();
+  //settings_->beginGroup(GROUP_TUNING);
+  //value = settings_->value(KEY_TUNING_TEXT, DEFAULT_TUNING_TEXT);
+  //setTuningText(value.toString());
+  //settings_->endGroup();
 
-  blackBox_.read(settings_.get());
+  modbus_.read(settings_.get());
+  controller_.read(settings_.get());
+  timer_.read(settings_.get());
   ui_.read(settings_.get());
+  tuning_.read(settings_.get());
 
   return settings_.get();
 }
@@ -155,24 +182,45 @@ QSettings* Configuration::write(const bool& sync) {
     return nullptr;
   }
 
-  /* Communication configuration */
-  settings_->beginGroup(GROUP_COMMUNICATION);
-  settings_->setValue(KEY_SERIAL_PORT, serialPort_);
-  settings_->setValue(KEY_SERIAL_BAUD, serialBaud_);
-  settings_->endGroup();
-
-  /* Modbus configuration */
-  settings_->beginGroup(GROUP_MODBUS);
-  settings_->setValue(KEY_SLAVE_ID, slaveId_);
-  settings_->endGroup();
-
-  writeTuning();
+  writeModbus();
+  writeController();
   writeTimers();
-  writeBlackBox();
   writeUi();
+  writeTuning();
 
   return completeWriting(sync);
 }
+
+/* Modbus Communication configuration */
+gptuc::Modbus* Configuration::modbus() { return &modbus_; }
+
+/* Controller configuration */
+gptuc::Controller* Configuration::controller() { return &controller_; }
+
+/* Timers configuration */
+gptuc::Timer* Configuration::timer() { return &timer_; }
+
+/* Tuning configuration */
+gptuc::Tuning* Configuration::tuning() { return &tuning_; }
+
+/* Ui configuration */
+gptuc::Ui* Configuration::ui() { return &ui_; }
+
+/* Interface implementation */
+
+/* Controller configuration */
+gptuc::Controller& Configuration::getController() { return controller_; }
+  
+/* Modbus configuration */
+gptuc::Modbus& Configuration::getModbus() { return modbus_; }
+
+/* Tuning configuration */
+gptuc::Timer& Configuration::getTimer() { return timer_; }
+
+/* Tuning configuration */
+gptuc::Tuning& Configuration::getTuning() { return tuning_; }
+
+gptuc::Ui& Configuration::getUi() { return ui_; }
 
 /* Writing */
 QSettings* Configuration::startWriting() {
@@ -182,21 +230,19 @@ QSettings* Configuration::startWriting() {
     return nullptr;
   }
 }
+void Configuration::writeModbus() {
+  modbus_.write(settings_.get());
+}
+void Configuration::writeController() {
+  controller_.write(settings_.get());
+}
 void Configuration::writeTuning() {
   /* Tuning configuration */
-  settings_->beginGroup(GROUP_TUNING);
-  settings_->setValue(KEY_TUNING_TEXT, tuningText());
-  settings_->endGroup();
+  tuning_.write(settings_.get());
 }
 void Configuration::writeTimers() {
   /* Timers configuration */
-  settings_->beginGroup(GROUP_TIMERS);
-  settings_->setValue(KEY_INTERVAL, interval_);
-  settings_->setValue(KEY_APPLY_TO_CONTROLLER, applyIntervalToController_);
-  settings_->endGroup();
-}
-void Configuration::writeBlackBox() {
-  blackBox_.write(settings_.get());
+  timer_.write(settings_.get());
 }
 void Configuration::writeUi() {
   ui_.write(settings_.get());
@@ -208,88 +254,78 @@ QSettings* Configuration::completeWriting(const bool& sync) {
   return settings_.get();
 }
 
-/* Black Box configuration */
-gptuc::BlackBox& Configuration::blackBox() {
-  return blackBox_;
-}
-
-/* Ui configuration */
-gptuc::Ui* Configuration::ui() {
-  return &ui_;
-}
-
-bool Configuration::applyUiDialog(gptuc::Ui* ui) {
-  if (&ui_ != ui) {
-    if (::compare(ui_, *ui) != 0) {
-      ui_ = *ui;
-      setMode(gptutc::mode::write);
-      write(true);
-      setMode(gptutc::mode::normal);
-      emit uiChanged();
-      return true;
-    }
-  }
-  return false;
-}
+//bool Configuration::applyUiDialog(gptuc::Ui* ui) {
+//  if (&ui_ != ui) {
+//    if (::compare(ui_, *ui) != 0) {
+//      ui_ = *ui;
+//      writing();
+//      write(true);
+//      idle();
+//      emit uiChanged();
+//      return true;
+//    }
+//  }
+//  return false;
+//}
 
 /* Modbus configuration */
-void Configuration::setSlaveId(const int& value) {
-  if (applySlaveId(value)) {
-    std::function<void()> changed =
-      std::bind(&Configuration::slaveIdChanged, this);
-    qDebug() << "Setting slave id to " << value;
-    handle(changed);
-  }
-}
+//void Configuration::setSlaveId(const int& value) {
+//  if (applySlaveId(value)) {
+//    std::function<void()> changed =
+//      std::bind(&Configuration::slaveIdChanged, this);
+//    qDebug() << "Setting slave id to " << value;
+//    handle(changed);
+//  }
+//}
 
 /* Communication configuration */
-void Configuration::setSerialPort(const QString& value) {
-  if (applySerialPort(value)) {
-    std::function<void()> changed =
-      std::bind(&Configuration::serialPortChanged, this);
-    qDebug() << "Setting serial port to " << value;
-    handle(changed);
-  }
-}
-void Configuration::setSerialBaud(const int& value) {
-  if (applySerialBaud(value)) {
-    std::function<void()> changed =
-      std::bind(&Configuration::serialBaudChanged, this);
-    qDebug() << "Setting serial baud to " << value;
-    handle(changed);
-  }
-}
+//void Configuration::setSerialPort(const QString& value) {
+//  if (applySerialPort(value)) {
+//    std::function<void()> changed =
+//      std::bind(&Configuration::serialPortChanged, this);
+//    qDebug() << "Setting serial port to " << value;
+//    handle(changed);
+//  }
+//}
+//void Configuration::setSerialBaud(const int& value) {
+//  if (applySerialBaud(value)) {
+//    std::function<void()> changed =
+//      std::bind(&Configuration::serialBaudChanged, this);
+//    qDebug() << "Setting serial baud to " << value;
+//    handle(changed);
+//  }
+//}
 
 /* Timers configuration */
-void Configuration::setInterval(const int& value) {
-  if (applyInterval(value)) {
-    std::function<void()> changed =
-      std::bind(&Configuration::intervalChanged, this);
-    qDebug() << "Setting interval to " << value;
-    handle(changed, fWriteTimers_);
-  }
-}
-void Configuration::setApplyIntervalToController(const bool& value) {
-  if (applyApplyIntervalToController(value)) {
-    std::function<void()> changed =
-      std::bind(&Configuration::applyIntervalToControllerChanged, this);
-    qDebug() << "Setting apply to controller to " << value;
-    handle(changed, fWriteTimers_);
-  }
-}
+//void Configuration::setInterval(const int& value) {
+//  if (applyInterval(value)) {
+//    std::function<void()> changed =
+//      std::bind(&Configuration::intervalChanged, this);
+//    qDebug() << "Setting interval to " << value;
+//    handle(changed, fWriteTimers_);
+//  }
+//}
+//void Configuration::setApplyIntervalToController(const bool& value) {
+//  if (applyApplyIntervalToController(value)) {
+//    std::function<void()> changed =
+//      std::bind(&Configuration::applyIntervalToControllerChanged, this);
+//    qDebug() << "Setting apply to controller to " << value;
+//    handle(changed, fWriteTimers_);
+//  }
+//}
 
 /* Tuning configuration */
-void Configuration::setTuning(const gp::tuning::types::TuningMode& value) {
-  if (applyTuning(value)) {
-    std::function<void()> changed =
-      std::bind(&Configuration::tuningChanged, this);
-    qDebug() << "Setting tuning to " << tuningText(value);
-    handle(changed, fWriteTuning_);
-  }
-}
-void Configuration::setTuningText(const QString& value) {
-  setTuning(Items::tuningMode(value));
-}
+//void Configuration::setTuning(const gp::tuning::types::TuningMode& value) {
+//  if (applyTuning(value)) {
+//    std::function<void()> changed =
+//      std::bind(&Configuration::tuningChanged, this);
+//    qDebug() << "Setting tuning to " << tuningText(value);
+//    handle(changed, fWriteTuning_);
+//  }
+//}
+//void Configuration::setTuningText(const QString& value) {
+//  setTuning(Items::tuningMode(value));
+//}
 
 /* Black Box configuration */
 //void Configuration::setBlackBox(gptuc::BlackBox* blackBox) {
@@ -302,19 +338,19 @@ void Configuration::setTuningText(const QString& value) {
 //}
 
 void Configuration::onFileChanged(const QString& path) {
-  switch (mode_) {
-  case gptutc::mode::normal:
+  switch (ptStatus_) {
+  case gptum::ptu::Status::Enum::Idle:
     qDebug() << "Configuration file at '" << path
              << "' change and in 'read' mode";
     read(true);
     break;
-  case gptutc::mode::write:
+  case gptum::ptu::Status::Enum::Writing:
     qDebug() << "Ignoring Configuration file at '" << path
              << "' change because in 'write' mode";
     qDebug() << "Configuration Setting mode back to 'normal'";
-    setMode(gptutc::mode::normal);
+    idle();
     break;
-  case gptutc::mode::initializing:
+  case gptum::ptu::Status::Enum::Initializing:
     qDebug() << "Ignoring Configuration file at '" << path
              << "' change because in 'initializing' mode";
     break;
@@ -326,18 +362,20 @@ void Configuration::onFileChanged(const QString& path) {
 }
 
 void Configuration::create() {
+  fWriteModbus_ = std::bind(&Configuration::writeModbus, this);
+  fWriteController_ = std::bind(&Configuration::writeController, this);
   fWriteTuning_ = std::bind(&Configuration::writeTuning, this);
   fWriteTimers_ = std::bind(&Configuration::writeTimers, this);
-  fWriteBlackBox_ = std::bind(&Configuration::writeBlackBox, this);
+  fWriteUi_ = std::bind(&Configuration::writeUi, this);
 }
 
 void Configuration::handle(std::function<void()>& changed) {
-  switch (mode_) {
-  case gptutc::mode::normal:
+  switch (ptStatus_) {
+  case gptum::ptu::Status::Enum::Idle:
     emit changed();
     break;
-  case gptutc::mode::write:
-  case gptutc::mode::initializing:
+  case gptum::ptu::Status::Enum::Writing:
+  case gptum::ptu::Status::Enum::Initializing:
   default:
     break;
   }
@@ -346,12 +384,12 @@ void Configuration::handle(std::function<void()>& changed) {
 void Configuration::handle(
   std::function<void()>& changed,
   std::function<void()>& write) {
-  switch (mode_) {
-  case gptutc::mode::normal:
+  switch (ptStatus_) {
+  case gptum::ptu::Status::Enum::Idle:
     qDebug() << "Configuration handling mode 'normal'";
     emit changed();
     break;
-  case gptutc::mode::write:
+  case gptum::ptu::Status::Enum::Writing:
     qDebug() << "Configuration handling mode 'write'";
     if (startWriting()) {
       write();
@@ -359,7 +397,7 @@ void Configuration::handle(
       qDebug() << "Configuration writing completed";
     }
     break;
-  case gptutc::mode::initializing:
+  case gptum::ptu::Status::Enum::Initializing:
   default:
     break;
   }
@@ -368,14 +406,14 @@ void Configuration::handle(
 void Configuration::handle(
   std::vector<std::function<void()>>& changed,
   std::function<void()>& write) {
-  switch (mode_) {
-  case gptutc::mode::normal:
+  switch (ptStatus_) {
+  case gptum::ptu::Status::Enum::Idle:
     qDebug() << "Configuration handling mode 'normal'";
     for (std::function<void()> f : changed) {
       emit f();
     }
     break;
-  case gptutc::mode::write:
+  case gptum::ptu::Status::Enum::Writing:
     qDebug() << "Configuration handling mode 'write'";
     if (startWriting()) {
       write();
@@ -383,7 +421,7 @@ void Configuration::handle(
       qDebug() << "Configuration writing completed";
     }
     break;
-  case gptutc::mode::initializing:
+  case gptum::ptu::Status::Enum::Initializing:
   default:
     break;
   }
@@ -393,3 +431,20 @@ void Configuration::handle(
 } // namespace toolkit
 } // namespace pid
 } // namespace gos
+
+bool operator==(const gptu::Configuration& lhs, const gptu::Configuration& rhs) {
+  return compare(lhs, rhs) == 0;
+}
+bool operator!=(const gptu::Configuration& lhs, const gptu::Configuration& rhs) {
+  return compare(lhs, rhs) != 0;
+}
+
+int compare(const gptu::Configuration& first, const gptu::Configuration& second) {
+  return (
+    /* Controller output items */
+    compare(first.modbus_, second.modbus_) == 0 &&
+    compare(first.controller_, second.controller_) == 0 &&
+    compare(first.timer_, second.timer_) == 0 &&
+    compare(first.tuning_, second.tuning_) == 0 &&
+    compare(first.ui_, second.ui_) == 0) ? 0 : 1;
+}

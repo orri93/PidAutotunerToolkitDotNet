@@ -1,3 +1,10 @@
+/*****************************************************************//**
+ * \file   options.h
+ * \brief  The Options header file.
+ * 
+ * \author Geirmundur Orri Sigurdsson
+ * \date   May 2020
+ *********************************************************************/
 #ifndef GOS_PID_TOOLKIT_OPTIONS_H_
 #define GOS_PID_TOOLKIT_OPTIONS_H_
 
@@ -16,6 +23,7 @@ namespace options {
 
 namespace general {
 extern const char* Name;
+
 void create(
   ::boost::program_options::options_description& description,
   const bool& file = false);

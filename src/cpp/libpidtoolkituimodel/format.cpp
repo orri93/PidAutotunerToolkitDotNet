@@ -63,8 +63,17 @@ QSettings* read(
   const QString& key,
   Format& format,
   const int& precision) {
+  Format default = make_format(precision);
+  return read(settings, key, format, default);
+}
+
+QSettings* read(
+  QSettings* settings,
+  const QString& key,
+  Format& format,
+  const Format& default) {
   QVariant value;
-  value = settings->value(key + KEY_BB_FORMAT_PRECISION, precision);
+  value = settings->value(key + KEY_BB_FORMAT_PRECISION, default.precision_);
   format.setPrecision(value.toInt());
   return settings;
 }
