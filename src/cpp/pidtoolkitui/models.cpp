@@ -34,13 +34,14 @@ bool create(QQmlContext& context) {
   // qmlRegisterType<gptu::Range>(
   //  GOS_QML_TYPE_RANGE_URI, 1, 0, GOS_QML_TYPE_RANGE_NAME);
 
+  /* Models */
   qmlRegisterUncreatableMetaObject(
     gptum::ptu::Status::staticMetaObject,
     "Pid.Toolkit.Model", 1, 0, "PtStatus",
     "Cannot create namespace PtStatus in QML");
   qmlRegisterUncreatableMetaObject(
     gptum::Force::staticMetaObject,
-    "Pid.Toolkit.Model", 1,0,"Force",
+    "Pid.Toolkit.Model", 1, 0, "Force",
     "Cannot create namespace Force in QML");
   qmlRegisterUncreatableMetaObject(
     gptum::Status::staticMetaObject,
@@ -62,13 +63,19 @@ bool create(QQmlContext& context) {
   qmlRegisterUncreatableMetaObject(
     gptum::Serial::staticMetaObject,
     "Pid.Toolkit.Model", 1, 0, "Serial",
-   "Cannot create namespace Serial in QML");
+    "Cannot create namespace Serial in QML");
 
+  /* View Models */
+  qmlRegisterUncreatableMetaObject(
+    gptuvm::tuning::Status::staticMetaObject,
+    "Pid.Toolkit.Model.Tuning", 1, 0, "Status",
+    "Cannot create namespace Tuning Status in QML");
   qmlRegisterUncreatableMetaObject(
     gptuvm::black::box::State::staticMetaObject,
     "Pid.Toolkit.Model.BlackBox", 1, 0, "State",
     "Cannot create namespace BlackBox State in QML");
 
+  /* Models */
   qRegisterMetaType<gptum::ptu::Status::Enum>(
     "::gos::pid::toolkit::ui::model::ptu::Status::Enum");
   qRegisterMetaType<gptum::Force::Enum>(
@@ -82,8 +89,17 @@ bool create(QQmlContext& context) {
   qRegisterMetaType<gptum::Restriction::Enum>(
     "::gos::pid::toolkit::ui::model::Restriction::Enum");
 
+  /* View Models */
+  qRegisterMetaType<gptuvm::tuning::Status::Enum>(
+    "::gos::pid::toolkit::ui::view::model::tuning::Status::Enum");
   qRegisterMetaType<gptuvm::black::box::State::Enum>(
     "::gos::pid::toolkit::ui::view::model::black::box::State::Enum");
+
+  /* Models */
+  qRegisterMetaType<::gos::pid::toolkit::ui::model::Force*>(
+    "::gos::pid::toolkit::ui::model::Force*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::model::tuning::Method*>(
+    "::gos::pid::toolkit::ui::model::tuning::Method*");
 
   _models = std::make_unique<gptu::Models>();
   if (_models) {
@@ -122,6 +138,7 @@ bool Models::initialize() {
 const QVariant& Models::interval() const { return intervalmodel_; }
 const QVariant& Models::mode() const { return modemodel_; }
 
+/* Models */
 gptum::ptu::Status* Models::ptuStatus() { return &ptuStatus_; }
 gptum::Force* Models::force() { return &force_; }
 gptum::Status* Models::status() { return &status_; }
@@ -131,6 +148,8 @@ gptum::Restriction* Models::restriction() { return &restriction_; }
 gptum::Serial* Models::serialBaud() { return &serialBaud_; }
 gptum::Serial* Models::serialPort() { return &serialPort_; }
 
+/* View Models  */
+gptuvm::tuning::Status* Models::tuningStatus() { return &tuningStatus_; }
 gptuvm::black::box::State* Models::blackBox() { return &blackBox_; }
 
 gptum::Force& Models::getForce() { return force_; }

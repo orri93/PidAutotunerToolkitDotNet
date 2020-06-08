@@ -26,9 +26,9 @@ SOURCES += \
     models.cpp
 
 RESOURCES += \
-    qml/pidtoolkit.qrc
+    pidtoolkit.qrc
 
-include("$$PWD/../libpidtoolkituiplugin/Pid/Toolkit/libpidtoolkituiplugin.pri")
+#include("$$PWD/../libpidtoolkituiplugin/Pid/Toolkit/libpidtoolkituiplugin.pri")
 
 #DEFINES += _USE_MATH_DEFINES
 
@@ -49,10 +49,14 @@ CONFIG(release, debug|release) {
 }
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH = $$PWD/../libpidtoolkituiplugin/Pid/Toolkit
+#QML_IMPORT_PATH = $$PWD/../pidtoolkitplugin/Pid/Toolkit
+#QML_IMPORT_PATH = $$PWD $$PWD/../../../out/install/x64-Release/bin/ui/
+QML_IMPORT_PATH = $$PWD/../../../artifacts/RelWithDebInfo/bin/ui/
+#QML_IMPORT_PATH = $$PWD/../../../build/RelWithDebInfo/plugin
 
 # Additional import path used to resolve QML modules just for Qt Quick Designer
-QML_DESIGNER_IMPORT_PATH = $$PWD/../libpidtoolkituiplugin/Pid/Toolkit
+#QML_DESIGNER_IMPORT_PATH = $$PWD/../pidtoolkitplugin/Pid/Toolkit
+#QML_DESIGNER_IMPORT_PATH = $$PWD/../pidtoolkitplugin
 
 win32 {
 LIBS += -lws2_32 -L"$$(BOOST)\lib64-msvc-14.2"
@@ -83,4 +87,4 @@ INCLUDEPATH +="$${PID_TOOLKIT_API_PATH}/include/modbus"
 INCLUDEPATH +="$${PID_TOOLKIT_API_PATH}/include/cpp"
 
 DISTFILES += \
-    configuration.ini
+    configuration.ini # $$PWD/../../../pidtoolkit.root

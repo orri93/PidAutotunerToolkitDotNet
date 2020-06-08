@@ -1,5 +1,5 @@
-import QtQuick 2.0
-import QtCharts 2.1
+import QtQuick 2.14
+import QtCharts 2.3
 
 ChartView {
   id: pidChart
@@ -10,29 +10,10 @@ ChartView {
   property bool openGl: true
   property bool openGlSupported: true
 
-  function setUpdatedUiConfiguration(ui) {
-    axisY.max = ui.chartMaximum;
-  }
-
-  onOpenGlChanged: {
-    if (openGlSupported) {
-      series("output").useOpenGL = openGl
-      series("temperature").useOpenGL = openGl;
-      series("setpoint").useOpenGL = openGl;
-    }
-  }
-
-  Component.onCompleted: {
-    if (!series("output").useOpenGL) {
-      openGlSupported = false
-      openGl = false
-    }
-  }
-
   ValueAxis {
     id: axisY
     min: 0
-    max: orchestration.configuration.ui.chart.maximum;
+    max: ptOrchestration.configuration.ui.chart.maximum;
   }
 
   ValueAxis {
@@ -63,30 +44,52 @@ ChartView {
     useOpenGL: pidChart.openGl
   }
 
-  Connections {
-    target: orchestration
-    onIntervalChanged: {
-      refreshTimer.interval = orchestration.interval;
+  Component.onCompleted: {
+    if (!series("output").useOpenGL) {
+      openGlSupported = false
+      openGl = false
+    }
+  }
+
+  onOpenGlChanged: {
+    if (openGlSupported) {
+      series("output").useOpenGL = openGl
+      series("temperature").useOpenGL = openGl;
+      series("setpoint").useOpenGL = openGl;
     }
   }
 
   Connections {
-    target: orchestration
+    target: ptOrchestration
+    onIntervalChanged: {
+      refreshTimer.interval = ptOrchestration.interval;
+    }
+  }
+
+  Connections {
+    target: ptOrchestration
     onStatusChanged: {
-      refreshTimer.running = orchestration.isConnected;
+      refreshTimer.running = ptOrchestration.isConnected;
     }
   }
 
   Timer {
     id: refreshTimer
-    interval: orchestration.interval
+    interval: ptOrchestration.interval
     running: false
     repeat: true
     onTriggered: {
-      axisX.max = orchestration.update(
+      axisX.max = ptOrchestration.update(
         pidChart.series("output"),
         pidChart.series("temperature"),
         pidChart.series("setpoint"));
     }
   }
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;formeditorColor:"#4c4e50";height:480;width:640}
+}
+##^##*/
+

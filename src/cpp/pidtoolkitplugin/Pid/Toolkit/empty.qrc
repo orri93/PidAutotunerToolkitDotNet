@@ -1,0 +1,106 @@
+<RCC>
+  <qresource prefix="/pidtoolkit">
+    
+    <file alias="PidToolkit.js">qml/PidToolkit.js</file>
+    <file alias="Style.qml">qml/Style.qml</file>
+
+    <file alias="Toolkit.qml">empty/Toolkit.qml</file>
+
+    <file alias="EmptyForm.ui.qml">qml/EmptyForm.ui.qml</file>
+    <file alias="Empty.qml">empty/Empty.qml</file>
+
+    <file alias="TestForm.ui.qml">qml/TestForm.ui.qml</file>
+    <file alias="Test.qml">empty/Test.qml</file>
+
+    <file alias="ControlRealSpinBoxForm.ui.qml">qml/ControlRealSpinBoxForm.ui.qml</file>
+    <file alias="ControlRealSpinBox.qml">empty/ControlRealSpinBox.qml</file>
+
+    <file alias="ControlGroupForm.ui.qml">qml/ControlGroupForm.ui.qml</file>
+    <file alias="ControlGroup.qml">empty/ControlGroup.qml</file>
+    
+    <file alias="IndicatorGaugeForm.ui.qml">qml/IndicatorGaugeForm.ui.qml</file>
+    <file alias="IndicatorGauge.qml">empty/IndicatorGauge.qml</file>
+    
+    <file alias="ComponentCommunicationForm.ui.qml">qml/ComponentCommunicationForm.ui.qml</file>
+    <file alias="ComponentCommunication.qml">empty/ComponentCommunication.qml</file>
+
+    <file alias="ComponentControllerForm.ui.qml">qml/ComponentControllerForm.ui.qml</file>
+    <file alias="ComponentController.qml">empty/ComponentController.qml</file>
+
+    <file alias="ComponentRangeForm.ui.qml">qml/ComponentRangeForm.ui.qml</file>
+    <file alias="ComponentRange.qml">empty/ComponentRange.qml</file>
+
+    <file alias="ComponentUiRangeForm.ui.qml">qml/ComponentUiRangeForm.ui.qml</file>
+    <file alias="ComponentUiRange.qml">empty/ComponentUiRange.qml</file>
+    
+    <file alias="ComponentFactorForm.ui.qml">qml/ComponentFactorForm.ui.qml</file>
+    <file alias="ComponentFactor.qml">empty/ComponentFactor.qml</file>
+
+    <file alias="ComponentFilePathForm.ui.qml">qml/ComponentFilePathForm.ui.qml</file>
+    <file alias="ComponentFilePath.qml">empty/ComponentFilePath.qml</file>
+
+    <file alias="ComponentLogForm.ui.qml">qml/ComponentLogForm.ui.qml</file>
+    <file alias="ComponentLog.qml">empty/ComponentLog.qml</file>
+
+    <file alias="ComponentSettingsForm.ui.qml">qml/ComponentSettingsForm.ui.qml</file>
+    <file alias="ComponentSettings.qml">empty/ComponentSettings.qml</file>
+
+    <file alias="ComponentStatusForm.ui.qml">qml/ComponentStatusForm.ui.qml</file>
+    <file alias="ComponentStatus.qml">empty/ComponentStatus.qml</file>
+
+    <file alias="ComponentTuningForm.ui.qml">qml/ComponentTuningForm.ui.qml</file>
+    <file alias="ComponentTuning.qml">empty/ComponentTuning.qml</file>
+    
+    <file alias="ComponentTuneKpidForm.ui.qml">qml/ComponentTuneKpidForm.ui.qml</file>
+    <file alias="ComponentTuneKpid.qml">empty/ComponentTuneKpid.qml</file>
+
+    <file alias="ComponentTuneKpiRangeForm.ui.qml">qml/ComponentTuneKpiRangeForm.ui.qml</file>
+    <file alias="ComponentTuneKpiRange.qml">empty/ComponentTuneKpiRange.qml</file>
+
+    <file alias="ComponentTuneControllerForm.ui.qml">qml/ComponentTuneControllerForm.ui.qml</file>
+    <file alias="ComponentTuneController.qml">empty/ComponentTuneController.qml</file>
+
+    <file alias="ComponentTuneEvaluationForm.ui.qml">qml/ComponentTuneEvaluationForm.ui.qml</file>
+    <file alias="ComponentTuneEvaluation.qml">empty/ComponentTuneEvaluation.qml</file>
+
+    <file alias="GroupCommunicationForm.ui.qml">qml/GroupCommunicationForm.ui.qml</file>
+    <file alias="GroupCommunication.qml">empty/GroupCommunication.qml</file>
+
+    <file alias="GroupControllerForm.ui.qml">qml/GroupControllerForm.ui.qml</file>
+    <file alias="GroupController.qml">empty/GroupController.qml</file>
+
+    <file alias="GroupRangeForm.ui.qml">qml/GroupRangeForm.ui.qml</file>
+    <file alias="GroupRange.qml">empty/GroupRange.qml</file>
+
+    <file alias="GroupUiRangeForm.ui.qml">qml/GroupUiRangeForm.ui.qml</file>
+    <file alias="GroupUiRange.qml">empty/GroupUiRange.qml</file>
+
+    <file alias="GroupSettingsForm.ui.qml">qml/GroupSettingsForm.ui.qml</file>
+    <file alias="GroupSettings.qml">empty/GroupSettings.qml</file>
+
+    <file alias="GroupStatusForm.ui.qml">qml/GroupStatusForm.ui.qml</file>
+    <file alias="GroupStatus.qml">empty/GroupStatus.qml</file>
+
+    <file alias="ViewOutputForm.ui.qml">qml/ViewOutputForm.ui.qml</file>
+    <file alias="ViewOutput.qml">empty/ViewOutput.qml</file>
+
+    <file alias="TabBlackBoxEvaluationForm.ui.qml">qml/TabBlackBoxEvaluationForm.ui.qml</file>
+    <file alias="TabBlackBoxEvaluation.qml">empty/TabBlackBoxEvaluation.qml</file>
+
+    <file alias="TabBlackBoxMainForm.ui.qml">qml/TabBlackBoxMainForm.ui.qml</file>
+    <file alias="TabBlackBoxMain.qml">empty/TabBlackBoxMain.qml</file>
+
+    <file alias="TabBlackBoxOtherForm.ui.qml">qml/TabBlackBoxOtherForm.ui.qml</file>
+    <file alias="TabBlackBoxOther.qml">empty/TabBlackBoxOther.qml</file>
+
+    <file alias="TabViewBlackBoxForm.ui.qml">qml/TabViewBlackBoxForm.ui.qml</file>
+    <file alias="TabViewBlackBox.qml">empty/TabViewBlackBox.qml</file>
+
+    <file alias="PanelMainForm.ui.qml">qml/PanelMainForm.ui.qml</file>
+    <file alias="PanelMain.qml">empty/PanelMain.qml</file>
+
+    <file alias="PanelMultyForm.ui.qml">qml/PanelMultyForm.ui.qml</file>
+    <file alias="PanelMulty.qml">empty/PanelMulty.qml</file>
+  
+  </qresource>
+</RCC>

@@ -1,4 +1,5 @@
-set(gos_pid_toolkit_ui_target pidtoolkitui)
+option(GOS_PID_TOOLKIT_UI_FETCH_PLUGIN
+  "Get the PID toolkit plugin to be able to run from build" ON)
 
 list(APPEND gos_pid_toolkit_ui_source
   "orchestration.cpp"
@@ -34,7 +35,9 @@ list(APPEND gos_pid_toolkit_ui_libraries
   Boost::regex
   Qt5::QuickControls2
   Qt5::SerialPort
+  Qt5::Widgets
   Qt5::Charts
+  Qt5::OpenGL
   Qt5::Quick  
   Qt5::Core
   Qt5::Qml
@@ -53,7 +56,7 @@ find_package(Qt5 COMPONENTS REQUIRED
   Qml)
 
 qt5_add_resources(gos_pid_toolkit_ui_resources
-  ${CMAKE_CURRENT_LIST_DIR}/qml/pidtoolkit.qrc)
+  ${CMAKE_CURRENT_SOURCE_DIR}/pidtoolkit.qrc)
 
 list(APPEND gos_pid_toolkit_ui_source
   ${gos_pid_toolkit_ui_resources})
@@ -74,12 +77,38 @@ target_link_libraries(${gos_pid_toolkit_ui_target} PRIVATE
 target_compile_definitions(${gos_pid_toolkit_ui_target} PRIVATE
   ${gos_pid_toolkit_ui_definitions})
 
+if(GOS_PID_TOOLKIT_UI_FETCH_PLUGIN)
+  set(gos_pid_toolkit_ui_cpp_plugin_destination_folder
+    "${CMAKE_CURRENT_BINARY_DIR}/Pid/Toolkit")
+  set(gos_pid_toolkit_ui_cpp_plugin_destination_qmldir
+    "${gos_pid_toolkit_ui_cpp_plugin_destination_folder}/qmldir")
+  set(gos_pid_toolkit_ui_cpp_plugin_source_runtime
+    "$<TARGET_FILE:${gos_pid_toolkit_ui_cpp_plugin_target}>")
+  set(gos_pid_toolkit_ui_cpp_plugin_binary_runtime
+    "${gos_pid_toolkit_ui_cpp_plugin_destination_folder}/$<TARGET_FILE_NAME:${gos_pid_toolkit_ui_cpp_plugin_target}>")
+
+  configure_file(${gos_pid_toolkit_ui_cpp_plugin_qmldir_file}
+    ${gos_pid_toolkit_ui_cpp_plugin_destination_qmldir} COPYONLY)
+
+  set(COPY_RUNTIME_COMMAND ${CMAKE_COMMAND} -E copy "\"${gos_pid_toolkit_ui_cpp_plugin_source_runtime}\"" "\"${gos_pid_toolkit_ui_cpp_plugin_binary_runtime}\"")
+  add_custom_command(TARGET ${gos_pid_toolkit_ui_target}
+    POST_BUILD
+    DEPENDS ${gos_pid_toolkit_ui_cpp_plugin_source_runtime}
+    COMMAND ${COPY_RUNTIME_COMMAND}
+    COMMENT "Fetch the plugin for the PID Toolkit UI")
+endif()
+
 if (GOS_PID_TOOLKIT_INSTALL_CONFIGURATION)
   add_custom_command(TARGET ${gos_pid_toolkit_ui_target} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       ${CMAKE_CURRENT_SOURCE_DIR}/configuration.ini
       $<TARGET_FILE_DIR:${gos_pid_toolkit_ui_target}>)
 endif ()
+if(GOS_DEPLOY_PDB_FILES)
+  install(FILES "$<TARGET_PDB_FILE:${gos_pid_toolkit_ui_target}>"
+    DESTINATION pdb
+    COMPONENT pdb)
+endif()
 
 install(TARGETS ${gos_pid_toolkit_ui_target} DESTINATION bin/ui)
 if (GOS_PID_TOOLKIT_INSTALL_CONFIGURATION)

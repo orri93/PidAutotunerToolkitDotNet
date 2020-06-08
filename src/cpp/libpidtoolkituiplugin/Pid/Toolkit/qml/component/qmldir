@@ -1,6 +1,0 @@
-module Pid.Toolkit.Component
-
-plugin pidtoolkitplugin
-
-Communication 1.0 qrc:/pidtoolkit/component/Communication.qml
-

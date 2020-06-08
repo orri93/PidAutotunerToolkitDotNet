@@ -14,6 +14,7 @@
 #include <gos/pid/ui/model/ptu.h>
 
 #include <gos/pid/ui/view/model/blackbox.h>
+#include <gos/pid/ui/view/model/tuning.h>
 
 namespace gos {
 namespace pid {
@@ -44,15 +45,16 @@ class Models : public QObject {
 
   /* Models */
   Q_PROPERTY(::gos::pid::toolkit::ui::model::ptu::Status* ptuStatus READ ptuStatus)
-  Q_PROPERTY(::gos::pid::toolkit::ui::model::Force* force READ force)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Force* force READ force NOTIFY forceChanged)
   Q_PROPERTY(::gos::pid::toolkit::ui::model::Status* status READ status)
-  Q_PROPERTY(::gos::pid::toolkit::ui::model::tuning::Method* tuningMethod READ tuningMethod)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::tuning::Method* tuningMethod READ tuningMethod NOTIFY tuningMethodChanged)
   Q_PROPERTY(::gos::pid::toolkit::ui::model::Operation* operation READ operation)
   Q_PROPERTY(::gos::pid::toolkit::ui::model::Restriction* restriction READ restriction)
   Q_PROPERTY(::gos::pid::toolkit::ui::model::Serial* serialBaud READ serialBaud)
   Q_PROPERTY(::gos::pid::toolkit::ui::model::Serial* serialPort READ serialPort NOTIFY serialPortChanged)
 
   /* View Models */
+  Q_PROPERTY(::gos::pid::toolkit::ui::view::model::tuning::Status* tuningStatus READ tuningStatus)
   Q_PROPERTY(::gos::pid::toolkit::ui::view::model::black::box::State* blackBox READ blackBox)
 
 public:
@@ -69,8 +71,6 @@ public:
   const QVariant& mode() const;
 
   /* Models */
-  
-  
   ::gos::pid::toolkit::ui::model::ptu::Status* ptuStatus();
   ::gos::pid::toolkit::ui::model::Force* force();
   ::gos::pid::toolkit::ui::model::Status* status();
@@ -81,12 +81,16 @@ public:
   ::gos::pid::toolkit::ui::model::Serial* serialPort();
 
   /* View Models  */
+  ::gos::pid::toolkit::ui::view::model::tuning::Status* tuningStatus();
   ::gos::pid::toolkit::ui::view::model::black::box::State* blackBox();
 
-
+  /* Models */
   ::gos::pid::toolkit::ui::model::Force& getForce();
 
 signals:
+  /* Models */
+  void forceChanged();
+  void tuningMethodChanged();
   void serialPortChanged();
 
 private:
@@ -107,6 +111,7 @@ private:
   ::gos::pid::toolkit::ui::model::Serial serialPort_;
 
   /* View Models */
+  ::gos::pid::toolkit::ui::view::model::tuning::Status tuningStatus_;
   ::gos::pid::toolkit::ui::view::model::black::box::State blackBox_;
 };
 

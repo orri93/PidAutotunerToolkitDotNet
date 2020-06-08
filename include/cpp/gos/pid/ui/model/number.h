@@ -36,7 +36,7 @@ QSettings* read(
   QSettings* settings,
   const QString& key,
   Number& number,
-  const Restriction::Enum& restriction,
+  const ::gos::pid::toolkit::ui::model::Restriction::Enum& restriction,
   const Range& range);
 QSettings* read(
   QSettings* settings,
@@ -52,7 +52,7 @@ class Number : public QObject {
   Q_OBJECT
 
   Q_PROPERTY(Range* range READ range WRITE setRange NOTIFY rangeChanged)
-  Q_PROPERTY(Restriction::Enum restriction MEMBER restriction_ WRITE setRestriction NOTIFY restrictionChanged)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Restriction::Enum restriction MEMBER restriction_ WRITE setRestriction NOTIFY restrictionChanged)
 
   friend bool(::operator==) (const Number& lhs, const Number& rhs);
   friend bool(::operator!=) (const Number& lhs, const Number& rhs);

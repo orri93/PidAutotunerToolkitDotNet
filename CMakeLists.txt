@@ -6,22 +6,23 @@ project(PidToolkit VERSION 1.0.0.0
   
 set(CMAKE_PLATFORM_INDEPENDENT_CODE ON)
 
+option(GOS_DEPLOY_PDB_FILES "Deploy PDB files" ON)
+
 option(GOS_PID_TOOLKIT_C "Build C version of PID Toolkit" OFF)
 option(GOS_PID_TOOLKIT_CPP "Build C++ version of PID Toolkit" ON)
 option(GOS_PID_TOOLKIT_TEST "Build and execute the unit tests" OFF)
 option(GOS_PID_TOOLKIT_UI "Build PID Toolkit UI components" ON)
 option(GOS_PID_ARDUINO_BASED_TUNING "Build the Arduino Based auto-tuning" OFF)
 option(GOS_PID_TOOLKIT_INSTALL_CONFIGURATION "Install the configuration file with the target" ON)
-option(GOS_PID_TOOLKIT_USE_ADVANCED_FILEDIALOG "Use Advanced FileDialog in QML" OFF)
+
 option(BUILD_DOCS "Generate Doxygen" OFF)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
 
 option(CLANG_TIDY "Perform Clang-Tidy check" OFF)
 
-
+set(gos_pid_toolkit_binary_root ${CMAKE_CURRENT_BINARY_DIR})
 set(gos_pid_toolkit_cpp_source_dir "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp")
-
 
 if (CLANG_TIDY)
   option(CLANG_TIDY_FIX_ERRORS
@@ -139,6 +140,7 @@ if (GOS_PID_TOOLKIT_CPP)
   set(gos_pid_tuning_black_box_library_target libpidtuningblackbox)
   set(gos_pid_toolkit_ui_cpp_plugin_target pidtoolkitplugin)
   set(gos_pid_black_box_tuning_target pidblackboxtuning)
+  set(gos_pid_toolkit_ui_target pidtoolkitui)
   set(gos_build_dependency_boost ON)
 
   if (GOS_PID_ARDUINO_BASED_TUNING)
@@ -171,23 +173,26 @@ if (GOS_PID_TOOLKIT_CPP)
   endif (GOS_PID_ARDUINO_BASED_TUNING)
 
   if (GOS_PID_TOOLKIT_UI)
+    find_package(Qt5 COMPONENTS REQUIRED
+      QuickControls2
+      SerialPort
+      Widgets
+      Charts
+      OpenGL
+      Quick
+      Core
+      Qml)
+
     set(gos_pid_toolkit_ui_cpp_plugin_source_dir
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/libpidtoolkituiplugin/Pid/Toolkit")
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/pidtoolkitplugin/Pid/Toolkit")
     set(gos_pid_toolkit_ui_cpp_plugin_include_dir
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui")
-    if (GOS_PID_TOOLKIT_USE_ADVANCED_FILEDIALOG)
-      list(APPEND gos_pid_toolkit_ui_cpp_plugin_include
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern/qml-file-dialog-demo")
-      list(APPEND gos_pid_toolkit_ui_cpp_plugin_source
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern/qml-file-dialog-demo/fileopendialog.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern/qml-file-dialog-demo/filesavedialog.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern/qml-file-dialog-demo/fileopendialog.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern/qml-file-dialog-demo/filesavedialog.h")
-    endif ()
-    list(APPEND gos_pid_toolkit_ui_cpp_plugin_source
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/floatvalidator.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/pathvalidator.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/plugin.h")
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/plugin")
+    list(APPEND gos_pid_toolkit_ui_cpp_plugin_base_source
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/plugin/pathvalidator.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/plugin/plugin.h")
+    set(gos_pid_toolkit_ui_cpp_plugin_qmldir_file
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/pidtoolkitplugin/Pid/Toolkit/qmldir")
+
     #list(APPEND gos_pid_toolkit_ui_cpp_plugin_public_header
     #  "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/items.h")
 

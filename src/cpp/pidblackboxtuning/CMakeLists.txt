@@ -33,6 +33,12 @@ target_include_directories(${gos_pid_black_box_tuning_target} PUBLIC
 target_link_libraries(${gos_pid_black_box_tuning_target}
   ${gos_pid_black_box_tuning_libraries})
 
+if(GOS_DEPLOY_PDB_FILES)
+  install(FILES "$<TARGET_PDB_FILE:${gos_pid_black_box_tuning_target}>"
+    DESTINATION pdb
+    COMPONENT pdb)
+endif()
+
 install(TARGETS ${gos_pid_black_box_tuning_target}
   LIBRARY DESTINATION bin/tuning
   ARCHIVE DESTINATION bin/tuning)

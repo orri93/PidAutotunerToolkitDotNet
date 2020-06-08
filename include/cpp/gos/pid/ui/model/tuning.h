@@ -103,8 +103,7 @@ public slots:
   virtual void setMethod(
     const ::gos::pid::toolkit::ui::model::tuning::Method::Enum& method);
 
-protected:
-  
+protected:  
   /* Controller tuning items */
   virtual void setKp(const double& value);
   virtual void setKi(const double& value);

@@ -5,6 +5,8 @@
 
 #include <QDebug>
 
+#include <QQmlEngine>
+#include <QtQml/QQmlContext>
 #include <QtCharts/QXYSeries>
 #include <QtCharts/QAreaSeries>
 #include <QtQuick/QQuickView>
@@ -16,7 +18,6 @@
 #include <gos/pid/arduino/modbus/master.h>
 #include <gos/pid/arduino/modbus/retry.h>
 
-#include <gos/pid/ui/plugin.h>
 #include <gos/pid/ui/model/status.h>
 #include <gos/pid/ui/model/interval.h>
 #include <gos/pid/ui/model/tuning.h>
@@ -63,7 +64,26 @@ namespace orchestration {
 typedef std::unique_ptr<Orchestration> OrchestrationPointer;
 static OrchestrationPointer _orchestration;
 //static PidToolkitPlugin _plugin;
-bool create(QQmlContext& context) {
+static bool create(
+  QApplication& application,
+  QQmlApplicationEngine& engine,
+  QQmlContext& context);
+bool create(QApplication& application, QQmlApplicationEngine& engine) {
+  //QObject::connect(
+  //  &engine,
+  //  &QQmlApplicationEngine::quit);
+  QQmlContext* context = engine.rootContext();
+  if (context) {
+    return create(application, engine, *context);
+  } else {
+    std::cerr << "The QML Root Context is undefined" << std::endl;
+    return false;
+  }
+}
+bool create(
+  QApplication& application,
+  QQmlApplicationEngine& engine,
+  QQmlContext& context) {
 
   qRegisterMetaType<::gos::pid::toolkit::ui::model::Range*>(
     "::gos::pid::toolkit::ui::model::Range*");
@@ -77,12 +97,23 @@ bool create(QQmlContext& context) {
     "::gos::pid::toolkit::ui::configuration::Ui*");
   qRegisterMetaType<::gos::pid::toolkit::ui::Configuration*>(
     "::gos::pid::toolkit::ui::Configuration*");
-  qRegisterMetaType<::gos::pid::toolkit::ui::model::Modbus*>(
-    "::gos::pid::toolkit::ui::model::Modbus*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::configuration::Timer*>(
+    "::gos::pid::toolkit::ui::configuration::Timer*");
+//qRegisterMetaType<::gos::pid::toolkit::ui::model::Modbus*>(
+//  "::gos::pid::toolkit::ui::model::Modbus*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::view::model::Tuning*>(
+    "::gos::pid::toolkit::ui::view::model::Tuning*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::view::model::Modbus*>(
+    "::gos::pid::toolkit::ui::view::model::Modbus*");
 
   if (gptu::models::create(context)) {
-    _orchestration = std::make_unique<Orchestration>(context);
+    _orchestration = std::make_unique<Orchestration>();
     if (_orchestration) {
+      QObject::connect(
+        &application,
+        &QCoreApplication::aboutToQuit,
+        _orchestration.get(),
+        &Orchestration::shutdown);
       context.setContextProperty(GOS_QML_ORCHESTRATION, _orchestration.get());
       if (_orchestration->initialize(false)) {
         return true;
@@ -114,9 +145,8 @@ template<typename T> void general(
 }
 }
 
-Orchestration::Orchestration(QQmlContext& context, QObject* parent) :
+Orchestration::Orchestration(QObject* parent) :
   gptum::Ptu(parent),
-  context_(context),
   count_(0),
   watcher_(false),
   isLastMessageError_(false)
@@ -132,23 +162,6 @@ Orchestration::Orchestration(QQmlContext& context, QObject* parent) :
   /* Controller output items */ {
   qRegisterMetaType<QAbstractSeries*>();
   qRegisterMetaType<QAbstractAxis*>();
-}
-
-Orchestration::~Orchestration() {
-  //if (isNotifyHandedOver_) {
-  //  recoverNotify();
-  //}
-  //switch (status_) {
-  //case gptum::Status::Enum::Connected:
-  //  gpam::master::disconnect();
-  //  status_ = gptum::Status::Enum::Disconnected;
-  //  break;
-  //}
-  if (logfile_) {
-    logfile_->flush();
-    logfile_->close();
-  }
-  gpam::master::shutdown();
 }
 
 bool Orchestration::initialize(const bool& watcher) {
@@ -753,6 +766,31 @@ void Orchestration::logging(const gpam::types::registry::Input& input) {
     }
   }
 }
+
+
+void Orchestration::shutdown() {
+  //if (isNotifyHandedOver_) {
+  //  recoverNotify();
+  //}
+  //switch (status_) {
+  //case gptum::Status::Enum::Connected:
+  //  gpam::master::disconnect();
+  //  status_ = gptum::Status::Enum::Disconnected;
+  //  break;
+  //}
+
+  if (tuning_) {
+    tuning_->shutdown();
+  }
+  if (logfile_) {
+    logfile_->flush();
+    logfile_->close();
+  }
+  gpam::master::shutdown();
+
+  qDebug() << "Shutdown";
+}
+
 
 } // namespace ui
 } // namespace toolkit

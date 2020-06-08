@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="/">
+    <file>qtquickcontrols2.conf</file>
+    <file alias="Main.qml">qml/Main.qml</file>
+    <file alias="PidChart.qml">qml/PidChart.qml</file>
+    <file alias="PidChartPanelForm.ui.qml">qml/PidChartPanelForm.ui.qml</file>
+    <file alias="PidChartPanel.qml">qml/PidChartPanel.qml</file>
+  </qresource>
+</RCC>

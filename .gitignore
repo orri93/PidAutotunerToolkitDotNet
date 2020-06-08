@@ -373,3 +373,5 @@ RCa18632
 .cmake/
 CMakeCache.txt
 CMakeFiles/
+pidtoolkit.root
+plugin.root

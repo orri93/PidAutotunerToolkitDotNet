@@ -20,56 +20,56 @@ class Modbus :
   public virtual ::gos::pid::toolkit::ui::view::model::Interface {
   Q_OBJECT
 
-    /* Communication items */
-    //Q_PROPERTY(QString serialPort READ serialPort WRITE setSerialPort NOTIFY serialPortChanged)
-    //Q_PROPERTY(int serialBaud READ serialBaud WRITE setSerialBaud NOTIFY serialBaudChanged)
+  /* Communication items */
+  //Q_PROPERTY(QString serialPort READ serialPort WRITE setSerialPort NOTIFY serialPortChanged)
+  //Q_PROPERTY(int serialBaud READ serialBaud WRITE setSerialBaud NOTIFY serialBaudChanged)
 
-    /* Modbus items */
-    //Q_PROPERTY(int slaveId READ slaveId WRITE setSlaveId NOTIFY slaveIdChanged)
+  /* Modbus items */
+  //Q_PROPERTY(int slaveId READ slaveId WRITE setSlaveId NOTIFY slaveIdChanged)
 
-    /* Timers items */
+  /* Timers items */
 
-    /**
-     * @brief The interval (cycle time) for the Arduino Controller.
-    */
-    Q_PROPERTY(int interval READ interval WRITE setInterval NOTIFY intervalChanged)
+  /**
+    * @brief The interval (cycle time) for the Arduino Controller.
+  */
+  Q_PROPERTY(int interval READ interval WRITE setInterval NOTIFY intervalChanged)
 
-    /* Status items */
+  /* Status items */
 
-    /**
-     * @brief The Connection status for the Modbus communication.
-    */
-    Q_PROPERTY(::gos::pid::toolkit::ui::model::Status::Enum status READ status NOTIFY statusChanged)
-    /**
-     * @brief A boolean property indicating if the Modbus Master is connected or not.
-    */
-    Q_PROPERTY(bool isConnected READ isConnected)
-    //Q_PROPERTY(QString lastMessage READ lastMessage NOTIFY lastMessageChanged)
-    //Q_PROPERTY(bool isLastMessageError READ isLastMessageError)
+  /**
+    * @brief The Connection status for the Modbus communication.
+  */
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Status::Enum status READ status NOTIFY statusChanged)
+  /**
+    * @brief A boolean property indicating if the Modbus Master is connected or not.
+  */
+  Q_PROPERTY(bool isConnected READ isConnected)
+  //Q_PROPERTY(QString lastMessage READ lastMessage NOTIFY lastMessageChanged)
+  //Q_PROPERTY(bool isLastMessageError READ isLastMessageError)
 
-    /* Controller input items */
+  /* Controller input items */
 
-    /**
-     * @brief The Manual setting for the Arduino Controller.
-    */
-    Q_PROPERTY(int manual READ manual WRITE setManual NOTIFY manualChanged)
-    /**
-     * @brief The Setpoint setting for the Arduino Controller.
-    */
-    Q_PROPERTY(double setpoint READ setpoint WRITE setSetpoint NOTIFY setpointChanged)
+  /**
+    * @brief The Manual setting for the Arduino Controller.
+  */
+  Q_PROPERTY(int manual READ manual WRITE setManual NOTIFY manualChanged)
+  /**
+    * @brief The Setpoint setting for the Arduino Controller.
+  */
+  Q_PROPERTY(double setpoint READ setpoint WRITE setSetpoint NOTIFY setpointChanged)
 
-    /* Controller settings items */
-    Q_PROPERTY(::gos::pid::toolkit::ui::model::Force::Enum force READ force WRITE setForce NOTIFY forceChanged)
+  /* Controller settings items */
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Force::Enum force READ force WRITE setForce NOTIFY forceChanged)
 
-    /* Controller tuning items */
-    Q_PROPERTY(double kp READ kp WRITE setKp NOTIFY kpChanged)
-    Q_PROPERTY(double ki READ ki WRITE setKi NOTIFY kiChanged)
-    Q_PROPERTY(double kd READ kd WRITE setKd NOTIFY kdChanged)
+  /* Controller tuning items */
+  Q_PROPERTY(double kp READ kp WRITE setKp NOTIFY kpChanged)
+  Q_PROPERTY(double ki READ ki WRITE setKi NOTIFY kiChanged)
+  Q_PROPERTY(double kd READ kd WRITE setKd NOTIFY kdChanged)
 
-    /* Controller output items */
-    Q_PROPERTY(double temperature READ temperature NOTIFY temperatureChanged)
-    Q_PROPERTY(double output READ output NOTIFY outputChanged)
-    Q_PROPERTY(float integral READ integral NOTIFY integralChanged)
+  /* Controller output items */
+  Q_PROPERTY(double temperature READ temperature NOTIFY temperatureChanged)
+  Q_PROPERTY(double output READ output NOTIFY outputChanged)
+  Q_PROPERTY(float integral READ integral NOTIFY integralChanged)
 
 public:
   explicit Modbus(

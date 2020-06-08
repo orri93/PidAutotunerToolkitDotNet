@@ -3,50 +3,55 @@ import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.12
 import QtQuick.Window 2.14
 
+import QtQuick.Controls.Material 2.12
+import QtQuick.Controls.Universal 2.12
+
+import Pid.Toolkit 1.0 as Pt
+
 Window {
   id: pidMainWindow
 
-  width: 1600
-  height: 900
+  width: Pt.Style.mainWindowWidth
+  height: Pt.Style.mainWindowHeight
+  color: Pt.Style.mainWindowColor
 
-  color: "#404040"
-
-  title: pidParameterPanel.titleText
-
-  property bool isComponentCompleted: false
-
+  title: Pt.Style.titleText
   visible: true
 
+  property var orchestration: ptOrchestration
+  property var modbus: ptOrchestration.modbus
+
+
   Component.onCompleted: {
-    isComponentCompleted = true
   }
 
-  PidPanel {
-    id: pidParameterPanel
+  Pt.PanelMain {
+    id: mainPanel
     anchors.top: parent.top
     anchors.left: parent.left
     anchors.bottom: parent.bottom
-    onRightPanelChanged: {
-      rightTimePanel.showRightPanel(panelIndex);
-    }
-    onUiConfigurationChanged: {
-      pidChart.setUpdatedUiConfiguration(ui);
-    }
+    onQuitPid: Qt.quit()
+
+    onConnectPid: orchestration.connectDisconnect()
   }
 
-  RightPanel {
-    id: rightTimePanel
-    anchors.top: parent.top
-    anchors.bottom: parent.bottom
-    anchors.right: parent.right
-  }
+  //Pt.PanelMulty {
+  //  id: multyPanel
+  //  anchors.top: parent.top
+  //  anchors.bottom: parent.bottom
+  //  anchors.right: parent.right
+  //}
 
-  PidChart {
+  PidChartPanel {
     id: pidChart
     anchors.top: parent.top
     anchors.bottom: parent.bottom
-    anchors.right: rightTimePanel.left
-    anchors.left: pidParameterPanel.right
+    
+    /* Switch for multy panel  */
+    //anchors.right: multyPanel.left
+    anchors.right: parent.right
+
+    anchors.left: mainPanel.right
     height: pidMainWindow.height
   }
 }

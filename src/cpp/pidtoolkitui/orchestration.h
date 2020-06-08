@@ -6,7 +6,8 @@
 #include <QTimer>
 #include <QtCore/QObject>
 #include <QtCharts/QAbstractSeries>
-#include <QtQml/QQmlContext>
+#include <QtWidgets/QApplication>
+#include <QQmlApplicationEngine>
 
 #include <gos/pid/arduino/types.h>
 
@@ -33,14 +34,13 @@ namespace toolkit {
 namespace ui {
 
 namespace orchestration {
-bool create(QQmlContext& context);
+bool create(QApplication& application, QQmlApplicationEngine& engine);
 }
 
 class Orchestration : public ::gos::pid::toolkit::ui::model::Ptu {
   Q_OBJECT
 public:
-  explicit Orchestration(QQmlContext& context, QObject* parent = nullptr);
-  ~Orchestration();
+  explicit Orchestration(QObject* parent = nullptr);
 
   /* Configuration Access */
   Q_PROPERTY(Configuration* configuration READ configuration NOTIFY configurationChanged)
@@ -215,6 +215,7 @@ Q_SIGNALS:
 //  void exit(int retCode);
 
 public Q_SLOTS:
+  void shutdown();
 //  bool close();
 
 public slots:
@@ -292,7 +293,6 @@ private:
   //bool handoverNotify();
   //bool recoverNotify();
 
-  QQmlContext& context_;
   VectorList setpointsList_;
   VectorList temperatureList_;
   VectorList outputsList_;

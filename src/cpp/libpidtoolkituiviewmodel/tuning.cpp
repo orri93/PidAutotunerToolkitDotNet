@@ -1,5 +1,7 @@
 #include <QStringList>
+#include <QDebug>
 
+#include <gos/pid/toolkit/exception.h>
 #include <gos/pid/arduino/modbus/master.h>
 #include <gos/pid/ui/view/model/tuning.h>
 #include <gos/pid/tuning/setting.h>
@@ -24,6 +26,53 @@ namespace ui {
 namespace view {
 namespace model {
 
+namespace tuning {
+static const QString StatusTextArray[] = {
+  "Idle",
+  "Starting",
+  "Tuning",
+  "Evaluating",
+  "Completed",
+  "" };
+static const Status::Enum StatusArray[] = {
+  Status::Enum::Idle,
+  Status::Enum::Starting,
+  Status::Enum::Tuning,
+  Status::Enum::Evaluating,
+  Status::Enum::Completed,
+  Status::Enum::Undefined
+};
+Status::EnumerateModel Status::EnumerateModel_(
+  StatusArray,
+  StatusTextArray,
+  Status::Enum::Undefined,
+  Status::StatusRoles::ValueRole,
+  Status::StatusRoles::TextRole);
+Status::Status(QObject* parent) :
+  QAbstractListModel(parent) {
+}
+int Status::index(const Status::Enum& status) {
+  return EnumerateModel_.index(status);
+}
+Status::Enum Status::status(const int& index) {
+  return EnumerateModel_.enumerate(index);
+}
+int Status::rowCount(const QModelIndex& parent) const {
+  Q_UNUSED(parent);
+  return EnumerateModel_.count();
+}
+QVariant Status::data(const QModelIndex& index, int role) const {
+  return EnumerateModel_.data(index, role);
+}
+QHash<int, QByteArray> Status::roleNames() const {
+  QHash<int, QByteArray> roles;
+  roles[TextRole] = "text";
+  roles[ValueRole] = "value";
+  return roles;
+}
+Status::EnumerateModel& Status::enumerateModel() { return EnumerateModel_; }
+} // namespace tuning
+
 Tuning::Tuning(
   gptuc::Tuning& tuning,
   gptuvm::Modbus& modbus,
@@ -41,7 +90,18 @@ Tuning::Tuning(
   isNotifyHandedOver_(false) {
 }
 
+Tuning::~Tuning() {
+  if (isNotifyHandedOver_) {
+    qWarning() << "Notifier has not been recovered - call shutdown";
+  }
+}
+
 bool Tuning::initialize() {
+  QObject::connect(
+    &blackBox_,
+    &gptuvm::BlackBox::stateChanged,
+    this,
+    &Tuning::onStateChanged);
   return handoverNotify();
 }
 
@@ -88,20 +148,37 @@ void Tuning::notifyKd(const gpa::types::Real& kd) {
   setKd(static_cast<double>(kd));
 }
 
-const gptumt::Method::Enum& Tuning::method() const {
-  return method_;
+  /* Tuning items */
+//const gptumt::Method::Enum& Tuning::method() const { return method_; }
+
+  /* Tuning status */
+const gptuvm::tuning::Status::Enum Tuning::status() const {
+  switch (method_) {
+  case gptum::tuning::Method::Enum::Undefined:
+  case gptum::tuning::Method::Enum::None:
+    return gptuvm::tuning::Status::Enum::Idle;
+  case gptum::tuning::Method::Enum::BlackBox:
+    switch (blackBox_.state()) {
+    case gptuvm::black::box::State::Enum::Undefined:
+      return gptuvm::tuning::Status::Enum::Undefined;
+    case gptuvm::black::box::State::Enum::Initialize:
+      return gptuvm::tuning::Status::Enum::Starting;
+    case gptuvm::black::box::State::Enum::Completed:
+      return gptuvm::tuning::Status::Enum::Completed;
+    case gptuvm::black::box::State::Enum::Reach:
+    case gptuvm::black::box::State::Enum::Over:
+    case gptuvm::black::box::State::Enum::Under:
+    case gptuvm::black::box::State::Enum::Balance:
+    case gptuvm::black::box::State::Enum::Cooldown:
+      return gptuvm::tuning::Status::Enum::Tuning;
+    }
+  default:
+    return gptuvm::tuning::Status::Enum::Undefined;
+  }
 }
 
 const bool Tuning::isTuning() const {
-  switch (method_) {
-  case gos::pid::toolkit::ui::model::tuning::Method::Enum::Undefined:
-  case gos::pid::toolkit::ui::model::tuning::Method::Enum::None:
-    return false;
-  case gos::pid::toolkit::ui::model::tuning::Method::Enum::BlackBox:
-    return true;
-  default:
-    return false;
-  }
+  return status() == gptuvm::tuning::Status::Enum::Tuning;
 }
 
 /* Tuning items */
@@ -117,12 +194,28 @@ const gptum::Force::Enum& Tuning::force() const { return force_; }
 gptuvm::BlackBox* Tuning::blackBox() { return &blackBox_; }
 gptuvm::BlackBox& Tuning::getBlackBox() { return blackBox_; }
 
-//void Tuning::setMethod(const gptum::tuning::Method::Enum& method) {
-//  if (method_ != method) {
-//    method_ = method;
-//    emit methodChanged();
-//  }
-//}
+void Tuning::setMethod(const gptum::tuning::Method::Enum& method) {
+  gptuvm::tuning::Status::Enum last = status();
+  if (applyMethod(method)) {
+    emit methodChanged();
+    if (status() != last) {
+      emit statusChanged();
+    }
+  }
+}
+
+void Tuning::onStateChanged() {
+  switch (method_) {
+  case gptum::tuning::Method::Enum::Undefined:
+  case gptum::tuning::Method::Enum::None:
+    /* Do nothing */;
+  case gptum::tuning::Method::Enum::BlackBox:
+    emit statusChanged();
+    break;
+  default:
+    /* Do nothing */;
+  }
+}
 
 /* Controller settings items */
 void Tuning::setForce(const gptum::Force::Enum& force) {

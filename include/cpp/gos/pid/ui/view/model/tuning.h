@@ -22,15 +22,53 @@ namespace ui {
 namespace view {
 namespace model {
 
+namespace tuning {
+class Status : public QAbstractListModel {
+  Q_OBJECT
+public:
+  enum class Enum : quint8 {
+    Undefined,
+    Idle,
+    Starting,
+    Tuning,
+    Evaluating,
+    Completed
+  };
+  enum StatusRoles {
+    ValueRole = Qt::UserRole + 1,
+    TextRole
+  };
+  Q_ENUM(Enum)
+  Q_ENUM(StatusRoles)
+  typedef ::gos::pid::toolkit::ui::model::Enumerate<
+    Enum, StatusRoles> EnumerateModel;
+  Status(QObject* parent = nullptr);
+  Q_INVOKABLE int index(const Enum& state);
+  Q_INVOKABLE Enum status(const int& index);
+  int rowCount(const QModelIndex& parent = QModelIndex()) const;
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+  static EnumerateModel& enumerateModel();
+protected:
+  QHash<int, QByteArray> roleNames() const;
+private:
+  static EnumerateModel EnumerateModel_;
+};
+}
+
 class Tuning :
   public ::gos::pid::toolkit::ui::model::Tuning,
   public virtual ::gos::pid::tuning::Nofity,
   public virtual ::gos::pid::toolkit::ui::view::model::Interface {
   Q_OBJECT
 
-  /* Tuning items */
-  //Q_PROPERTY(::gos::pid::toolkit::ui::model::tuning::Method::Enum method READ method WRITE setMethod NOTIFY methodChanged)
+  /* Tuning status */
+  /**
+   * @brief Black Box tuning state of an enumerated type
+  */
+  Q_PROPERTY(::gos::pid::toolkit::ui::view::model::tuning::Status::Enum status READ status NOTIFY statusChanged)
   Q_PROPERTY(bool isTuning READ isTuning)
+
+  //Q_PROPERTY(::gos::pid::toolkit::ui::model::tuning::Method::Enum method READ method WRITE setMethod NOTIFY methodChanged)
   //Q_PROPERTY(QString lastMessage READ lastMessage NOTIFY lastMessageChanged)
   //Q_PROPERTY(bool isLastMessageError READ isLastMessageError)
 
@@ -50,6 +88,7 @@ public:
     ::gos::pid::toolkit::ui::view::model::Modbus& modbus,
     ::gos::pid::toolkit::ui::model::Force& force,
     QObject* parent = nullptr);
+  virtual ~Tuning();
 
   bool initialize();
   bool shutdown();
@@ -68,7 +107,10 @@ public:
   void notifyKd(const ::gos::pid::arduino::types::Real& kd);
 
   /* Tuning items */
-  const ::gos::pid::toolkit::ui::model::tuning::Method::Enum& method() const;
+  //const ::gos::pid::toolkit::ui::model::tuning::Method::Enum& method() const;
+
+  /* Tuning status */
+  const ::gos::pid::toolkit::ui::view::model::tuning::Status::Enum status() const;
   const bool isTuning() const;
 
   /* Controller tuning items */
@@ -87,6 +129,10 @@ public:
   ::gos::pid::toolkit::ui::view::model::BlackBox& getBlackBox();
 
 signals:
+
+  /* Tuning status */
+  void statusChanged();
+
   //void methodChanged();
 //void stateChanged();
 //void lastMessageChanged();
@@ -102,11 +148,15 @@ signals:
   void blackBoxChanged();
   
 public slots:
-  //void setMethod(const ::gos::pid::toolkit::ui::model::tuning::Method::Enum& method);
+  void setMethod(const ::gos::pid::toolkit::ui::model::tuning::Method::Enum& method);
+
+private slots:
+  void onStateChanged();
 
 private:
+
   /* Status items */
-  void setStatus(const ::gos::pid::toolkit::ui::model::Status::Enum& status);
+//void setStatus(const ::gos::pid::toolkit::ui::model::Status::Enum& status);
 //void setLastMessage(const QString& message, const bool isLastMessageError = false);
 //void setLastError(const QString& message);
 
