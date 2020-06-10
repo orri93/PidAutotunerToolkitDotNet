@@ -50,7 +50,7 @@ int Serial::index(const int& baud) {
 QString Serial::port(const int& index) {
   return portModel_.value(index);
 }
-int Serial:: baud(const int& index) {
+int Serial::baud(const int& index) {
   return BaudModel_.value(index);
 }
 
@@ -71,7 +71,7 @@ QVariant Serial::data(const QModelIndex& index, int role) const {
   switch (type_) {
   case PortValueRole:
   case PortTextRole:
-    return BaudModel_.dataString(index, role);
+    return portModel_.data(index, role);
   case BaudValueRole:
   case BaudTextRole:
     return BaudModel_.data(index, role);
@@ -81,8 +81,10 @@ QVariant Serial::data(const QModelIndex& index, int role) const {
 
 QHash<int, QByteArray> Serial::roleNames() const {
   QHash<int, QByteArray> roles;
-  roles[PortTextRole] = "text";
-  roles[PortValueRole] = "value";
+  roles[PortTextRole] = "portText";
+  roles[PortValueRole] = "portValue";
+  roles[BaudTextRole] = "baudText";
+  roles[BaudValueRole] = "baudValue";
   return roles;
 }
 

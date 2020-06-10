@@ -25,6 +25,12 @@ Window {
   Component.onCompleted: {
   }
 
+  DialogController {
+    id: controllerDialog
+    x: (parent.width - width) / 2
+    y: (parent.height - height) / 2
+  }
+
   Pt.PanelMain {
     id: mainPanel
     anchors.top: parent.top
@@ -33,6 +39,8 @@ Window {
     onQuitPid: Qt.quit()
 
     onConnectPid: orchestration.connectDisconnect()
+
+    controllerComponent.onControllerDialog: controllerDialog.open()
   }
 
   //Pt.PanelMulty {

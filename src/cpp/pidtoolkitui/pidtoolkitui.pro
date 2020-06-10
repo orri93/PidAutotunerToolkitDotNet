@@ -51,7 +51,8 @@ CONFIG(release, debug|release) {
 # Additional import path used to resolve QML modules in Qt Creator's code model
 #QML_IMPORT_PATH = $$PWD/../pidtoolkitplugin/Pid/Toolkit
 #QML_IMPORT_PATH = $$PWD $$PWD/../../../out/install/x64-Release/bin/ui/
-QML_IMPORT_PATH = $$PWD/../../../artifacts/RelWithDebInfo/bin/ui/
+QML_IMPORT_PATH = $$PWD/../../../artifacts/RelWithDebInfo/plugin/empty
+#QML_IMPORT_PATH = $$PWD/../../../artifacts/RelWithDebInfo/bin/ui/
 #QML_IMPORT_PATH = $$PWD/../../../build/RelWithDebInfo/plugin
 
 # Additional import path used to resolve QML modules just for Qt Quick Designer

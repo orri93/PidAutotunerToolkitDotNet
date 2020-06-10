@@ -1,6 +1,5 @@
 import QtQuick 2.4
 import QtQuick.Dialogs 1.2
-import Pid.Toolkit 1.0
 
 ComponentFilePathForm {
 

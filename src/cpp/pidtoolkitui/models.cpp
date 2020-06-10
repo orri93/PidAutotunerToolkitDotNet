@@ -100,6 +100,8 @@ bool create(QQmlContext& context) {
     "::gos::pid::toolkit::ui::model::Force*");
   qRegisterMetaType<::gos::pid::toolkit::ui::model::tuning::Method*>(
     "::gos::pid::toolkit::ui::model::tuning::Method*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::model::Serial*>(
+    "::gos::pid::toolkit::ui::model::Serial*");
 
   _models = std::make_unique<gptu::Models>();
   if (_models) {
@@ -127,6 +129,7 @@ Models::Models(QObject* parent) :
   QObject(parent),
   serialBaud_(gptum::Serial::BaudValueRole),
   serialPort_(gptum::Serial::PortValueRole) {
+  serialPort_.create();
 }
 
 bool Models::initialize() {

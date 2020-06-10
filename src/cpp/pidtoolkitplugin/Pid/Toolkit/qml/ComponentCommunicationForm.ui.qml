@@ -2,9 +2,11 @@ import QtQuick 2.14
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.12
 
-import Pid.Toolkit 1.0
-
 ColumnLayout {
+
+    property alias serialPortBox: serialPortComboBox
+    property alias serialBaudBox: serialBaudComboBox
+
     RowLayout {
         ColumnLayout {
             Label {
@@ -16,6 +18,7 @@ ColumnLayout {
 
             ComboBox {
                 id: serialPortComboBox
+                Layout.preferredWidth: 111.0
             }
         }
 
@@ -29,6 +32,7 @@ ColumnLayout {
 
             ComboBox {
                 id: serialBaudComboBox
+                Layout.preferredWidth: 111.0
             }
         }
 
@@ -43,6 +47,7 @@ ColumnLayout {
             SpinBox {
                 from: 0
                 to: 255
+                Layout.preferredWidth: 111.0
             }
         }
     }
@@ -58,6 +63,7 @@ ColumnLayout {
             ComboBox {
                 id: dataBitsComboBox
                 model: [8, 7]
+                Layout.preferredWidth: 111.0
             }
         }
 
@@ -86,6 +92,7 @@ ColumnLayout {
             ComboBox {
                 id: parityComboBox
                 model: ["None", "Odd", "Even"]
+                Layout.preferredWidth: 111.0
             }
         }
     }
@@ -96,3 +103,4 @@ Designer {
     D{i:0;formeditorColor:"#c0c0c0"}
 }
 ##^##*/
+

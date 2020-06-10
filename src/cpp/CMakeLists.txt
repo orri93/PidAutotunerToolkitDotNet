@@ -10,6 +10,9 @@ if (GOS_PID_TOOLKIT_CPP)
   add_subdirectory(libpidtoolkitpid)
   add_subdirectory(pidblackboxtuning)
   if (GOS_PID_TOOLKIT_UI)
+    set(gos_pid_toolkit_ui_cpp_plugin_qmldir_in
+      "${CMAKE_CURRENT_SOURCE_DIR}/pidtoolkitplugin/Pid/Toolkit/qmldir.in")
+
     add_subdirectory(libpidtoolkituiconfiguration)
     add_subdirectory(libpidtoolkituiviewmodel)
     add_subdirectory(libpidtoolkituimodel)

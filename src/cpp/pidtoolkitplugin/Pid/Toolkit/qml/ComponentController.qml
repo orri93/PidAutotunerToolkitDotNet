@@ -8,6 +8,8 @@ import Pid.Toolkit.Model 1.0 as Ptm
 
 ComponentControllerForm {
 
+  signal controllerDialog()
+
   property var orchestration: ptOrchestration
   property var configuration: ptOrchestration.configuration
   property var setpointAccuracy: ptOrchestration.configuration.ui.setpoint
@@ -41,6 +43,7 @@ ComponentControllerForm {
 
   settingButton.onClicked: {
     console.log("Controller setting button clicked");
+    controllerDialog();
   }
 
   Component.onCompleted: {

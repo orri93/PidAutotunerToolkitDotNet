@@ -24,19 +24,37 @@ ECHO %GOS_PROJECT_NAME% root directory is defined as %GOS_ROOT_DIR%
 REM Set build variables
 SET GOS_BUILD_CONFIG=RelWithDebInfo
 
+IF "%1" == "noclean" GOTO gos_not_clean
+IF "%1" == "notclean" GOTO gos_not_clean
+IF "%1" == "Noclean" GOTO gos_not_clean
+IF "%1" == "Notclean" GOTO gos_not_clean
+IF "%1" == "noClean" GOTO gos_not_clean
+IF "%1" == "notClean" GOTO gos_not_clean
+IF "%1" == "NoClean" GOTO gos_not_clean
 IF "%1" == "NotClean" GOTO gos_not_clean
 GOTO gos_check_not_clean_done
 :gos_not_clean
 ECHO Not Clean detected
-SET GOS_NOT_CLEAN=%1
+SET GOS_NOT_CLEAN=NotClean
 SHIFT
 :gos_check_not_clean_done
 
+IF "%1" == "nodoc" GOTO gos_not_doc
+IF "%1" == "nodocs" GOTO gos_not_doc
+IF "%1" == "notdoc" GOTO gos_not_doc
+IF "%1" == "notdocs" GOTO gos_not_doc
+IF "%1" == "noDoc" GOTO gos_not_doc
+IF "%1" == "noDocs" GOTO gos_not_doc
+IF "%1" == "notDoc" GOTO gos_not_doc
+IF "%1" == "notDocs" GOTO gos_not_doc
+IF "%1" == "NoDoc" GOTO gos_not_doc
+IF "%1" == "NoDocs" GOTO gos_not_doc
 IF "%1" == "NotDoc" GOTO gos_not_doc
+IF "%1" == "NotDocs" GOTO gos_not_doc
 GOTO gos_check_not_doc_done
 :gos_not_doc
 ECHO Not Documentation detected
-SET GOS_NOT_DOC=%1
+SET GOS_NOT_DOC=NotDoc
 SHIFT
 :gos_check_not_doc_done
 

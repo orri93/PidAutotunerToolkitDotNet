@@ -1,8 +1,19 @@
 option(GOS_PID_TOOLKIT_UI_PLUGIN_GENERATE_DUMMY
-  "Generate dummy plugin for QML Types (only works with release builds)" OFF)
+  "Generate dummy plugin for QML Types (only works with release builds)" ON)
 
-set(gos_pid_toolkit_ui_cpp_plugin_source_qmldir
+set(GOS_PID_TOOLKIT_PLUGIN ${gos_pid_toolkit_ui_cpp_plugin_target})
+set(gos_pid_toolkit_ui_cpp_plugin_qmldir
   "${CMAKE_CURRENT_SOURCE_DIR}/qmldir")
+configure_file(${gos_pid_toolkit_ui_cpp_plugin_qmldir_in}
+  ${gos_pid_toolkit_ui_cpp_plugin_qmldir} @ONLY)
+
+set(GOS_PID_TOOLKIT_PLUGIN_QRC_PATH "qml")
+set(gos_pid_toolkit_ui_cpp_plugin_qrc_in
+  "${CMAKE_CURRENT_SOURCE_DIR}/plugin.qrc.in")
+set(gos_pid_toolkit_ui_cpp_plugin_qrc
+  "${CMAKE_CURRENT_SOURCE_DIR}/plugin.qrc")
+configure_file(${gos_pid_toolkit_ui_cpp_plugin_qrc_in}
+  ${gos_pid_toolkit_ui_cpp_plugin_qrc} @ONLY)
 
 list(APPEND gos_pid_toolkit_ui_cpp_plugin_base_source
   "${CMAKE_CURRENT_SOURCE_DIR}/pathvalidator.cpp"
@@ -10,31 +21,26 @@ list(APPEND gos_pid_toolkit_ui_cpp_plugin_base_source
 
 list(APPEND gos_pid_toolkit_ui_cpp_plugin_source
   ${gos_pid_toolkit_ui_cpp_plugin_base_source}
-# "${CMAKE_CURRENT_SOURCE_DIR}/pidtoolkitplugin.qrc"
-  ${gos_pid_toolkit_ui_cpp_plugin_source_qmldir})
+  ${gos_pid_toolkit_ui_cpp_plugin_qmldir})
 
 qt5_add_resources(gos_pid_toolkit_ui_cpp_plugin_resources
-  "${CMAKE_CURRENT_SOURCE_DIR}/pidtoolkitplugin.qrc")
+  ${gos_pid_toolkit_ui_cpp_plugin_qrc})
 
 list(APPEND gos_pid_toolkit_ui_cpp_plugin_source
-#  "${CMAKE_CURRENT_LIST_DIR}/pidtoolkitplugin.qrc")
- ${gos_pid_toolkit_ui_cpp_plugin_resources})
+# ${gos_pid_toolkit_ui_cpp_plugin_qrc}
+  ${gos_pid_toolkit_ui_cpp_plugin_resources})
 
 list(APPEND gos_pid_toolkit_ui_cpp_plugin_include
+  ${gos_pid_toolkit_ui_cpp_qt_include}
   ${gos_pid_toolkit_cpp_include}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ${Qt5Core_INCLUDE_DIRS}
-  ${Qt5Qml_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS})
 
 list(APPEND gos_pid_toolkit_ui_cpp_plugin_libraries
-  Qt5::QuickControls2
-  Qt5::Widgets
-  Qt5::Charts
-  Qt5::OpenGL
-  Qt5::Quick
-  Qt5::Core
-  Qt5::Qml)
+  ${gos_pid_toolkit_ui_cpp_qt_libraries})
+
+list(APPEND gos_pid_toolkit_ui_cpp_plugin_definitions
+  ${gos_pid_toolkit_ui_cpp_qt_compile_definitions})
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -42,8 +48,6 @@ set(CMAKE_AUTOUIC ON)
 
 add_library(${gos_pid_toolkit_ui_cpp_plugin_target} SHARED
   ${gos_pid_toolkit_ui_cpp_plugin_source})
-
-#list(APPEND gos_pid_toolkit_ui_cpp_plugin_include ${Boost_INCLUDE_DIRS})
 
 if(CLANG_TIDY_EXE)
   set_target_properties(${gos_pid_toolkit_ui_cpp_plugin_target} PROPERTIES
@@ -77,8 +81,6 @@ list(APPEND gos_pid_toolkit_ui_cpp_plugin_extra_files
 if(GOS_PID_TOOLKIT_UI_PLUGIN_GENERATE_DUMMY)
   set(gos_pid_toolkit_ui_cpp_dummy_qrc
     "${CMAKE_CURRENT_SOURCE_DIR}/empty.qrc")
-  set(gos_pid_toolkit_ui_cpp_dummy_empty_qmldir
-    "${CMAKE_CURRENT_SOURCE_DIR}/emptyqmldir")
   add_subdirectory(empty)
 endif()
 

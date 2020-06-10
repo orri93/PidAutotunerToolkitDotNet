@@ -1,9 +1,14 @@
 <RCC>
+
+  <qresource prefix="/">
+     <file alias="qtquickcontrols2.conf">empty/qtquickcontrols2.conf</file>
+  </qresource>
+  
   <qresource prefix="/pidtoolkit">
     
     <file alias="PidToolkit.js">qml/PidToolkit.js</file>
     <file alias="Style.qml">qml/Style.qml</file>
-
+    
     <file alias="Toolkit.qml">empty/Toolkit.qml</file>
 
     <file alias="EmptyForm.ui.qml">qml/EmptyForm.ui.qml</file>
@@ -26,6 +31,9 @@
 
     <file alias="ComponentControllerForm.ui.qml">qml/ComponentControllerForm.ui.qml</file>
     <file alias="ComponentController.qml">empty/ComponentController.qml</file>
+    
+    <file alias="ComponentKpidForm.ui.qml">qml/ComponentKpidForm.ui.qml</file>
+    <file alias="ComponentKpid.qml">empty/ComponentKpid.qml</file>
 
     <file alias="ComponentRangeForm.ui.qml">qml/ComponentRangeForm.ui.qml</file>
     <file alias="ComponentRange.qml">empty/ComponentRange.qml</file>
@@ -95,6 +103,9 @@
 
     <file alias="TabViewBlackBoxForm.ui.qml">qml/TabViewBlackBoxForm.ui.qml</file>
     <file alias="TabViewBlackBox.qml">empty/TabViewBlackBox.qml</file>
+
+    <file alias="ContentControllerForm.ui.qml">qml/ContentControllerForm.ui.qml</file>
+    <file alias="ContentController.qml">empty/ContentController.qml</file>
 
     <file alias="PanelMainForm.ui.qml">qml/PanelMainForm.ui.qml</file>
     <file alias="PanelMain.qml">empty/PanelMain.qml</file>

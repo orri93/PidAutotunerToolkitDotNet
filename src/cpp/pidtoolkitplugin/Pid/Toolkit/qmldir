@@ -24,6 +24,9 @@ ComponentCommunication 1.0 qrc:///pidtoolkit/ComponentCommunication.qml
 ComponentControllerForm 1.0 qrc:///pidtoolkit/ComponentControllerForm.ui.qml
 ComponentController 1.0 qrc:///pidtoolkit/ComponentController.qml
 
+ComponentKpidForm 1.0 qrc:///pidtoolkit/ComponentKpidForm.ui.qml
+ComponentKpid 1.0 qrc:///pidtoolkit/ComponentKpid.qml
+
 ComponentRangeForm 1.0 qrc:///pidtoolkit/ComponentRangeForm.ui.qml
 ComponentRange 1.0 qrc:///pidtoolkit/ComponentRange.qml
 
@@ -93,13 +96,16 @@ TabBlackBoxOther 1.0 qrc:///pidtoolkit/TabBlackBoxOther.qml
 TabViewBlackBoxForm 1.0 qrc:///pidtoolkit/TabViewBlackBoxForm.ui.qml
 TabViewBlackBox 1.0 qrc:///pidtoolkit/TabViewBlackBox.qml
 
+ContentControllerForm 1.0 qrc:///pidtoolkit/ContentControllerForm.ui.qml
+ContentController 1.0 qrc:///pidtoolkit/ContentController.qml
+
 PanelMainForm 1.0 qrc:///pidtoolkit/PanelMainForm.ui.qml
 PanelMain 1.0 qrc:///pidtoolkit/PanelMain.qml
 
 PanelMultyForm 1.0 qrc:///pidtoolkit/PanelMultyForm.ui.qml
 PanelMulty 1.0 qrc:///pidtoolkit/PanelMulty.qml
 
-singleton Toolkit 1.0 qrc:///pidtoolkit/Toolkit.qml
+
 
 plugin pidtoolkitplugin
 

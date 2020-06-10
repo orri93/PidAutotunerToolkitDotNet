@@ -26,74 +26,80 @@ Item {
   ComponentControllerForm {}
   ComponentController {}
 
+  ComponentKpidForm {}
+  ComponentKpid {}
+
   ComponentRangeForm {}
   ComponentRange {}
-
+  
   ComponentUiRangeForm {}
   ComponentUiRange {}
 
-//ComponentFactorForm {}
-//ComponentFactor {}
+  ComponentFactorForm {}
+  ComponentFactor {}
 
-//ComponentFilePathForm {}
-//ComponentFilePath {}
+  ComponentFilePathForm {}
+  ComponentFilePath {}
 
-//ComponentLogForm {}
-//ComponentLog {}
+  ComponentLogForm {}
+  ComponentLog {}
 
-//ComponentSettingsForm {}
-//ComponentSettings {}
+  ComponentSettingsForm {}
+  ComponentSettings {}
 
-//ComponentStatusForm {}
-//ComponentStatus {}
+  ComponentStatusForm {}
+  ComponentStatus {}
 
-//ComponentTuningForm {}
-//ComponentTuning {}
+  ComponentTuningForm {}
+  ComponentTuning {}
 
-//ComponentTuneKpidForm {}
-//ComponentTuneKpid {}
+  ComponentTuneKpidForm {}
+  ComponentTuneKpid {}
 
-//ComponentTuneKpiRangeForm {}
-//ComponentTuneKpiRange {}
+  ComponentTuneKpiRangeForm {}
+  ComponentTuneKpiRange {}
 
-//ComponentTuneControllerForm {}
-//ComponentTuneController {}
+  ComponentTuneControllerForm {}
+  ComponentTuneController {}
 
-//ComponentTuneEvaluationForm {}
-//ComponentTuneEvaluation {}
+  ComponentTuneEvaluationForm {}
+  ComponentTuneEvaluation {}
 
-//GroupCommunicationForm {}
-//GroupCommunication {}
+  GroupCommunicationForm {}
+  GroupCommunication {}
 
-//GroupControllerForm {}
-//GroupController {}
+  GroupControllerForm {}
+  GroupController {}
 
-//GroupRangeForm {}
-//GroupRange {}
+  GroupRangeForm {}
+  GroupRange {}
 
-//GroupUiRangeForm {}
-//GroupUiRange {}
+  GroupUiRangeForm {}
+  GroupUiRange {}
 
-//GroupSettingsForm {}
-//GroupSettings {}
+  GroupSettingsForm {}
+  GroupSettings {}
 
-//GroupStatusForm {}
-//GroupStatus {}
+  GroupStatusForm {}
+  GroupStatus {}
 
-//ViewOutputForm {}
-//ViewOutput {}
+  ViewOutputForm {}
+  ViewOutput {}
 
-//TabBlackBoxEvaluationForm {}
-//TabBlackBoxEvaluation {}
+  TabBlackBoxEvaluationForm {}
+  TabBlackBoxEvaluation {}
 
-//TabBlackBoxMainForm {}
-//TabBlackBoxMain {}
+  TabBlackBoxMainForm {}
+  TabBlackBoxMain {}
 
-//TabBlackBoxOtherForm {}
-//TabBlackBoxOther {}
+  TabBlackBoxOtherForm {}
+  TabBlackBoxOther {}
 
-//TabViewBlackBoxForm {}
-//TabViewBlackBox {}
+  TabViewBlackBoxForm {}
+  TabViewBlackBox {}
+
+  ContentControllerForm {}
+  ContentController {}
 
 //PanelMainForm {}
 //PanelMain {}

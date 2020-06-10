@@ -14,6 +14,7 @@ option(GOS_PID_TOOLKIT_TEST "Build and execute the unit tests" OFF)
 option(GOS_PID_TOOLKIT_UI "Build PID Toolkit UI components" ON)
 option(GOS_PID_ARDUINO_BASED_TUNING "Build the Arduino Based auto-tuning" OFF)
 option(GOS_PID_TOOLKIT_INSTALL_CONFIGURATION "Install the configuration file with the target" ON)
+option(GOS_PID_TOOLKIT_INSTALL_DEPENDENCIES "Install runtime dependencies" ON)
 
 option(BUILD_DOCS "Generate Doxygen" OFF)
 
@@ -176,12 +177,100 @@ if (GOS_PID_TOOLKIT_CPP)
     find_package(Qt5 COMPONENTS REQUIRED
       QuickControls2
       SerialPort
+      Network
       Widgets
       Charts
       OpenGL
       Quick
       Core
-      Qml)
+      Qml
+      Gui)
+    get_target_property(gos_pid_toolkit_qt_quick_controls_2_runtime
+      Qt5::QuickControls2 "IMPORTED_LOCATION_RELEASE")
+    get_target_property(gos_pid_toolkit_qt_serial_port_runtime
+      Qt5::SerialPort "IMPORTED_LOCATION_RELEASE")
+    get_target_property(gos_pid_toolkit_qt_network_runtime
+      Qt5::Network "IMPORTED_LOCATION_RELEASE")
+    get_target_property(gos_pid_toolkit_qt_widgets_runtime
+      Qt5::Widgets "IMPORTED_LOCATION_RELEASE")
+    get_target_property(gos_pid_toolkit_qt_charts_runtime
+      Qt5::Charts "IMPORTED_LOCATION_RELEASE")
+    get_target_property(gos_pid_toolkit_qt_open_gl_runtime
+      Qt5::OpenGL "IMPORTED_LOCATION_RELEASE")
+    get_target_property(gos_pid_toolkit_qt_quick_runtime
+      Qt5::Quick "IMPORTED_LOCATION_RELEASE")
+    get_target_property(gos_pid_toolkit_qt_core_runtime
+      Qt5::Core "IMPORTED_LOCATION_RELEASE")
+    get_target_property(gos_pid_toolkit_qt_qml_runtime
+      Qt5::Qml "IMPORTED_LOCATION_RELEASE")
+    get_target_property(gos_pid_toolkit_qt_gui_runtime
+      Qt5::Gui "IMPORTED_LOCATION_RELEASE")
+
+    list(APPEND gos_pid_toolkit_ui_cpp_qt_libraries
+      Qt5::QuickControls2
+      Qt5::Widgets
+      Qt5::Charts
+      Qt5::OpenGL
+      Qt5::Quick
+      Qt5::Core
+      Qt5::Qml
+      Qt5::Gui)
+    list(APPEND gos_pid_toolkit_ui_cpp_qt_ui_libraries
+      ${gos_pid_toolkit_ui_cpp_qt_libraries}
+      Qt5::SerialPort)
+
+    list(APPEND gos_pid_toolkit_ui_cpp_qt_include
+      ${Qt5QuickControls2_INCLUDE_DIRS}
+      ${Qt5Widgets_INCLUDE_DIRS}
+      ${Qt5Charts_INCLUDE_DIRS}
+      ${Qt5OpenGL_INCLUDE_DIRS}
+      ${Qt5Quick_INCLUDE_DIRS}
+      ${Qt5Core_INCLUDE_DIRS}
+      ${Qt5Qml_INCLUDE_DIRS}
+      ${Qt5Gui_INCLUDE_DIRS})
+    list(APPEND gos_pid_toolkit_ui_cpp_qt_ui_include
+      ${gos_pid_toolkit_ui_cpp_qt_include}
+      ${Qt5SerialPort_INCLUDE_DIRS})
+
+    list(APPEND gos_pid_toolkit_ui_cpp_qt_definitions
+      ${Qt5QuickControls2_DEFINITIONS}
+      ${Qt5Widgets_DEFINITIONS}
+      ${Qt5Charts_DEFINITIONS}
+      ${Qt5OpenGL_DEFINITIONS}
+      ${Qt5Quick_DEFINITIONS}
+      ${Qt5Core_DEFINITIONS}
+      ${Qt5Qml_DEFINITIONS}
+      ${Qt5Gui_DEFINITIONS})
+    list(APPEND gos_pid_toolkit_ui_cpp_ui_definitions
+      ${gos_pid_toolkit_ui_cpp_qt_definitions}
+      ${Qt5SerialPort_DEFINITIONS})
+
+    list(APPEND gos_pid_toolkit_ui_cpp_qt_compile_definitions
+      ${Qt5QuickControls2_COMPILE_DEFINITIONS}
+      ${Qt5Widgets_COMPILE_DEFINITIONS}
+      ${Qt5Charts_COMPILE_DEFINITIONS}
+      ${Qt5OpenGL_COMPILE_DEFINITIONS}
+      ${Qt5Quick_COMPILE_DEFINITIONS}
+      ${Qt5Core_COMPILE_DEFINITIONS}
+      ${Qt5Qml_COMPILE_DEFINITIONS}
+      ${Qt5Gui_COMPILE_DEFINITIONS})
+    list(APPEND gos_pid_toolkit_ui_cpp_qt_compile_ui_definitions
+      ${gos_pid_toolkit_ui_cpp_qt_compile_definitions}
+      ${Qt5SerialPort_COMPILE_DEFINITIONS})
+
+    # Empty so not needed
+    list(APPEND gos_pid_toolkit_ui_cpp_qt_compile_flags
+      ${Qt5QuickControls2_EXECUTABLE_COMPILE_FLAGS}
+      ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}
+      ${Qt5Charts_EXECUTABLE_COMPILE_FLAGS}
+      ${Qt5OpenGL_EXECUTABLE_COMPILE_FLAGS}
+      ${Qt5Quick_EXECUTABLE_COMPILE_FLAGS}
+      ${Qt5Core_EXECUTABLE_COMPILE_FLAGS}
+      ${Qt5Qml_EXECUTABLE_COMPILE_FLAGS}
+      ${Qt5Gui_EXECUTABLE_COMPILE_FLAGS})
+    list(APPEND gos_pid_toolkit_ui_cpp_qt_ui_compile_flags
+      ${gos_pid_toolkit_ui_cpp_qt_compile_flags}
+      ${Qt5SerialPort_EXECUTABLE_COMPILE_FLAGS})
 
     set(gos_pid_toolkit_ui_cpp_plugin_source_dir
       "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/pidtoolkitplugin/Pid/Toolkit")
@@ -192,9 +281,6 @@ if (GOS_PID_TOOLKIT_CPP)
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/plugin/plugin.h")
     set(gos_pid_toolkit_ui_cpp_plugin_qmldir_file
       "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/pidtoolkitplugin/Pid/Toolkit/qmldir")
-
-    #list(APPEND gos_pid_toolkit_ui_cpp_plugin_public_header
-    #  "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/items.h")
 
     list(APPEND gos_pid_toolkit_ui_model_cpp_library_source
       "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/ui/model/restriction.h"
@@ -355,23 +441,27 @@ endif (GOS_PID_TOOLKIT_TEST)
 
 message(STATUS "")
 message(STATUS "PID Toolkit BUILD SUMMARY")
-message(STATUS "  CMAKE_SYSTEM_NAME    : ${CMAKE_SYSTEM_NAME}")
-message(STATUS "  CMAKE_GENERATOR      : ${CMAKE_GENERATOR}")
-message(STATUS "  CMAKE_MODULE_PATH    : ${CMAKE_MODULE_PATH}")
+message(STATUS "  CMAKE_SYSTEM_NAME       : ${CMAKE_SYSTEM_NAME}")
+message(STATUS "  CMAKE_GENERATOR         : ${CMAKE_GENERATOR}")
+message(STATUS "  CMAKE_MODULE_PATH       : ${CMAKE_MODULE_PATH}")
 if (GOS_PID_TOOLKIT_C)
-message(STATUS "  C Compiler ID        : ${CMAKE_C_COMPILER_ID}")
+message(STATUS "  C Compiler ID           : ${CMAKE_C_COMPILER_ID}")
 endif ()
 if (GOS_PID_TOOLKIT_CPP)
-message(STATUS "  C++ Compiler ID      : ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "  C++ Compiler ID         : ${CMAKE_CXX_COMPILER_ID}")
+if (GOS_PID_TOOLKIT_UI)
+message(STATUS "  Qt Definitions          : ${gos_pid_toolkit_ui_cpp_qt_definitions}")
+message(STATUS "  Qt Compile Definitions  : ${gos_pid_toolkit_ui_cpp_qt_compile_definitions}")
 endif ()
-message(STATUS "  Build type           : ${CMAKE_BUILD_TYPE}")
+endif ()
+message(STATUS "  Build type              : ${CMAKE_BUILD_TYPE}")
 if (gos_build_dependency_boost)
-message(STATUS "  Boost version        : ${Boost_VERSION}")
-message(STATUS "  Boost include dir    : ${Boost_INCLUDE_DIRS}")
+message(STATUS "  Boost version           : ${Boost_VERSION}")
+message(STATUS "  Boost include dir       : ${Boost_INCLUDE_DIRS}")
 endif ()
 if (GOS_PID_TOOLKIT_TEST)
-message(STATUS "  Google Test dir      : ${GOS_PID_TOOLKIT_GOOGLE_TEST_PATH}")
-message(STATUS "  Force Shared CRT     : ${gtest_force_shared_crt}")
+message(STATUS "  Google Test dir         : ${GOS_PID_TOOLKIT_GOOGLE_TEST_PATH}")
+message(STATUS "  Force Shared CRT        : ${gtest_force_shared_crt}")
 message(STATUS "  Build and execute unit tests")
 endif ()
 message(STATUS "")
