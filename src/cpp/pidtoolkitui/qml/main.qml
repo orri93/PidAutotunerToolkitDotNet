@@ -31,6 +31,12 @@ Window {
     y: (parent.height - height) / 2
   }
 
+  DialogSettings {
+    id: settingsDialog
+    x: (parent.width - width) / 2
+    y: (parent.height - height) / 2
+  }
+
   Pt.PanelMain {
     id: mainPanel
     anchors.top: parent.top
@@ -40,7 +46,10 @@ Window {
 
     onConnectPid: orchestration.connectDisconnect()
 
+    onSettingsPid: settingsDialog.open();
+
     controllerComponent.onControllerDialog: controllerDialog.open()
+
   }
 
   //Pt.PanelMulty {

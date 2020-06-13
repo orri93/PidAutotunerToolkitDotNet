@@ -100,6 +100,8 @@ bool create(QQmlContext& context) {
     "::gos::pid::toolkit::ui::model::Force*");
   qRegisterMetaType<::gos::pid::toolkit::ui::model::tuning::Method*>(
     "::gos::pid::toolkit::ui::model::tuning::Method*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::model::Restriction*>(
+    "::gos::pid::toolkit::ui::model::Restriction*");
   qRegisterMetaType<::gos::pid::toolkit::ui::model::Serial*>(
     "::gos::pid::toolkit::ui::model::Serial*");
 

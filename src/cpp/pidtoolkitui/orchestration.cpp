@@ -259,7 +259,7 @@ bool Orchestration::connectDisconnect() {
   if (result) {
     if (modbus_->isConnected()) {
       gptuc::Timer& timer = configuration_->getTimer();
-      if (timer.applyIntervalToController()) {
+      if (timer.synchronizeWithController()) {
         if (!modbus_->writeInterval(timer.interval())) {
           //setLastMessage(modbus_->lastMessage());
         }

@@ -14,6 +14,9 @@ Item {
   ControlRealSpinBoxForm {}
   ControlRealSpinBox {}
 
+  ControlIntervalForm {}
+  ControlInterval {}
+
   ControlGroupForm {}
   ControlGroup {}
 
@@ -31,9 +34,18 @@ Item {
 
   ComponentRangeForm {}
   ComponentRange {}
-  
+
   ComponentUiRangeForm {}
   ComponentUiRange {}
+
+  ComponentUiFormatForm {}
+  ComponentUiFormat {}
+
+  ComponentUiNumberForm {}
+  ComponentUiNumber {}
+
+  ComponentUiAccuracyForm {}
+  ComponentUiAccuracy {}
 
   ComponentFactorForm {}
   ComponentFactor {}
@@ -83,6 +95,27 @@ Item {
   GroupStatusForm {}
   GroupStatus {}
 
+  ConfigurationBlackBoxForm {}
+  ConfigurationBlackBox {}
+
+  ConfigurationControllerForm {}
+  ConfigurationController {}
+
+  ConfigurationModbusForm {}
+  ConfigurationModbus {}
+
+  ConfigurationTimerForm {}
+  ConfigurationTimer {}
+  
+  ConfigurationTuningForm {}
+  ConfigurationTuning {}
+
+  ConfigurationUiForm {}
+  ConfigurationUi {}
+
+  ConfigurationSettingsForm {}
+  ConfigurationSettings {}
+
   ViewOutputForm {}
   ViewOutput {}
 
@@ -100,6 +133,9 @@ Item {
 
   ContentControllerForm {}
   ContentController {}
+
+  ContentSettingsForm {}
+  ContentSettings {}
 
 //PanelMainForm {}
 //PanelMain {}

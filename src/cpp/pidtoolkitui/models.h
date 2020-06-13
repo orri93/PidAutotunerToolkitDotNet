@@ -49,7 +49,7 @@ class Models : public QObject {
   Q_PROPERTY(::gos::pid::toolkit::ui::model::Status* status READ status)
   Q_PROPERTY(::gos::pid::toolkit::ui::model::tuning::Method* tuningMethod READ tuningMethod NOTIFY tuningMethodChanged)
   Q_PROPERTY(::gos::pid::toolkit::ui::model::Operation* operation READ operation)
-  Q_PROPERTY(::gos::pid::toolkit::ui::model::Restriction* restriction READ restriction)
+  Q_PROPERTY(::gos::pid::toolkit::ui::model::Restriction* restriction READ restriction NOTIFY restrictionChanged)
   Q_PROPERTY(::gos::pid::toolkit::ui::model::Serial* serialBaud READ serialBaud NOTIFY serialBaudChanged)
   Q_PROPERTY(::gos::pid::toolkit::ui::model::Serial* serialPort READ serialPort NOTIFY serialPortChanged)
 
@@ -91,6 +91,7 @@ signals:
   /* Models */
   void forceChanged();
   void tuningMethodChanged();
+  void restrictionChanged();
   void serialBaudChanged();
   void serialPortChanged();
 

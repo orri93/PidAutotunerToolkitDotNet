@@ -40,7 +40,7 @@ class Timer : public ::gos::pid::toolkit::ui::model::Ptu {
 
   /* Timers configuration */
   Q_PROPERTY(int interval READ interval WRITE setInterval NOTIFY intervalChanged)
-  Q_PROPERTY(bool applyIntervalToController READ applyIntervalToController WRITE setApplyIntervalToController NOTIFY applyIntervalToControllerChanged)
+  Q_PROPERTY(bool synchronizeWithController READ synchronizeWithController WRITE setSynchronizeWithController NOTIFY synchronizeWithControllerChanged)
 
   friend bool (::operator==) (const Timer&, const Timer&);
   friend bool (::operator!=) (const Timer&, const Timer&);
@@ -61,28 +61,28 @@ public:
 
   /* Timers configuration */
   const int& interval() const;
-  const bool& applyIntervalToController() const;
+  const bool& synchronizeWithController() const;
 
   /* Timers configuration */
   bool applyInterval(const int& value);
-  bool applyApplyIntervalToController(const bool& value);
+  bool applySynchronizeWithController(const bool& value);
 
 signals:
   /* Timers configuration */
   void intervalChanged();
-  void applyIntervalToControllerChanged();
+  void synchronizeWithControllerChanged();
 
 public slots:
   /* Timers configuration */
   void setInterval(const int& value);
-  void setApplyIntervalToController(const bool& value);
+  void setSynchronizeWithController(const bool& value);
 
 protected:
   void create();
 
   /* Timers configuration */
   int interval_;
-  bool applyIntervalToController_;
+  bool synchronizeWithController_;
 };
 
 typedef std::unique_ptr<Timer> TimerPointer;

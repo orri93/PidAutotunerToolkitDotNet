@@ -141,8 +141,8 @@ PanelMain 1.0 qrc:///pidtoolkit/PanelMain.qml
 PanelMultyForm 1.0 qrc:///pidtoolkit/PanelMultyForm.ui.qml
 PanelMulty 1.0 qrc:///pidtoolkit/PanelMulty.qml
 
+@GOS_PID_TOOLKIT_PLUGIN_QMLDIR_TOOLKIT_ITEM@
 
-
-plugin pidtoolkitplugin
+plugin @GOS_PID_TOOLKIT_PLUGIN@
 
 typeinfo Pid.Toolkit.qmltypes

@@ -34,6 +34,7 @@ RowLayout {
     minorTickmarkCount: 8
     Layout.preferredWidth: Style.gaugeWidth
   }
+
 }
 
 /*##^##

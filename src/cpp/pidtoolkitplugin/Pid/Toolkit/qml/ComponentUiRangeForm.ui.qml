@@ -6,6 +6,9 @@ import Pid.Toolkit 1.0
 
 ColumnLayout {
 
+  property alias rangeFromField: rangeFromTextField
+  property alias rangeToField: rangeToTextField
+
     DoubleValidator {
         id: doubleValidator
     }
@@ -19,14 +22,14 @@ ColumnLayout {
 
     RowLayout {
         Label {
-            id: rangeMinimumLabel
-            text: qsTr("Minimum: ")
+            id: rangeFromLabel
+            text: qsTr("From: ")
             color: Style.labelTextColor
             Layout.leftMargin: Style.labelLeftMargin
             font.pointSize: Style.labelFontPointSize
         }
         TextField {
-            id: rangeMinimumTextField
+            id: rangeFromTextField
             Layout.preferredWidth: Style.preferredRangeInputWidth
             Layout.leftMargin: Style.inputTextLeftMargin
             color: acceptableInput ? Style.inputTextColor : Style.errorTextColor
@@ -35,14 +38,14 @@ ColumnLayout {
         }
 
         Label {
-            id: rangeMaximumLabel
-            text: qsTr("Maximum: ")
+            id: rangeToLabel
+            text: qsTr("To: ")
             color: Style.labelTextColor
             Layout.leftMargin: Style.labelLeftMargin
             font.pointSize: Style.labelFontPointSize
         }
         TextField {
-            id: rangeMaximumTextField
+            id: rangeToTextField
             Layout.preferredWidth: Style.preferredRangeInputWidth
             Layout.leftMargin: Style.inputTextLeftMargin
             color: acceptableInput ? Style.inputTextColor : Style.errorTextColor

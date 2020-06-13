@@ -30,7 +30,7 @@ public:
 
   Serial(const SerialRoles& type, QObject* parent = nullptr);
 
-  Q_INVOKABLE bool create(const SerialRoles& type = PortValueRole);
+  Q_INVOKABLE bool create(const SerialRoles& type);
   Q_INVOKABLE int index(const QString& port);
   Q_INVOKABLE int index(const int& baud);
   Q_INVOKABLE QString port(const int& index);
@@ -39,7 +39,9 @@ public:
   int rowCount(const QModelIndex& parent = QModelIndex()) const;
   QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-  PortModel& portModel();
+  static bool create();
+
+  static PortModel& portModel();
 
   static BaudModel& baudModel();
 
@@ -47,7 +49,7 @@ protected:
   QHash<int, QByteArray> roleNames() const;
 private:
   SerialRoles type_;
-  PortModel portModel_;
+  static PortModel PortModel_;
   static BaudModel BaudModel_;
 };
 

@@ -1,0 +1,12 @@
+import QtQuick 2.14
+import Pid.Toolkit 1.0
+
+ConfigurationTimerForm {
+
+  property var timer: null
+
+  onTimerChanged: {
+    if(timer) {
+    }
+  }
+}

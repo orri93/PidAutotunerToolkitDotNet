@@ -20,18 +20,21 @@
     <file alias="ControlRealSpinBoxForm.ui.qml">qml/ControlRealSpinBoxForm.ui.qml</file>
     <file alias="ControlRealSpinBox.qml">empty/ControlRealSpinBox.qml</file>
 
+    <file alias="ControlIntervalForm.ui.qml">qml/ControlIntervalForm.ui.qml</file>
+    <file alias="ControlInterval.qml">empty/ControlInterval.qml</file>
+
     <file alias="ControlGroupForm.ui.qml">qml/ControlGroupForm.ui.qml</file>
     <file alias="ControlGroup.qml">empty/ControlGroup.qml</file>
-    
+
     <file alias="IndicatorGaugeForm.ui.qml">qml/IndicatorGaugeForm.ui.qml</file>
     <file alias="IndicatorGauge.qml">empty/IndicatorGauge.qml</file>
-    
+
     <file alias="ComponentCommunicationForm.ui.qml">qml/ComponentCommunicationForm.ui.qml</file>
     <file alias="ComponentCommunication.qml">empty/ComponentCommunication.qml</file>
 
     <file alias="ComponentControllerForm.ui.qml">qml/ComponentControllerForm.ui.qml</file>
     <file alias="ComponentController.qml">empty/ComponentController.qml</file>
-    
+
     <file alias="ComponentKpidForm.ui.qml">qml/ComponentKpidForm.ui.qml</file>
     <file alias="ComponentKpid.qml">empty/ComponentKpid.qml</file>
 
@@ -40,6 +43,15 @@
 
     <file alias="ComponentUiRangeForm.ui.qml">qml/ComponentUiRangeForm.ui.qml</file>
     <file alias="ComponentUiRange.qml">empty/ComponentUiRange.qml</file>
+
+    <file alias="ComponentUiNumberForm.ui.qml">qml/ComponentUiNumberForm.ui.qml</file>
+    <file alias="ComponentUiNumber.qml">empty/ComponentUiNumber.qml</file>
+
+    <file alias="ComponentUiFormatForm.ui.qml">qml/ComponentUiFormatForm.ui.qml</file>
+    <file alias="ComponentUiFormat.qml">empty/ComponentUiFormat.qml</file>
+
+    <file alias="ComponentUiAccuracyForm.ui.qml">qml/ComponentUiAccuracyForm.ui.qml</file>
+    <file alias="ComponentUiAccuracy.qml">empty/ComponentUiAccuracy.qml</file>
     
     <file alias="ComponentFactorForm.ui.qml">qml/ComponentFactorForm.ui.qml</file>
     <file alias="ComponentFactor.qml">empty/ComponentFactor.qml</file>
@@ -88,7 +100,28 @@
 
     <file alias="GroupStatusForm.ui.qml">qml/GroupStatusForm.ui.qml</file>
     <file alias="GroupStatus.qml">empty/GroupStatus.qml</file>
+    
+    <file alias="ConfigurationBlackBoxForm.ui.qml">qml/ConfigurationBlackBoxForm.ui.qml</file>
+    <file alias="ConfigurationBlackBox.qml">empty/ConfigurationBlackBox.qml</file>
+    
+    <file alias="ConfigurationControllerForm.ui.qml">qml/ConfigurationControllerForm.ui.qml</file>
+    <file alias="ConfigurationController.qml">empty/ConfigurationController.qml</file>
 
+    <file alias="ConfigurationModbusForm.ui.qml">qml/ConfigurationModbusForm.ui.qml</file>
+    <file alias="ConfigurationModbus.qml">empty/ConfigurationModbus.qml</file>
+    
+    <file alias="ConfigurationTimerForm.ui.qml">qml/ConfigurationTimerForm.ui.qml</file>
+    <file alias="ConfigurationTimer.qml">empty/ConfigurationTimer.qml</file>
+    
+    <file alias="ConfigurationTuningForm.ui.qml">qml/ConfigurationTuningForm.ui.qml</file>
+    <file alias="ConfigurationTuning.qml">empty/ConfigurationTuning.qml</file>
+    
+    <file alias="ConfigurationUiForm.ui.qml">qml/ConfigurationUiForm.ui.qml</file>
+    <file alias="ConfigurationUi.qml">empty/ConfigurationUi.qml</file>
+
+    <file alias="ConfigurationSettingsForm.ui.qml">qml/ConfigurationSettingsForm.ui.qml</file>
+    <file alias="ConfigurationSettings.qml">empty/ConfigurationSettings.qml</file>
+    
     <file alias="ViewOutputForm.ui.qml">qml/ViewOutputForm.ui.qml</file>
     <file alias="ViewOutput.qml">empty/ViewOutput.qml</file>
 
@@ -107,6 +140,9 @@
     <file alias="ContentControllerForm.ui.qml">qml/ContentControllerForm.ui.qml</file>
     <file alias="ContentController.qml">empty/ContentController.qml</file>
 
+    <file alias="ContentSettingsForm.ui.qml">qml/ContentSettingsForm.ui.qml</file>
+    <file alias="ContentSettings.qml">empty/ContentSettings.qml</file>
+    
     <file alias="PanelMainForm.ui.qml">qml/PanelMainForm.ui.qml</file>
     <file alias="PanelMain.qml">empty/PanelMain.qml</file>
 

@@ -20,6 +20,8 @@ static const int BaudArray[] = {
 };
 } // namespace baud
 
+Serial::PortModel Serial::PortModel_(QString(), PortValueRole, PortTextRole);
+
 Serial::BaudModel Serial::BaudModel_(
   gptum::baud::BaudArray,
   -1,
@@ -28,27 +30,20 @@ Serial::BaudModel Serial::BaudModel_(
 
 Serial::Serial(const SerialRoles& type, QObject* parent) :
   QAbstractListModel(parent),
-  type_(type),
-  portModel_(QString(), PortValueRole, PortTextRole) {
+  type_(type) {
 }
 
 bool Serial::create(const SerialRoles& type) {
-  portModel_.clear();
-  QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
-  for (QSerialPortInfo port : ports) {
-    QString porttext = port.portName();
-    portModel_.add(porttext);
-  }
-  return true;
+  return Serial::create();
 }
 int Serial::index(const QString& port) {
-  return portModel_.index(port);
+  return Serial::PortModel_.index(port);
 }
 int Serial::index(const int& baud) {
   return BaudModel_.index(baud);
 }
 QString Serial::port(const int& index) {
-  return portModel_.value(index);
+  return Serial::PortModel_.value(index);
 }
 int Serial::baud(const int& index) {
   return BaudModel_.value(index);
@@ -59,7 +54,7 @@ int Serial::rowCount(const QModelIndex& parent) const {
   switch (type_) {
   case PortValueRole:
   case PortTextRole:
-    return portModel_.count();
+    return Serial::PortModel_.count();
   case BaudValueRole:
   case BaudTextRole:
     return BaudModel_.count();
@@ -71,7 +66,7 @@ QVariant Serial::data(const QModelIndex& index, int role) const {
   switch (type_) {
   case PortValueRole:
   case PortTextRole:
-    return portModel_.data(index, role);
+    return Serial::PortModel_.data(index, role);
   case BaudValueRole:
   case BaudTextRole:
     return BaudModel_.data(index, role);
@@ -89,13 +84,22 @@ QHash<int, QByteArray> Serial::roleNames() const {
 }
 
 Serial::PortModel& Serial::portModel() {
-  return portModel_;
+  return PortModel_;
 }
 
 Serial::BaudModel& Serial::baudModel(){
   return BaudModel_;
 }
 
+bool Serial::create() {
+  Serial::PortModel_.clear();
+  QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
+  for (QSerialPortInfo port : ports) {
+    QString porttext = port.portName();
+    Serial::PortModel_.add(porttext);
+  }
+  return true;
+}
 
 } // namespace model
 } // namespace ui
