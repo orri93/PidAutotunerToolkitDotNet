@@ -13,6 +13,9 @@ SET GOS_QML_PLUGIN_DUMP_EXE=qmlplugindump
 SET GOS_QML_PLUGIN_VERSION=1.0
 SET GOS_QML_PLUGIN=Pid.Toolkit
 
+SET GOS_BUILD_LOG_DIR=%GOS_ROOT_DIR%\var\log
+SET GOS_BUILD_LOG=%GOS_BUILD_LOG_DIR%\build.log
+
 SET GOS_DIA_EXE_PATH=C:/Program Files (x86)/Dia/bin/dia.exe
 
 ECHO ---------------------------------------------------------------------------
@@ -51,10 +54,12 @@ IF "%1" == "NoDoc" GOTO gos_not_doc
 IF "%1" == "NoDocs" GOTO gos_not_doc
 IF "%1" == "NotDoc" GOTO gos_not_doc
 IF "%1" == "NotDocs" GOTO gos_not_doc
+SET GOS_BUILD_DOCS=ON
 GOTO gos_check_not_doc_done
 :gos_not_doc
 ECHO Not Documentation detected
 SET GOS_NOT_DOC=NotDoc
+SET GOS_BUILD_DOCS=OFF
 SHIFT
 :gos_check_not_doc_done
 
@@ -68,6 +73,33 @@ SHIFT
 
 
 REM Check and set environmental variables
+
+REM Check for Latex pdfflatex
+SET GOS_MIKTEX_PATH=C:\Program Files\MiKTeX 2.9\miktex\bin\x64
+SET GOS_LATEX_IN_PATH_INDICATOR=%GOS_MIKTEX_PATH%
+CALL:inPath GOS_LATEX_IN_PATH_INDICATOR && ( GOTO latex_in_path ) || ( GOTO latex_not_in_path )
+:latex_in_path
+ECHO The Latex bin folder is already in the path
+GOTO latex_in_path_done
+:latex_not_in_path
+ECHO Putting the Latex bin folders into the path
+SET PATH=%PATH%;%GOS_MIKTEX_PATH%
+ECHO Testing PDF Latex by getting version information
+pdflatex --version
+:latex_in_path_done
+
+REM Check for Python
+SET GOS_PYTHON_IN_PATH_INDICATOR=C:\Python38\
+CALL:inPath GOS_PYTHON_IN_PATH_INDICATOR && ( GOTO python_in_path ) || ( GOTO python_not_in_path )
+:python_in_path
+ECHO The Python bin folders is already in the path
+GOTO python_in_path_done
+:python_not_in_path
+ECHO Putting the Python bin folders into the path
+SET PATH=%PATH%;C:\Python38\;C:\Python38\Scripts\;C:\%USERPROFILE%\AppData\Roaming\Python\Scripts
+:python_in_path_done
+
+REM Check Qt
 IF NOT DEFINED QTDIR GOTO qtdir_not_defined
   ECHO QT Dir already defined as %QTDIR%
   GOTO qtdir_defined
@@ -76,8 +108,8 @@ IF NOT DEFINED QTDIR GOTO qtdir_not_defined
   ECHO QT Dir not defined. Defined as %QTDIR%
 :qtdir_defined
 SET QT_BIN_DIR=%QTDIR%\bin
-SET GOS_EP_QT_IN_PATH_INDICATOR=%QT_BIN_DIR%
-CALL:inPath GOS_EP_QT_IN_PATH_INDICATOR && ( GOTO qt_in_path ) || ( GOTO qt_not_in_path )
+SET GOS_QT_IN_PATH_INDICATOR=%QT_BIN_DIR%
+CALL:inPath GOS_QT_IN_PATH_INDICATOR && ( GOTO qt_in_path ) || ( GOTO qt_not_in_path )
 :qt_in_path
 ECHO The Qt bin folder is already in the path
 GOTO qt_in_path_done
@@ -104,7 +136,9 @@ REM -DGOS_PID_TOOLKIT_UI_PLUGIN_QML_TYPES:BOOL=ON ^
 REM -Dgtest_force_shared_crt:BOOL=ON ^
 
 SET GOS_CMAKE_CREATE_OPTIONS=^
--DBUILD_DOCS:BOOL=ON ^
+--graphviz="%GOS_PROJECT_ARTIFACTS_DIR%\share\graphviz" ^
+--log-level=DEBUG ^
+-DBUILD_DOCS:BOOL=%GOS_BUILD_DOCS% ^
 -DGOS_DEPLOY_PDB_FILES:BOOL=ON ^
 -DGOS_PID_TOOLKIT_UI_PLUGIN_GENERATE_DUMMY:BOOL=ON ^
 -DDOXYGEN_DIA_EXECUTABLE:FILEPATH="%GOS_DIA_EXE_PATH%" ^
@@ -153,39 +187,46 @@ ECHO Creating a build folder %GOS_PROJECT_BUILD_DIR%
 ECHO *** Creating a Build
 SET GOS_CMAKE_CREATE_BUILD_CMD="%GOS_EXE_CMAKE%" -E chdir "%GOS_PROJECT_BUILD_DIR%" "%GOS_EXE_CMAKE%" %GOS_CMAKE_CREATE_OPTIONS%
 ECHO %GOS_CMAKE_CREATE_BUILD_CMD%
-%GOS_CMAKE_CREATE_BUILD_CMD%
+%GOS_CMAKE_CREATE_BUILD_CMD% > "%GOS_BUILD_LOG_DIR%\create.log"
 
 ECHO *** Building
 SET GOS_CMAKE_BUILD_CMD="%GOS_EXE_CMAKE%" %GOS_CMAKE_BUILD_OPTIONS%
 ECHO %GOS_CMAKE_BUILD_CMD%
-%GOS_CMAKE_BUILD_CMD%
+%GOS_CMAKE_BUILD_CMD% > "%GOS_BUILD_LOG_DIR%\build.log"
 
 REM ECHO *** Creating a Plugin QML Types for the Build
 REM SET GOS_QML_PLUGIN_BUILD_DUMP_CMD="%GOS_QML_PLUGIN_DUMP_EXE%" -nonrelocatable -output "%GOS_QML_PLUGIN_BUILD_QML_TYPES_DESTINATION%" %GOS_QML_PLUGIN% %GOS_QML_PLUGIN_VERSION% "%GOS_QML_PLUGIN_BUILD_DIR%"
 REM ECHO %GOS_QML_PLUGIN_BUILD_DUMP_CMD%
-%REM GOS_QML_PLUGIN_BUILD_DUMP_CMD%
+REM %GOS_QML_PLUGIN_BUILD_DUMP_CMD%
 
 ECHO *** Testing
 SET GOS_CMAKE_CTEST_CMD="%GOS_EXE_CMAKE%" -E chdir "%GOS_PROJECT_BUILD_DIR%" "%GOS_EXE_CTEST%" %GOS_CTEST_OPTIONS%
 ECHO %GOS_CMAKE_CTEST_CMD%
-%GOS_CMAKE_CTEST_CMD%
+%GOS_CMAKE_CTEST_CMD% > "%GOS_BUILD_LOG_DIR%\test.log"
 
 IF "%GOS_NOT_DOC%" == "NotDoc" GOTO gos_do_not_generate_doc
 ECHO *** Generating API Documentation
 SET GOS_CMAKE_DOXYGEN_CMD="%GOS_EXE_CMAKE%" %GOS_CMAKE_DOXYGEN_OPTIONS%
 ECHO %GOS_CMAKE_DOXYGEN_CMD%
-%GOS_CMAKE_DOXYGEN_CMD%
+%GOS_CMAKE_DOXYGEN_CMD% > "%GOS_BUILD_LOG_DIR%\doxygen.log"
+REM ECHO *** Generating PDF Documentation
+REM SET GOS_DOXYGEN_BUILD_DIR=%GOS_PROJECT_BUILD_DIR%\doc\latex
+REM ECHO Entering %GOS_DOXYGEN_BUILD_DIR%
+REM PUSHD "%GOS_DOXYGEN_BUILD_DIR%"
+REM ECHO Execute PDF Latex
+REM ECHO pdflatex pdf
+REM POPD
 :gos_do_not_generate_doc
 
 ECHO *** Installing
 SET GOS_CMAKE_INSTALL_CMD="%GOS_EXE_CMAKE%" %GOS_CMAKE_INSTALL_OPTIONS%
 ECHO %GOS_CMAKE_INSTALL_CMD%
-%GOS_CMAKE_INSTALL_CMD%
+%GOS_CMAKE_INSTALL_CMD% > "%GOS_BUILD_LOG_DIR%\install.log"
 
 ECHO *** Creating a Plugin QML Types for the Install
 SET GOS_QML_PLUGIN_INSTALL_DUMP_CMD="%GOS_QML_PLUGIN_DUMP_EXE%" -nonrelocatable -output "%GOS_QML_PLUGIN_INSTALL_QML_TYPES_DESTINATION%" %GOS_QML_PLUGIN% %GOS_QML_PLUGIN_VERSION% "%GOS_QML_PLUGIN_INSTALL_DIR%"
 ECHO %GOS_QML_PLUGIN_INSTALL_DUMP_CMD%
-%GOS_QML_PLUGIN_INSTALL_DUMP_CMD%
+%GOS_QML_PLUGIN_INSTALL_DUMP_CMD% > "%GOS_BUILD_LOG_DIR%\qmltypes.log"
 
 REM Done
 GOTO:EOF

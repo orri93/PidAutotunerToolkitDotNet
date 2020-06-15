@@ -77,6 +77,7 @@ ColumnLayout {
               anchors.horizontalCenter: parent.horizontalCenter
               Button {
                   id: controllerSettingButton
+                  enabled: false
                   text: qsTr("Setting")
               }
             }

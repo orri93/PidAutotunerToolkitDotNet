@@ -4,7 +4,10 @@ import Pid.Toolkit.Model 1.0 as Ptm
 
 ControlRealSpinBoxForm {
 
+  /*** type:var The accuracy object */
   property var accuracyObject: null
+
+  /*** type:real The the real value */
   property real realValue: 0.0
 
   DoubleValidator {
@@ -56,12 +59,19 @@ ControlRealSpinBoxForm {
     return realMultiplier * Number.fromLocaleString(locale, text)
   }
 
+  /**
+   * Refresh the value
+   */
   function refresh() {
     if(accuracyObject) {
       value = realMultiplier * realValue;
     }
   }
 
+  /**
+   * Calculate internal properties
+   * @param type:int precision The precision
+   */
   function calculate(precision) {
     realMultiplier = Math.pow(10.0, realPrecision);
     realStepSize = 1.0 / realMultiplier;
@@ -73,6 +83,9 @@ ControlRealSpinBoxForm {
       " step size to " + realStepSize);
   }
 
+  /**
+   * Resolve the user interface
+   */
   function resolveUserInterface() {
     if(accuracyObject.number.restriction == Ptm.Restriction.Both) {
       validator = doubleValidatorBoth;

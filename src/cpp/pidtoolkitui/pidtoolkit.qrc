@@ -5,7 +5,5 @@
     <file alias="PidChart.qml">qml/PidChart.qml</file>
     <file alias="PidChartPanelForm.ui.qml">qml/PidChartPanelForm.ui.qml</file>
     <file alias="PidChartPanel.qml">qml/PidChartPanel.qml</file>
-    <file alias="DialogController.qml">qml/DialogController.qml</file>
-    <file alias="DialogSettings.qml">qml/DialogSettings.qml</file>
   </qresource>
 </RCC>

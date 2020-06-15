@@ -1,2 +1,7 @@
-# PidAutotunerToolkitDotNet
-.Net Core 2 version of Arduino PID AutoTune Library and matlab Autotuner PID Toolkit
+# Goals
+
+PID Toolkit is a collection of software libraries and executable for PID controllers and tuning.
+
+# Building
+
+# Installing

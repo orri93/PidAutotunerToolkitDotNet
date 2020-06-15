@@ -37,6 +37,12 @@ Item {
   readonly property int fileDialogHeight: 600
   readonly property int fileDialogWidth: 800
 
+  readonly property int settingsDialogHeight: 800
+  readonly property int settingsDialogWidth: 600
+
+  readonly property int controllerDialogHeight: 80
+  readonly property int controllerDialogWidth: 540
+
   readonly property double panelMargin: 10.0
   readonly property double panelItemMargin: 4.0
   readonly property double labelLeftMargin: 2.0
@@ -61,6 +67,7 @@ Item {
 
   readonly property real preferredNumberInputWidth: 60.0
   readonly property real preferredRangeInputWidth: 60.0
+  readonly property real preferredRangeLabelWidth: 40.0
 
   readonly property real preferredSeparatorInputWidth: 40.0
 

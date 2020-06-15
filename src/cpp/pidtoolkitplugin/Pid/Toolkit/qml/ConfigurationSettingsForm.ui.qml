@@ -5,12 +5,11 @@ import QtQuick.Layouts 1.12
 import Pid.Toolkit 1.0
 
 ColumnLayout {
-    width: stackLayout.width
-    height: stackLayout.height
+    width: 600.0
+    height: 600.0
 
     TabBar {
-        id: tabBar
-        currentIndex: stackLayout.currentIndex
+      id: tabBar
         Layout.preferredWidth: stackLayout.width
 
         TabButton {
@@ -25,8 +24,8 @@ ColumnLayout {
     StackLayout {
         id: stackLayout
         currentIndex: tabBar.currentIndex
-        Layout.preferredHeight: 600.0
-        Layout.preferredWidth: 600.0
+        Layout.preferredHeight: parent.height
+        Layout.preferredWidth: parent.width
 
         ColumnLayout {
             ConfigurationModbus {
@@ -39,6 +38,14 @@ ColumnLayout {
 
             ConfigurationTimer {
                 id: timerConfiguration
+            }
+
+            ControlGroup {
+                title: qsTr("Logging")
+
+                ComponentLog {
+                    id: logComponent
+                }
             }
         }
 
@@ -53,3 +60,4 @@ Designer {
     D{i:0;formeditorColor:"#4c4e50"}
 }
 ##^##*/
+

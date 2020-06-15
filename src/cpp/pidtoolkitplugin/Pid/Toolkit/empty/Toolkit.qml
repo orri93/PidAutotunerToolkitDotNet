@@ -20,6 +20,9 @@ Item {
   ControlGroupForm {}
   ControlGroup {}
 
+  ControlFilePathForm {}
+  ControlFilePath {}
+
   IndicatorGaugeForm {}
   IndicatorGauge {}
 
@@ -49,9 +52,6 @@ Item {
 
   ComponentFactorForm {}
   ComponentFactor {}
-
-  ComponentFilePathForm {}
-  ComponentFilePath {}
 
   ComponentLogForm {}
   ComponentLog {}
@@ -128,8 +128,17 @@ Item {
   TabBlackBoxOtherForm {}
   TabBlackBoxOther {}
 
+  TabSettingsMainForm {}
+  TabSettingsMain {}
+
+  TabSettingsUiForm {}
+  TabSettingsUi {}
+
   TabViewBlackBoxForm {}
   TabViewBlackBox {}
+
+  TabViewSettingsForm {}
+  TabViewSettings {}
 
   ContentControllerForm {}
   ContentController {}

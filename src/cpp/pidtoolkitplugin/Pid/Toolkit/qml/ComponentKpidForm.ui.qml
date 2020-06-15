@@ -5,7 +5,10 @@ import QtQuick.Controls 2.12
 import Pid.Toolkit 1.0
 
 RowLayout {
-    id: rowLayout
+
+  property alias kpRealBox: kpRealSpinBox
+  property alias kiRealBox: kiRealSpinBox
+  property alias kdRealBox: kdRealSpinBox
 
     DoubleValidator {
         id: doubleValidator

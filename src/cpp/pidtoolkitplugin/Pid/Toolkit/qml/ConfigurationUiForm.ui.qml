@@ -4,16 +4,20 @@ import QtQuick.Controls 2.12
 
 import Pid.Toolkit 1.0
 
-ColumnLayout {
+GridLayout {
+    columns: 2
+    rows: 2
 
     ControlGroup {
         title: qsTr("Accuracy")
+        Layout.rowSpan: 2
+        Layout.column: 0
+        Layout.row: 0
 
         ColumnLayout {
             ColumnLayout {
                 id: setpointAccuracyColumn
                 Layout.preferredWidth: setpointComponentUiAccuracy.width
-                Layout.fillWidth: true
                 Label {
                     text: qsTr("Setpoint")
                     color: Style.labelTextColor
@@ -27,7 +31,6 @@ ColumnLayout {
             ColumnLayout {
                 id: kpAccuracyColumn
                 Layout.preferredWidth: kpComponentUiAccuracy.width
-                Layout.fillWidth: true
                 Label {
                     text: qsTr("Kp")
                     color: Style.labelTextColor
@@ -41,7 +44,6 @@ ColumnLayout {
             ColumnLayout {
                 id: kiAccuracyColumn
                 Layout.preferredWidth: kiComponentUiAccuracy.width
-                Layout.fillWidth: true
                 Label {
                     text: qsTr("Ki")
                     color: Style.labelTextColor
@@ -55,7 +57,6 @@ ColumnLayout {
             ColumnLayout {
                 id: kdAccuracyColumn
                 Layout.preferredWidth: kdComponentUiAccuracy.width
-                Layout.fillWidth: true
                 Label {
                     text: qsTr("Kd")
                     color: Style.labelTextColor
@@ -67,18 +68,16 @@ ColumnLayout {
                 }
             }
         }
-    }
-
-    RowLayout {
 
         ControlGroup {
             title: qsTr("Range")
+            Layout.column: 1
+            Layout.row: 0
 
             ColumnLayout {
                 ColumnLayout {
                     id: kpTuningRangeColumn
                     Layout.preferredWidth: kpTuningComponentUiRange.width
-                    Layout.fillWidth: true
                     Label {
                         text: qsTr("Kp Tuning")
                         color: Style.labelTextColor
@@ -92,7 +91,6 @@ ColumnLayout {
                 ColumnLayout {
                     id: kiTuningRangeColumn
                     Layout.preferredWidth: kiTuningComponentUiRange.width
-                    Layout.fillWidth: true
                     Label {
                         text: qsTr("Ki Tuning")
                         color: Style.labelTextColor
@@ -107,12 +105,13 @@ ColumnLayout {
         }
         ControlGroup {
             title: qsTr("Format")
+            Layout.column: 1
+            Layout.row: 1
 
             ColumnLayout {
                 ColumnLayout {
                     id: temperatureFormatColumn
                     Layout.preferredWidth: temperatureComponentUiFormat.width
-                    Layout.fillWidth: true
                     Label {
                         text: qsTr("Temperature")
                         color: Style.labelTextColor
@@ -127,7 +126,6 @@ ColumnLayout {
                 ColumnLayout {
                     id: integralFormatColumn
                     Layout.preferredWidth: integralComponentUiFormat.width
-                    Layout.fillWidth: true
                     Label {
                         text: qsTr("Integral")
                         color: Style.labelTextColor
@@ -142,10 +140,3 @@ ColumnLayout {
         }
     }
 }
-
-/*##^##
-Designer {
-    D{i:0;formeditorColor:"#4c4e50"}
-}
-##^##*/
-

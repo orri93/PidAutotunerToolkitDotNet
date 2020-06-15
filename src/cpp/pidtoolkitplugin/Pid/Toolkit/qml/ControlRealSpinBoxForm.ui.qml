@@ -5,14 +5,28 @@ import QtQuick.Controls 2.12
 import Pid.Toolkit 1.0
 
 SpinBox {
-    property int realPrecision: 3
-    property real realValue: 0.0
-    property real realMultiplier: 1000.0
-    property real realStepSize: 0.001
-    property real realFrom: 0.0
-    property real realTo: 100.0
+  /*** type:int The precision of the real value */
+  property int realPrecision: 3
 
-    editable: true
+  /*** type:real The minimum real value */
+  property real realFrom: 0.0
 
-    stepSize: realMultiplier * realStepSize
+  /*** type:real The v real value */
+  property real realTo: 100.0
+
+  /*** type:real The real value step size is based on the precision */
+  property real realStepSize: 0.001
+
+  /*** type:real The real multipler is internal property and is based on the precision */
+  property real realMultiplier: 1000.0
+
+  editable: true
+
+  stepSize: realMultiplier * realStepSize
 }
+
+/*##^##
+Designer {
+    D{i:0;formeditorColor:"#4c4e50"}
+}
+##^##*/

@@ -6,11 +6,12 @@ import Pid.Toolkit 1.0
 
 RowLayout {
 
-  property alias restrictionBox: restrictionComboBox
-  property alias componentRange: componentUiRange
+    property alias restrictionBox: restrictionComboBox
+    property alias componentRange: componentUiRange
 
     ComponentUiRange {
         id: componentUiRange
+        Layout.preferredWidth: 200.0
     }
 
     ColumnLayout {
@@ -32,3 +33,4 @@ Designer {
     D{i:0;formeditorColor:"#4c4e50"}
 }
 ##^##*/
+

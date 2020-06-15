@@ -7,8 +7,6 @@ ComponentUiFormatForm {
   onFormatChanged: {
     if(format) {
       precision = format.precision;
-      formatConnections.target = format;
-      formatConnections.enabled = true;
     }
   }
 
@@ -17,14 +15,5 @@ ComponentUiFormatForm {
       format.precision = precision;
     }
   }
-
-  Connections {
-    id: formatConnections
-    enabled: false
-    onPrecisionChanged: {
-      precision = format.precision;
-    }
-  }
-
 
 }

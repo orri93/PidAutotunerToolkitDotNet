@@ -1,0 +1,16 @@
+digraph G {
+
+  Main -> PidChart;
+  Main -> PanelMain -> ViewOutput;
+  PanelMain -> ComponentController;
+  PanelMain -> ComponentTuning;
+  PanelMain -> ComponentStatus;
+  PanelMain -> settingDialog -> TabViewSettings -> TabSettingMain -> ConfigurationModbus -> ComponentCommunication;
+  TabViewSettings -> TabSettingUi -> ConfigurationUi -> ComponentUiAccuracy -> ComponentUiFormat;
+  ComponentUiAccuracy -> ComponentUiNumber -> ComponentUiRange;
+  ConfigurationUi -> ComponentUiRange;
+  ConfigurationUi -> ComponentUiFormat;
+  TabSettingMain -> ConfigurationController -> ComponentUiNumber;
+  TabSettingMain -> ConfigurationTimer -> ControlInterval;
+  TabSettingMain -> ComponentLog -> ControlFilePath;
+}

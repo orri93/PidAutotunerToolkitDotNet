@@ -14,11 +14,7 @@ ComponentUiNumberForm {
   onNumberChanged: {
     if(number) {
       componentRange.range = number.range;
-      rangeConnections.target = number.range;
-      rangeConnections.enabled = true;
       restrictionBox.currentIndex = ptModels.restriction.index(number.restriction);
-      numberConnections.target = number;
-      numberConnections.enabled = true;
     }
   }
 
@@ -28,20 +24,5 @@ ComponentUiNumberForm {
     }
   }
 
-  Connections {
-    id: rangeConnections
-    enabled: false
-    onRangeChanged: {
-      componentRange.range = number.range;
-    }
-  }
-
-  Connections {
-    id: numberConnections
-    enabled: false
-    onRestrictionChanged: {
-      restrictionBox.currentIndex = ptModels.restriction.index(number.restriction);
-    }
-  }
 
 }

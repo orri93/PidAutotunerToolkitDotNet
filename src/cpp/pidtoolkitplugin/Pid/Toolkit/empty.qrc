@@ -25,6 +25,9 @@
 
     <file alias="ControlGroupForm.ui.qml">qml/ControlGroupForm.ui.qml</file>
     <file alias="ControlGroup.qml">empty/ControlGroup.qml</file>
+    
+    <file alias="ControlFilePathForm.ui.qml">qml/ControlFilePathForm.ui.qml</file>
+    <file alias="ControlFilePath.qml">empty/ControlFilePath.qml</file>
 
     <file alias="IndicatorGaugeForm.ui.qml">qml/IndicatorGaugeForm.ui.qml</file>
     <file alias="IndicatorGauge.qml">empty/IndicatorGauge.qml</file>
@@ -55,9 +58,6 @@
     
     <file alias="ComponentFactorForm.ui.qml">qml/ComponentFactorForm.ui.qml</file>
     <file alias="ComponentFactor.qml">empty/ComponentFactor.qml</file>
-
-    <file alias="ComponentFilePathForm.ui.qml">qml/ComponentFilePathForm.ui.qml</file>
-    <file alias="ComponentFilePath.qml">empty/ComponentFilePath.qml</file>
 
     <file alias="ComponentLogForm.ui.qml">qml/ComponentLogForm.ui.qml</file>
     <file alias="ComponentLog.qml">empty/ComponentLog.qml</file>
@@ -130,13 +130,22 @@
 
     <file alias="TabBlackBoxMainForm.ui.qml">qml/TabBlackBoxMainForm.ui.qml</file>
     <file alias="TabBlackBoxMain.qml">empty/TabBlackBoxMain.qml</file>
+    
+    <file alias="TabSettingsMainForm.ui.qml">qml/TabSettingsMainForm.ui.qml</file>
+    <file alias="TabSettingsMain.qml">empty/TabSettingsMain.qml</file>
+
+    <file alias="TabSettingsUiForm.ui.qml">qml/TabSettingsUiForm.ui.qml</file>
+    <file alias="TabSettingsUi.qml">empty/TabSettingsUi.qml</file>
 
     <file alias="TabBlackBoxOtherForm.ui.qml">qml/TabBlackBoxOtherForm.ui.qml</file>
     <file alias="TabBlackBoxOther.qml">empty/TabBlackBoxOther.qml</file>
 
     <file alias="TabViewBlackBoxForm.ui.qml">qml/TabViewBlackBoxForm.ui.qml</file>
     <file alias="TabViewBlackBox.qml">empty/TabViewBlackBox.qml</file>
-
+    
+    <file alias="TabViewSettingsForm.ui.qml">qml/TabViewSettingsForm.ui.qml</file>
+    <file alias="TabViewSettings.qml">empty/TabViewSettings.qml</file>
+    
     <file alias="ContentControllerForm.ui.qml">qml/ContentControllerForm.ui.qml</file>
     <file alias="ContentController.qml">empty/ContentController.qml</file>
 
@@ -148,6 +157,6 @@
 
     <file alias="PanelMultyForm.ui.qml">qml/PanelMultyForm.ui.qml</file>
     <file alias="PanelMulty.qml">empty/PanelMulty.qml</file>
-  
+
   </qresource>
 </RCC>

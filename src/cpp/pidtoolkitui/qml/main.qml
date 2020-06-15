@@ -21,21 +21,7 @@ Window {
   property var orchestration: ptOrchestration
   property var modbus: ptOrchestration.modbus
 
-
-  Component.onCompleted: {
-  }
-
-  DialogController {
-    id: controllerDialog
-    x: (parent.width - width) / 2
-    y: (parent.height - height) / 2
-  }
-
-  DialogSettings {
-    id: settingsDialog
-    x: (parent.width - width) / 2
-    y: (parent.height - height) / 2
-  }
+  Component.onCompleted: {}
 
   Pt.PanelMain {
     id: mainPanel
@@ -45,11 +31,6 @@ Window {
     onQuitPid: Qt.quit()
 
     onConnectPid: orchestration.connectDisconnect()
-
-    onSettingsPid: settingsDialog.open();
-
-    controllerComponent.onControllerDialog: controllerDialog.open()
-
   }
 
   //Pt.PanelMulty {

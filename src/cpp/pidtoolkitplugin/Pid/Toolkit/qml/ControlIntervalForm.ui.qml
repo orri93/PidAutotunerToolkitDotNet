@@ -4,8 +4,9 @@ import QtQuick.Controls 2.12
 
 import Pid.Toolkit 1.0
 
-RowLayout {
+Item {
 
+    /** type:string The what text */
     property string what: qsTr("...")
 
     property alias value: intervalSpinBox.value
@@ -14,10 +15,12 @@ RowLayout {
 
     SpinBox {
         id: intervalSpinBox
-        Layout.preferredWidth: Style.preferredPanelItemWidth
+        width: 195.0
     }
 
     CheckBox {
+        x: 200.0
+        width: 240.0
         id: intervalCheckBox
         text: "Synchronize with " + what
     }
@@ -25,7 +28,7 @@ RowLayout {
 
 /*##^##
 Designer {
-    D{i:0;formeditorColor:"#4c4e50"}
+    D{i:0;autoSize:true;formeditorColor:"#4c4e50";height:480;width:640}
 }
 ##^##*/
 

@@ -5,11 +5,21 @@ import QtQuick.Controls 2.12
 import Pid.Toolkit 1.0
 
 ColumnLayout {
-    width: settingsConfiguration.width
-    height: settingsConfiguration.height
 
-    ConfigurationSettings {
-        id: settingsConfiguration
+    property alias kpid: kpidComponent
+
+    width: 540.0
+    height: 80.0
+
+    ControlGroup {
+        title: qsTr("PID")
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+        Layout.preferredHeight: parent.height - 10.0
+        Layout.preferredWidth: parent.width - 10.0
+
+        ComponentKpid {
+            id: kpidComponent
+        }
     }
 }
 

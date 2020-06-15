@@ -18,6 +18,9 @@ ControlInterval 1.0 qrc:///pidtoolkit/ControlInterval.qml
 ControlGroupForm 1.0 qrc:///pidtoolkit/ControlGroupForm.ui.qml
 ControlGroup 1.0 qrc:///pidtoolkit/ControlGroup.qml
 
+ControlFilePathForm 1.0 qrc:///pidtoolkit/ControlFilePathForm.ui.qml
+ControlFilePath 1.0 qrc:///pidtoolkit/ControlFilePath.qml
+
 IndicatorGaugeForm 1.0 qrc:///pidtoolkit/IndicatorGaugeForm.ui.qml
 IndicatorGauge 1.0 qrc:///pidtoolkit/IndicatorGauge.qml
 
@@ -126,8 +129,17 @@ TabBlackBoxMain 1.0 qrc:///pidtoolkit/TabBlackBoxMain.qml
 TabBlackBoxOtherForm 1.0 qrc:///pidtoolkit/TabBlackBoxOtherForm.ui.qml
 TabBlackBoxOther 1.0 qrc:///pidtoolkit/TabBlackBoxOther.qml
 
+TabSettingsMainForm 1.0 qrc:///pidtoolkit/TabSettingsMainForm.ui.qml
+TabSettingsMain 1.0 qrc:///pidtoolkit/TabSettingsMain.qml
+
+TabSettingsUiForm 1.0 qrc:///pidtoolkit/TabSettingsUiForm.ui.qml
+TabSettingsUi 1.0 qrc:///pidtoolkit/TabSettingsUi.qml
+
 TabViewBlackBoxForm 1.0 qrc:///pidtoolkit/TabViewBlackBoxForm.ui.qml
 TabViewBlackBox 1.0 qrc:///pidtoolkit/TabViewBlackBox.qml
+
+TabViewSettingsForm 1.0 qrc:///pidtoolkit/TabViewSettingsForm.ui.qml
+TabViewSettings 1.0 qrc:///pidtoolkit/TabViewSettings.qml
 
 ContentControllerForm 1.0 qrc:///pidtoolkit/ContentControllerForm.ui.qml
 ContentController 1.0 qrc:///pidtoolkit/ContentController.qml

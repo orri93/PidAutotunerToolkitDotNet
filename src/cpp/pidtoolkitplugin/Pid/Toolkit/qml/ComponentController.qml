@@ -26,7 +26,7 @@ ComponentControllerForm {
   setpointBox.enabled: false // modbus.isConnected
   //setpointBox.realValue: modbus.setpoint
 
-  //settingButton.enabled: false // modbus.isConnected
+  settingButton.enabled: false // modbus.isConnected
 
   manualBox.onValueChanged: {
     console.log("Manual box value is " + manualBox.value);
@@ -89,5 +89,6 @@ ComponentControllerForm {
     manualBox.enabled = modbus.isConnected;
     forceBox.enabled = modbus.isConnected;
     setpointBox.enabled = modbus.isConnected;
+    settingButton.enabled = modbus.isConnected;
   }
 }
