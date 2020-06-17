@@ -8,7 +8,7 @@ Item {
 
     TabBar {
         id: tabBar
-        currentIndex: stackLayout.currentIndex
+        currentIndex: 0
 
         TabButton {
             text: qsTr("Main")
@@ -22,9 +22,12 @@ Item {
     StackLayout {
         id: stackLayout
         currentIndex: tabBar.currentIndex
+        width: 960.0
+        height: 450.0
+        y: 50
 
         TabSettingsMain {
-            id: mainTab
+          id: mainTab
         }
 
         TabSettingsUi {
@@ -35,6 +38,7 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;autoSize:true;height:480;width:640}
+    D{i:0;autoSize:true;formeditorColor:"#4c4e50";height:450;width:960}D{i:6;invisible:true}
 }
 ##^##*/
+

@@ -4,16 +4,19 @@ import QtQuick.Controls 2.12
 
 import Pid.Toolkit 1.0
 
-RowLayout {
-  property alias componentNumber: componentUiNumber
-  property alias componentFormat: componentUiFormat
+Item {
+    property alias componentNumber: componentUiNumber
+    property alias componentFormat: componentUiFormat
 
     ComponentUiFormat {
         id: componentUiFormat
+        width: 170.0
     }
 
     ComponentUiNumber {
         id: componentUiNumber
+        width: 340.0
+        x: 180.0
     }
 }
 

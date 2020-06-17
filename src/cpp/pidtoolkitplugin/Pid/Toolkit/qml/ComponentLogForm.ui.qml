@@ -4,33 +4,39 @@ import QtQuick.Controls 2.12
 
 import Pid.Toolkit 1.0
 
-RowLayout {
-    ColumnLayout {
-        Layout.preferredWidth: Style.preferredSeparatorInputWidth
-        Label {
-            text: qsTr("Separator")
-            color: Style.labelTextColor
-            Layout.leftMargin: Style.labelLeftMargin
-            font.pointSize: Style.labelFontPointSize
-        }
-        TextField {
-            id: loggingSeparatorTextField
-            Layout.leftMargin: Style.inputTextLeftMargin
-            font.pointSize: Style.inputFontPointSize
-            color: Style.inputTextColor
-        }
+Item {
+
+    Label {
+        text: qsTr("Separator")
+        color: Style.labelTextColor
+        font.pointSize: Style.labelFontPointSize
+        x: 5.0
     }
-    ColumnLayout {
-        Layout.preferredWidth: 410.0
-        Label {
-            text: qsTr("File")
-            color: Style.labelTextColor
-            Layout.leftMargin: Style.labelLeftMargin
-            font.pointSize: Style.labelFontPointSize
-        }
-        ControlFilePath {
-            id: logControlFilePath
-        }
+    TextField {
+        id: loggingSeparatorTextField
+        font.pointSize: Style.inputFontPointSize
+        color: Style.inputTextColor
+        y: 15.0
+    }
+
+    Label {
+        text: qsTr("File")
+        color: Style.labelTextColor
+        font.pointSize: Style.labelFontPointSize
+        x: 135.0
+    }
+    ControlFilePath {
+        id: logControlFilePath
+        height: 44.0
+        width: 410
+        y: 15.0
+        x: 130.0
     }
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;formeditorColor:"#4c4e50";height:60;width:540}
+}
+##^##*/
 

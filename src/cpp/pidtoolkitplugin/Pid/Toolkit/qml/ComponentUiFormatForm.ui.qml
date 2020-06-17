@@ -4,25 +4,27 @@ import QtQuick.Controls 2.12
 
 import Pid.Toolkit 1.0
 
-RowLayout {
-  property alias precision: precisionSpinBox.value
+Item {
+    property alias precision: precisionSpinBox.value
 
-    ColumnLayout {
-        Label {
-          text: qsTr("Precision")
-            color: Style.labelTextColor
-            Layout.leftMargin: Style.labelLeftMargin
-            font.pointSize: Style.labelFontPointSize
-        }
-        SpinBox {
-            id: precisionSpinBox
-            Layout.preferredWidth: Style.preferredPanelItemWidth
-        }
+    implicitWidth: 190.0
+
+    Label {
+        text: qsTr("Precision")
+        color: Style.labelTextColor
+        font.pointSize: Style.labelFontPointSize
+        x: 2.0
+    }
+    SpinBox {
+        id: precisionSpinBox
+        width: 190.0
+        y: 15.0
     }
 }
 
 /*##^##
 Designer {
-    D{i:0;formeditorColor:"#4c4e50"}
+    D{i:0;autoSize:true;formeditorColor:"#4c4e50";height:480;width:640}
 }
 ##^##*/
+

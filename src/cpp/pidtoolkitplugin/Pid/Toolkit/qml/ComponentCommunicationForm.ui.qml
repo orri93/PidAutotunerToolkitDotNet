@@ -4,105 +4,104 @@ import QtQuick.Controls 2.12
 
 import Pid.Toolkit 1.0
 
-ColumnLayout {
+Item {
 
     property alias serialPortBox: serialPortComboBox
     property alias serialBaudBox: serialBaudComboBox
 
-    RowLayout {
-        ColumnLayout {
-            Label {
-                text: "Serial Port"
-                color: Style.dialogLabelTextColor
-                Layout.leftMargin: Style.labelLeftMargin
-                font.pointSize: Style.labelFontPointSize
-            }
-
-            ComboBox {
-                id: serialPortComboBox
-                Layout.preferredWidth: 111.0
-            }
-        }
-
-        ColumnLayout {
-            Label {
-                text: "Baud Rate"
-                color: Style.dialogLabelTextColor
-                Layout.leftMargin: Style.labelLeftMargin
-                font.pointSize: Style.labelFontPointSize
-            }
-
-            ComboBox {
-                id: serialBaudComboBox
-                Layout.preferredWidth: 111.0
-            }
-        }
-
-        ColumnLayout {
-            Label {
-                text: "Slave ID"
-                color: Style.dialogLabelTextColor
-                Layout.leftMargin: Style.labelLeftMargin
-                font.pointSize: Style.labelFontPointSize
-            }
-
-            SpinBox {
-                from: 0
-                to: 255
-                Layout.preferredWidth: 111.0
-            }
-        }
+    Label {
+        text: "Serial Port"
+        color: Style.dialogLabelTextColor
+        font.pointSize: Style.labelFontPointSize
+        x: 5.0
     }
-    RowLayout {
-        ColumnLayout {
-            Label {
-                text: "Data Bits"
-                color: Style.dialogLabelTextColor
-                Layout.leftMargin: Style.labelLeftMargin
-                font.pointSize: Style.labelFontPointSize
-            }
 
-            ComboBox {
-                id: dataBitsComboBox
-                model: [8, 7]
-                Layout.preferredWidth: 111.0
-            }
-        }
+    ComboBox {
+        id: serialPortComboBox
+        width: 120.0
+        y: 15.0
+    }
 
-        ColumnLayout {
-            Label {
-                text: "Stop Bit"
-                color: Style.dialogLabelTextColor
-                Layout.leftMargin: Style.labelLeftMargin
-                font.pointSize: Style.labelFontPointSize
-            }
+    Label {
+        text: "Baud Rate"
+        color: Style.dialogLabelTextColor
+        font.pointSize: Style.labelFontPointSize
+        x: 135.0
+    }
 
-            ComboBox {
-                id: stopBitComboBox
-                model: [1, 1.5, 2]
-            }
-        }
+    ComboBox {
+        id: serialBaudComboBox
+        width: 120.0
+        x: 130.0
+        y: 15.0
+    }
 
-        ColumnLayout {
-            Label {
-                text: "Parity"
-                color: Style.dialogLabelTextColor
-                Layout.leftMargin: Style.labelLeftMargin
-                font.pointSize: Style.labelFontPointSize
-            }
+    Label {
+        text: "Slave ID"
+        color: Style.dialogLabelTextColor
+        font.pointSize: Style.labelFontPointSize
+        x: 265.0
+    }
 
-            ComboBox {
-                id: parityComboBox
-                model: ["None", "Odd", "Even"]
-                Layout.preferredWidth: 111.0
-            }
-        }
+    SpinBox {
+        from: 0
+        to: 255
+        width: 190.0
+        x: 260.0
+        y: 15.0
+    }
+
+    Label {
+        text: "Data Bits"
+        color: Style.dialogLabelTextColor
+        font.pointSize: Style.labelFontPointSize
+        x: 5.0
+        y: 70.0
+    }
+
+    ComboBox {
+        id: dataBitsComboBox
+        model: [8, 7]
+        width: 120.0
+        y: 85.0
+    }
+
+    Label {
+        text: "Stop Bit"
+        color: Style.dialogLabelTextColor
+        font.pointSize: Style.labelFontPointSize
+        x: 135.0
+        y: 70.0
+    }
+
+    ComboBox {
+        id: stopBitComboBox
+        model: [1, 1.5, 2]
+        width: 120.0
+        x: 130.0
+        y: 85.0
+    }
+
+    Label {
+        text: "Parity"
+        color: Style.dialogLabelTextColor
+        font.pointSize: Style.labelFontPointSize
+        x: 265.0
+        y: 70.0
+    }
+
+    ComboBox {
+        id: parityComboBox
+        model: ["None", "Odd", "Even"]
+        width: 120.0
+        x: 260.0
+        y: 85.0
     }
 }
 
 /*##^##
 Designer {
-    D{i:0;formeditorColor:"#c0c0c0"}
+    D{i:0;autoSize:true;formeditorColor:"#4c4e50";height:130;width:450}
 }
 ##^##*/
 

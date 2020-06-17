@@ -4,33 +4,36 @@ import QtQuick.Controls 2.12
 
 import Pid.Toolkit 1.0
 
-RowLayout {
+Item {
 
     property alias restrictionBox: restrictionComboBox
     property alias componentRange: componentUiRange
 
+    implicitWidth: 340.0
+
     ComponentUiRange {
         id: componentUiRange
-        Layout.preferredWidth: 200.0
+        width: 210
     }
 
-    ColumnLayout {
-        Label {
-            text: qsTr("Restriction")
-            color: Style.labelTextColor
-            Layout.leftMargin: Style.labelLeftMargin
-            font.pointSize: Style.labelFontPointSize
-        }
-        ComboBox {
-            id: restrictionComboBox
-            Layout.preferredWidth: Style.preferredPanelItemWidth
-        }
+    Label {
+        text: qsTr("Restriction")
+        color: Style.labelTextColor
+        font.pointSize: Style.labelFontPointSize
+        x: 222.0
+    }
+
+    ComboBox {
+        id: restrictionComboBox
+        width: 120.0
+        x: 220.0
+        y: 15.0
     }
 }
 
 /*##^##
 Designer {
-    D{i:0;formeditorColor:"#4c4e50"}
+    D{i:0;autoSize:true;formeditorColor:"#4c4e50";height:480;width:640}
 }
 ##^##*/
 

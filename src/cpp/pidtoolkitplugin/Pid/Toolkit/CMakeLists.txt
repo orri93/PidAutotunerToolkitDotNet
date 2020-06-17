@@ -1,5 +1,5 @@
 option(GOS_PID_TOOLKIT_UI_PLUGIN_GENERATE_DUMMY
-  "Generate dummy plugin for QML Types (only works with release builds)" ON)
+  "Generate dummy plugin for QML Types (only works with release builds)" OFF)
 
 set(GOS_PID_TOOLKIT_PLUGIN ${gos_pid_toolkit_ui_cpp_plugin_target})
 set(gos_pid_toolkit_ui_cpp_plugin_qmldir

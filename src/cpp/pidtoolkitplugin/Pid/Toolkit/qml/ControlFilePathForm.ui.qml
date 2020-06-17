@@ -12,6 +12,8 @@ Item {
     /*** type:alias The File Path Field */
     property alias filePathButton: filePathBrowseButton
 
+  implicitWidth: 405
+
     TextField {
         id: filePathTextField
         width: 320.0
@@ -20,7 +22,7 @@ Item {
     }
     Button {
         id: filePathBrowseButton
-        implicitWidth: 80.0
+        width: 80.0
         x: 325.0
         text: qsTr("Browse")
     }

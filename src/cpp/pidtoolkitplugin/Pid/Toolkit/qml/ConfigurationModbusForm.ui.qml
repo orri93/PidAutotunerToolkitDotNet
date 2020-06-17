@@ -4,11 +4,13 @@ import QtQuick.Controls 2.12
 
 import Pid.Toolkit 1.0
 
-ColumnLayout {
+Item {
 
     property alias modbusCommunicationComponent: communicationComponent
 
     ControlGroup {
+        width: 460
+        height: 170
         title: qsTr("Modbus Communication")
 
         ComponentCommunication {
@@ -19,7 +21,7 @@ ColumnLayout {
 
 /*##^##
 Designer {
-    D{i:0;formeditorColor:"#4c4e50"}
+    D{i:0;autoSize:true;formeditorColor:"#4c4e50";height:150;width:460}
 }
 ##^##*/
 

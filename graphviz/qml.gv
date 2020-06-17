@@ -13,4 +13,5 @@ digraph G {
   TabSettingMain -> ConfigurationController -> ComponentUiNumber;
   TabSettingMain -> ConfigurationTimer -> ControlInterval;
   TabSettingMain -> ComponentLog -> ControlFilePath;
+  
 }

@@ -4,21 +4,23 @@ import QtQuick.Controls 2.12
 
 import Pid.Toolkit 1.0
 
-ColumnLayout {
+Item {
 
     ControlGroup {
+        width: 410
+        height: 80
         title: qsTr("Timer")
 
         ControlInterval {
-          id: intervalControl
-          what: qsTr("controller")
+            id: intervalControl
+            what: qsTr("controller")
         }
     }
 }
 
 /*##^##
 Designer {
-    D{i:0;formeditorColor:"#4c4e50"}
+    D{i:0;autoSize:true;formeditorColor:"#4c4e50";height:60;width:410}
 }
 ##^##*/
 

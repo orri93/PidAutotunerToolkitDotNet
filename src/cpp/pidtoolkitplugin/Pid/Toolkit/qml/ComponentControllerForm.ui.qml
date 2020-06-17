@@ -4,84 +4,58 @@ import QtQuick.Controls 2.12
 
 import Pid.Toolkit 1.0
 
-ColumnLayout {
+Item {
 
-  property alias manualBox: manualSpinBox
-  property alias forceBox: forceComboBox
-  property alias setpointBox: setpointRealSpinBox
-  property alias settingButton: controllerSettingButton
+    property alias manualBox: manualSpinBox
+    property alias forceBox: forceComboBox
+    property alias setpointBox: setpointRealSpinBox
+    property alias settingButton: controllerSettingButton
 
-    RowLayout {
-
-        ColumnLayout {
-            id: manualColumn
-            Layout.rightMargin: Style.panelItemMargin
-
-            Label {
-                text: qsTr("Manual")
-                color: Style.labelTextColor
-                Layout.leftMargin: Style.labelLeftMargin
-                font.pointSize: Style.labelFontPointSize
-            }
-            SpinBox {
-                id: manualSpinBox
-                editable: true
-                Layout.preferredWidth: Style.preferredPanelItemWidth
-            }
-        }
-
-        ColumnLayout {
-            id: forceColumn
-            Layout.leftMargin: Style.panelItemMargin
-
-            Label {
-                text: qsTr("Mode")
-                color: Style.labelTextColor
-                Layout.leftMargin: Style.labelLeftMargin
-                font.pointSize: Style.labelFontPointSize
-            }
-            ComboBox {
-                id: forceComboBox
-                Layout.preferredWidth: Style.preferredPanelItemWidth
-            }
-        }
+    Label {
+        text: qsTr("Manual")
+        color: Style.labelTextColor
+        font.pointSize: Style.labelFontPointSize
+        x: 5.0
+    }
+    SpinBox {
+        id: manualSpinBox
+        editable: true
+        width: 190.0
+        y: 15.0
     }
 
-    RowLayout {
+    Label {
+        text: qsTr("Mode")
+        color: Style.labelTextColor
+        font.pointSize: Style.labelFontPointSize
+        x: 205.0
+    }
+    ComboBox {
+        id: forceComboBox
+        width: 120.0
+        x: 200.0
+        y: 15.0
+    }
 
-        ColumnLayout {
-            id: setpointColumn
-            Layout.rightMargin: Style.panelItemMargin
-            Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
+    Label {
+        text: qsTr("Setpoint")
+        color: Style.labelTextColor
+        font.pointSize: Style.labelFontPointSize
+        y: 100.0
+        x: 5
+    }
+    ControlRealSpinBox {
+        id: setpointRealSpinBox
+        y: 115.0
+    }
 
-            Label {
-                text: qsTr("Setpoint")
-                color: Style.labelTextColor
-                Layout.leftMargin: Style.labelLeftMargin
-                font.pointSize: Style.labelFontPointSize
-            }
-            ControlRealSpinBox {
-                id: setpointRealSpinBox
-                Layout.preferredWidth: Style.preferredPanelItemWidth
-            }
-        }
-
-        Item {
-            id: element
-            Layout.leftMargin: Style.panelItemMargin
-            Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
-            Layout.preferredWidth: Style.preferredPanelItemWidth
-            Layout.preferredHeight: controllerSettingButton.height
-
-            RowLayout {
-              anchors.horizontalCenter: parent.horizontalCenter
-              Button {
-                  id: controllerSettingButton
-                  enabled: false
-                  text: qsTr("Setting")
-              }
-            }
-        }
+    Button {
+        id: controllerSettingButton
+        text: qsTr("Setting")
+        enabled: false
+        width: 90.0
+        y: 115.0
+        x: 200.0
     }
 }
 

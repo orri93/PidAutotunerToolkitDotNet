@@ -4,68 +4,64 @@ import QtQuick.Controls 2.12
 
 import Pid.Toolkit 1.0
 
-ColumnLayout {
+Item {
 
     property alias rangeFromField: rangeFromTextField
     property alias rangeToField: rangeToTextField
+
+    property real labelVerticalPosition: 10.0
+    property real labelWidth: 40.0
+    property real fieldWidth: 60.0
+
+    property real labelMargin: 2.0
+    property real fieldMargin: 5.0
+
+    implicitWidth: 212.0
 
     DoubleValidator {
         id: doubleValidator
     }
 
     Label {
-        id: rangeNameLabel
+        id: rangeFromLabel
+        text: qsTr("From: ")
         color: Style.labelTextColor
-        Layout.leftMargin: Style.labelLeftMargin
         font.pointSize: Style.labelFontPointSize
+        width: labelWidth
+        y: labelVerticalPosition
+        x: 2.0
+    }
+    TextField {
+        id: rangeFromTextField
+        color: acceptableInput ? Style.inputTextColor : Style.errorTextColor
+        font.pointSize: Style.inputFontPointSize
+        validator: doubleValidator
+        width: fieldWidth
+        x: 47.0
     }
 
-    RowLayout {
-        RowLayout {
-            Layout.preferredWidth: 100.0
-            Label {
-                id: rangeFromLabel
-                text: qsTr("From: ")
-                color: Style.labelTextColor
-                Layout.leftMargin: Style.labelLeftMargin
-                font.pointSize: Style.labelFontPointSize
-            }
-            TextField {
-                id: rangeFromTextField
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                Layout.preferredWidth: Style.preferredRangeInputWidth
-                Layout.leftMargin: Style.inputTextLeftMargin
-                color: acceptableInput ? Style.inputTextColor : Style.errorTextColor
-                font.pointSize: Style.inputFontPointSize
-                validator: doubleValidator
-            }
-        }
-
-        RowLayout {
-            Layout.preferredWidth: 100.0
-            Label {
-                id: rangeToLabel
-                text: qsTr("To: ")
-                color: Style.labelTextColor
-                Layout.leftMargin: Style.labelLeftMargin
-                font.pointSize: Style.labelFontPointSize
-            }
-            TextField {
-                id: rangeToTextField
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                Layout.preferredWidth: Style.preferredRangeInputWidth
-                Layout.leftMargin: Style.inputTextLeftMargin
-                color: acceptableInput ? Style.inputTextColor : Style.errorTextColor
-                font.pointSize: Style.inputFontPointSize
-                validator: doubleValidator
-            }
-        }
+    Label {
+        id: rangeToLabel
+        text: qsTr("To: ")
+        color: Style.labelTextColor
+        font.pointSize: Style.labelFontPointSize
+        width: labelWidth
+        y: labelVerticalPosition
+        x: 109
+    }
+    TextField {
+        id: rangeToTextField
+        color: acceptableInput ? Style.inputTextColor : Style.errorTextColor
+        font.pointSize: Style.inputFontPointSize
+        validator: doubleValidator
+        width: fieldWidth
+        x: 152
     }
 }
 
 /*##^##
 Designer {
-    D{i:0;formeditorColor:"#808080"}
+    D{i:0;autoSize:true;formeditorColor:"#808080";height:480;width:640}
 }
 ##^##*/
 
