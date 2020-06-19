@@ -40,5 +40,5 @@ if(GOS_DEPLOY_PDB_FILES)
 endif()
 
 install(TARGETS ${gos_pid_black_box_tuning_target}
-  LIBRARY DESTINATION bin/tuning
-  ARCHIVE DESTINATION bin/tuning)
+# CONFIGURATIONS etc
+  RUNTIME DESTINATION bin/tuning)
