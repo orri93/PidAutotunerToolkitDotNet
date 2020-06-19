@@ -7,7 +7,8 @@ ComponentCommunicationForm {
 
   property var orchestration: ptOrchestration
   property var setpointAccuracy: ptOrchestration.configuration.ui.setpoint
-  property var modbus: ptOrchestration.modbus
+  property var settings: ptOrchestration.settings
+  property var modbus: ptOrchestration.settings.modbus
 
   serialPortBox.model: ptModels.serialPort
   serialPortBox.textRole: "portText"

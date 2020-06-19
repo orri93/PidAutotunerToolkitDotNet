@@ -5,11 +5,26 @@ ComponentUiRangeForm {
 
   property var range: null
 
+  property bool fromEnabled: true
+  property bool toEnabled: true
+
+
+  rangeFromField.enabled: fromEnabled
+  rangeToField.enabled: toEnabled
+
   onRangeChanged: {
     if(range) {
       rangeFromField.text = range.from;
       rangeToField.text = range.to;
     }
+  }
+
+  onFromEnabledChanged: {
+    rangeFromField.enabled = fromEnabled;
+  }
+
+  onToEnabledChanged: {
+    rangeToField.enabled = toEnabled;
   }
 
   rangeFromField.onAccepted: {
@@ -23,4 +38,5 @@ ComponentUiRangeForm {
       range.to = rangeToField.text;
     }
   }
+
 }

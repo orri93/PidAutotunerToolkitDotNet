@@ -6,6 +6,8 @@ import Pid.Toolkit 1.0
 
 Item {
 
+  property alias interval: intervalControl
+
     ControlGroup {
         width: 410
         height: 80

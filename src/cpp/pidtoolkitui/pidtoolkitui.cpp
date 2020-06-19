@@ -1,3 +1,5 @@
+/** @defgroup pidtoolkitui PID Toolkit Application */
+
 #include <cstdlib>
 
 #include <memory>
@@ -14,6 +16,11 @@
 
 namespace gptu = ::gos::pid::toolkit::ui;
 
+/** @addtogroup pidtoolkitui
+  * @brief The PID Toolkit UI Application.
+  *
+  * @{
+  */
 int main(int argc, char* argv[]) {
   // Qt Charts uses Qt Graphics View Framework for drawing
   // therefore QApplication must be used.
@@ -45,3 +52,5 @@ int main(int argc, char* argv[]) {
   }
   return EXIT_FAILURE;
 }
+
+/** @} */

@@ -14,7 +14,6 @@ SET GOS_QML_PLUGIN_VERSION=1.0
 SET GOS_QML_PLUGIN=Pid.Toolkit
 
 SET GOS_BUILD_LOG_DIR=%GOS_ROOT_DIR%\var\log
-SET GOS_BUILD_LOG=%GOS_BUILD_LOG_DIR%\build.log
 
 SET GOS_DIA_EXE_PATH=C:/Program Files (x86)/Dia/bin/dia.exe
 
@@ -42,6 +41,26 @@ SET GOS_NOT_CLEAN=NotClean
 SHIFT
 :gos_check_not_clean_done
 
+IF "%1" == "nobuild" GOTO gos_not_build
+IF "%1" == "nobuilds" GOTO gos_not_build
+IF "%1" == "notbuild" GOTO gos_not_build
+IF "%1" == "notbuilds" GOTO gos_not_build
+IF "%1" == "noBuild" GOTO gos_not_build
+IF "%1" == "noBuilds" GOTO gos_not_build
+IF "%1" == "notBuild" GOTO gos_not_build
+IF "%1" == "notBuilds" GOTO gos_not_build
+IF "%1" == "NoBuild" GOTO gos_not_build
+IF "%1" == "NoBuilds" GOTO gos_not_build
+IF "%1" == "NotBuild" GOTO gos_not_build
+IF "%1" == "NotBuilds" GOTO gos_not_build
+SET GOS_BUILDING=ON
+GOTO gos_no_build_done
+:gos_not_build
+ECHO No Build detected
+SET GOS_BUILDING=OFF
+SHIFT
+:gos_no_build_done
+
 IF "%1" == "nodoc" GOTO gos_not_doc
 IF "%1" == "nodocs" GOTO gos_not_doc
 IF "%1" == "notdoc" GOTO gos_not_doc
@@ -55,13 +74,13 @@ IF "%1" == "NoDocs" GOTO gos_not_doc
 IF "%1" == "NotDoc" GOTO gos_not_doc
 IF "%1" == "NotDocs" GOTO gos_not_doc
 SET GOS_BUILD_DOCS=ON
-GOTO gos_check_not_doc_done
+GOTO gos_check_doc_done
 :gos_not_doc
-ECHO Not Documentation detected
+ECHO No Documentation detected
 SET GOS_NOT_DOC=NotDoc
 SET GOS_BUILD_DOCS=OFF
 SHIFT
-:gos_check_not_doc_done
+:gos_check_doc_done
 
 IF "%1" == "" GOTO gos_no_build_number
 SET GOS_BUILD_NUMBER=%1
@@ -136,7 +155,7 @@ REM -DGOS_PID_TOOLKIT_UI_PLUGIN_QML_TYPES:BOOL=ON ^
 REM -Dgtest_force_shared_crt:BOOL=ON ^
 
 SET GOS_CMAKE_CREATE_OPTIONS=^
---graphviz="%GOS_PROJECT_ARTIFACTS_DIR%\share\graphviz\" ^
+--graphviz="%GOS_PROJECT_ARTIFACTS_DIR%\share\graphviz\pidtoolkit" ^
 --log-level=DEBUG ^
 -DBUILD_DOCS:BOOL=%GOS_BUILD_DOCS% ^
 -DGOS_DEPLOY_PDB_FILES:BOOL=ON ^
@@ -187,12 +206,13 @@ ECHO Creating a build folder %GOS_PROJECT_BUILD_DIR%
 ECHO *** Creating a Build
 SET GOS_CMAKE_CREATE_BUILD_CMD="%GOS_EXE_CMAKE%" -E chdir "%GOS_PROJECT_BUILD_DIR%" "%GOS_EXE_CMAKE%" %GOS_CMAKE_CREATE_OPTIONS%
 ECHO %GOS_CMAKE_CREATE_BUILD_CMD%
-%GOS_CMAKE_CREATE_BUILD_CMD% > "%GOS_BUILD_LOG_DIR%\create.log"
+%GOS_CMAKE_CREATE_BUILD_CMD%
 
+IF "%GOS_BUILDING%" == "OFF" GOTO gos_do_not_build
 ECHO *** Building
 SET GOS_CMAKE_BUILD_CMD="%GOS_EXE_CMAKE%" %GOS_CMAKE_BUILD_OPTIONS%
 ECHO %GOS_CMAKE_BUILD_CMD%
-%GOS_CMAKE_BUILD_CMD% > "%GOS_BUILD_LOG_DIR%\build.log"
+%GOS_CMAKE_BUILD_CMD%
 
 REM ECHO *** Creating a Plugin QML Types for the Build
 REM SET GOS_QML_PLUGIN_BUILD_DUMP_CMD="%GOS_QML_PLUGIN_DUMP_EXE%" -nonrelocatable -output "%GOS_QML_PLUGIN_BUILD_QML_TYPES_DESTINATION%" %GOS_QML_PLUGIN% %GOS_QML_PLUGIN_VERSION% "%GOS_QML_PLUGIN_BUILD_DIR%"
@@ -202,13 +222,14 @@ REM %GOS_QML_PLUGIN_BUILD_DUMP_CMD%
 ECHO *** Testing
 SET GOS_CMAKE_CTEST_CMD="%GOS_EXE_CMAKE%" -E chdir "%GOS_PROJECT_BUILD_DIR%" "%GOS_EXE_CTEST%" %GOS_CTEST_OPTIONS%
 ECHO %GOS_CMAKE_CTEST_CMD%
-%GOS_CMAKE_CTEST_CMD% > "%GOS_BUILD_LOG_DIR%\test.log"
+%GOS_CMAKE_CTEST_CMD%
+:gos_do_not_build
 
 IF "%GOS_NOT_DOC%" == "NotDoc" GOTO gos_do_not_generate_doc
 ECHO *** Generating API Documentation
 SET GOS_CMAKE_DOXYGEN_CMD="%GOS_EXE_CMAKE%" %GOS_CMAKE_DOXYGEN_OPTIONS%
 ECHO %GOS_CMAKE_DOXYGEN_CMD%
-%GOS_CMAKE_DOXYGEN_CMD% > "%GOS_BUILD_LOG_DIR%\doxygen.log"
+%GOS_CMAKE_DOXYGEN_CMD%
 REM ECHO *** Generating PDF Documentation
 REM SET GOS_DOXYGEN_BUILD_DIR=%GOS_PROJECT_BUILD_DIR%\doc\latex
 REM ECHO Entering %GOS_DOXYGEN_BUILD_DIR%
@@ -221,12 +242,12 @@ REM POPD
 ECHO *** Installing
 SET GOS_CMAKE_INSTALL_CMD="%GOS_EXE_CMAKE%" %GOS_CMAKE_INSTALL_OPTIONS%
 ECHO %GOS_CMAKE_INSTALL_CMD%
-%GOS_CMAKE_INSTALL_CMD% > "%GOS_BUILD_LOG_DIR%\install.log"
+%GOS_CMAKE_INSTALL_CMD%
 
 ECHO *** Creating a Plugin QML Types for the Install
 SET GOS_QML_PLUGIN_INSTALL_DUMP_CMD="%GOS_QML_PLUGIN_DUMP_EXE%" -nonrelocatable -output "%GOS_QML_PLUGIN_INSTALL_QML_TYPES_DESTINATION%" %GOS_QML_PLUGIN% %GOS_QML_PLUGIN_VERSION% "%GOS_QML_PLUGIN_INSTALL_DIR%"
 ECHO %GOS_QML_PLUGIN_INSTALL_DUMP_CMD%
-%GOS_QML_PLUGIN_INSTALL_DUMP_CMD% > "%GOS_BUILD_LOG_DIR%\qmltypes.log"
+%GOS_QML_PLUGIN_INSTALL_DUMP_CMD%
 
 REM Done
 GOTO:EOF

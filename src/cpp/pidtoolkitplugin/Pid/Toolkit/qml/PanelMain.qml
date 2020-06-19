@@ -12,7 +12,9 @@ PanelMainForm {
   Dialog {
     id: settingsDialog
 
-    width: 980
+    property var orchestration: ptOrchestration
+
+    width: 1010
     height: 600
 
     x: (parent.mainWidth - width) / 2
@@ -27,8 +29,14 @@ PanelMainForm {
       anchors.fill: parent
     }
 
-    onAccepted: console.log("Ok clicked")
-    onRejected: console.log("Cancel clicked")
+    onAccepted: {
+      console.log("Ok clicked");
+      orchestration.applySettings();
+    }
+    onRejected: {
+      console.log("Cancel clicked");
+      orchestration.rejecSettings();
+    }
   }
 
 

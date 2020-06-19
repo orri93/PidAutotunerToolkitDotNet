@@ -1,115 +1,123 @@
 import QtQuick 2.14
-import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.12
 import QtQuick.Extras 1.4
 
-//import QtQuick.Controls.Material 2.12
-//import QtQuick.Controls.Universal 2.12
 import Pid.Toolkit 1.0
 
-ColumnLayout {
-    id: column
-
+Item {
+    id: element
     property alias quiter: quitButton
     property alias connector: connectButton
     property alias setter: settingButton
 
     property alias controllerComponent: ptControllerComponent
 
-    width: Style.panelWidth
-
     Text {
         id: pidPanelTitleText
+        x: 8
+        y: 8
         text: Style.titleText
         color: Style.titleTextColor
         font.pointSize: Style.titleFontPointSize
-        Layout.margins: Style.panelMargin
     }
 
-    ColumnLayout {
-        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+    ControlGroup {
+        id: ptOutputGroup
+        x: 10
+        y: 50
+        width: 380
+        height: 250
+        title: qsTr("Output")
 
-        ControlGroup {
-            id: ptOutputGroup
-            title: qsTr("Output")
-            Layout.preferredWidth: Style.groupWidth
-
-            ViewOutput {
-                id: ptOutputView
-            }
-        }
-
-        ControlGroup {
-            id: ptControllerGroup
-            title: qsTr("Controller")
-            Layout.preferredWidth: Style.groupWidth
-
-            ComponentController {
-                id: ptControllerComponent
-            }
-        }
-
-        ControlGroup {
-            id: ptTuningGroup
-            title: qsTr("Tuning")
-            Layout.preferredWidth: Style.groupWidth
-
-            ComponentTuning {
-                id: ptTuningComponent
-            }
-        }
-
-        ControlGroup {
-            id: ptStatusGroup
-            title: qsTr("Status")
-            Layout.preferredWidth: Style.groupWidth
-
-            ComponentStatus {
-                id: ptStatusComponent
-            }
+        ViewOutput {
+            id: ptOutputView
+            y: 10
         }
     }
 
-    RowLayout {
-        id: pidPanelButtonRow
-        Layout.fillWidth: true
-        Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
-        Layout.preferredWidth: Style.groupWidth
-        Layout.margins: Style.panelMargin
+    ControlGroup {
+        id: ptControllerGroup
+        x: 10
+        y: 300
+        width: 380
+        height: 220
+        title: qsTr("Controller")
 
-        RowLayout {
-            id: pidPanelMainButtonRow
+        ComponentController {
+            id: ptControllerComponent
+            y: 10
+        }
+    }
 
-            DelayButton {
-                id: quitButton
-                delay: Style.quitDelay
-                Layout.preferredHeight: Style.preferredButtonSize
-                Layout.preferredWidth: Style.preferredButtonSize
-                text: qsTr("Quit")
-            }
+    ControlGroup {
+        id: ptTuningGroup
+        x: 10
+        y: 520
+        width: 380
+        height: 160
+        title: qsTr("Tuning")
 
-            Button {
-                id: helpButton
-                visible: false
-                Layout.preferredHeight: Style.preferredButtonSize
-                text: qsTr("Help")
-            }
+        ComponentTuning {
+            id: ptTuningComponent
+            y: 10
+        }
+    }
+
+    ControlGroup {
+        id: ptStatusGroup
+        x: 10
+        y: 680
+        width: 380
+        height: 150
+        title: qsTr("Status")
+
+        ComponentStatus {
+            id: ptStatusComponent
+            y: 10
+        }
+    }
+
+    Item {
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 10
+        height: 50
+        width: 380
+        x: 10
+
+        DelayButton {
+            id: quitButton
+            delay: Style.quitDelay
+            text: qsTr("Quit")
+            height: 50
+            width: 50
         }
 
-        RowLayout {
-            id: pidPanelOtherButtonRow
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+        Button {
+            id: helpButton
+            visible: false
+            text: qsTr("Help")
+            width: 80
+            x: 60
+            y: 3
+        }
+
+        Item {
+            anchors.right: parent.right
+            width: 170
 
             Button {
                 id: connectButton
-                Layout.preferredHeight: Style.preferredButtonSize
                 text: qsTr("Connect")
+                width: 80
+                y: 3
             }
 
             Button {
                 id: settingButton
-                Layout.preferredHeight: Style.preferredButtonSize
                 text: qsTr("Setting")
+                width: 80
+                x: 90
+                y: 3
             }
         }
     }
@@ -117,7 +125,7 @@ ColumnLayout {
 
 /*##^##
 Designer {
-    D{i:0;formeditorColor:"#4c4e50"}
+    D{i:0;autoSize:true;formeditorColor:"#4c4e50";height:900;width:400}
 }
 ##^##*/
 

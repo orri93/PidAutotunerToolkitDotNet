@@ -10,12 +10,15 @@ Item {
     property string what: qsTr("...")
 
     property alias value: intervalSpinBox.value
+    property alias intervalSpin: intervalSpinBox
     property alias isSynchronized: intervalCheckBox.checked
     property alias intervalBox: intervalCheckBox
 
     SpinBox {
         id: intervalSpinBox
         width: 195.0
+        to: 99999.0
+        from: 0.0
     }
 
     CheckBox {

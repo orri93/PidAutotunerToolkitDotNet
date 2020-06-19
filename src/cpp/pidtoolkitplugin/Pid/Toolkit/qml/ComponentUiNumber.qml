@@ -21,6 +21,8 @@ ComponentUiNumberForm {
   restrictionBox.onActivated: {
     if(number) {
       number.restriction = ptModels.restriction.restriction(restrictionBox.currentIndex);
+      componentRange.fromEnabled = (number.restriction == Ptm.Restriction.Both) || (number.restriction == Ptm.Restriction.Minimum);
+      componentRange.toEnabled = (number.restriction == Ptm.Restriction.Both) || (number.restriction == Ptm.Restriction.Maximum);
     }
   }
 

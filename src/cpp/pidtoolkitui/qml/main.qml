@@ -29,6 +29,7 @@ Window {
     anchors.left: parent.left
     anchors.bottom: parent.bottom
     onQuitPid: Qt.quit()
+    width: 400
 
     onConnectPid: orchestration.connectDisconnect()
   }

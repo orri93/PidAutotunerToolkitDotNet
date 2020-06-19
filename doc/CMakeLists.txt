@@ -1,7 +1,7 @@
 find_package(Doxygen REQUIRED dot dia OPTIONAL_COMPONENTS mscgen)
 
-set(gos_pid_toolkit_doxygen_docs_directory
-  "${CMAKE_BINARY_DIR}/docs")
+#set(gos_pid_toolkit_doxygen_docs_directory
+#  "${CMAKE_BINARY_DIR}/docs")
 
 if (DOXYGEN_FOUND)
 # set(DOXYGEN_OUTPUT_DIRECTORY        ${gos_pid_toolkit_doxygen_output_directory})
@@ -18,9 +18,9 @@ if (DOXYGEN_FOUND)
 # set(DOXYGEN_EXTRACT_PACKAGE         NO)
 # set(DOXYGEN_EXTRACT_STATIC          NO)
 # set(DOXYGEN_WARN_NO_PARAMDOC        YES)
-  set(DOXYGEN_HTML_OUTPUT             "${gos_pid_toolkit_doxygen_docs_directory}/html")
+  set(DOXYGEN_HTML_OUTPUT             html)
 # set(DOXYGEN_LATEX_OUTPUT            "${gos_pid_toolkit_doxygen_docs_directory}/latex")
-  set(DOXYGEN_USE_MDFILE_AS_MAINPAGE  README.md)
+  set(DOXYGEN_USE_MDFILE_AS_MAINPAGE  ${gos_pid_toolkit_doxygen_main_page_mdfile})
 # set(DOXYGEN_USE_PDFLATEX            NO)
 # set(DOXYGEN_PDF_HYPERLINKS          NO)
   set(DOXYGEN_EXTENSION_MAPPING       qml=C++)
@@ -32,8 +32,8 @@ if (DOXYGEN_FOUND)
     ${gos_pid_toolkit_doxygen_source}
     WORKING_DIRECTORY ${gos_pid_toolkit_doxygen_working_directory})
 
-  install(DIRECTORY ${gos_pid_toolkit_doxygen_html_directory}
-    DESTINATION share/doc/api)
+# install(DIRECTORY ${gos_pid_toolkit_doxygen_html_directory}
+#   DESTINATION share/doc/api)
 
 
 else ()

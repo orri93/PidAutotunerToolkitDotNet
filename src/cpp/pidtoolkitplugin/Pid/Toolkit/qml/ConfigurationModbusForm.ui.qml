@@ -15,6 +15,7 @@ Item {
 
         ComponentCommunication {
             id: communicationComponent
+            y: 10
         }
     }
 }

@@ -6,6 +6,9 @@ import Pid.Toolkit 1.0
 
 Item {
 
+  property alias integralNumber: integralComponentUiNumber
+  property alias temperatureNumber: temperatureComponentUiNumber
+
     ControlGroup {
         title: qsTr("Output")
         height: 200.0

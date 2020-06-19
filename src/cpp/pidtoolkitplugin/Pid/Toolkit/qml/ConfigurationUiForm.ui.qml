@@ -6,9 +6,6 @@ import Pid.Toolkit 1.0
 
 Item {
 
-    implicitWidth: 960.0
-    implicitHeight: 400.0
-
     ControlGroup {
         width: 640
         height: 400

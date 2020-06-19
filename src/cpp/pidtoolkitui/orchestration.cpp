@@ -89,22 +89,30 @@ bool create(
     "::gos::pid::toolkit::ui::model::Range*");
   qRegisterMetaType<::gos::pid::toolkit::ui::model::Factor*>(
     "::gos::pid::toolkit::ui::model::Factor*");
-  qRegisterMetaType< ::gos::pid::toolkit::ui::model::Accuracy*>(
+  qRegisterMetaType<::gos::pid::toolkit::ui::model::Number*>(
+      "::gos::pid::toolkit::ui::model::Number*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::model::Accuracy*>(
     "::gos::pid::toolkit::ui::model::Accuracy*");
-  qRegisterMetaType<::gos::pid::toolkit::ui::configuration::BlackBox*>(
-    "::gos::pid::toolkit::ui::configuration::BlackBox*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::model::Modbus*>(
+      "::gos::pid::toolkit::ui::model::Modbus*");
+
   qRegisterMetaType<::gos::pid::toolkit::ui::configuration::Ui*>(
     "::gos::pid::toolkit::ui::configuration::Ui*");
-  qRegisterMetaType<::gos::pid::toolkit::ui::Configuration*>(
-    "::gos::pid::toolkit::ui::Configuration*");
   qRegisterMetaType<::gos::pid::toolkit::ui::configuration::Timer*>(
     "::gos::pid::toolkit::ui::configuration::Timer*");
-//qRegisterMetaType<::gos::pid::toolkit::ui::model::Modbus*>(
-//  "::gos::pid::toolkit::ui::model::Modbus*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::configuration::Modbus*>(
+      "::gos::pid::toolkit::ui::configuration::Modbus*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::configuration::Controller*>(
+      "::gos::pid::toolkit::ui::configuration::Controller*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::configuration::BlackBox*>(
+      "::gos::pid::toolkit::ui::configuration::BlackBox*");
+
   qRegisterMetaType<::gos::pid::toolkit::ui::view::model::Tuning*>(
     "::gos::pid::toolkit::ui::view::model::Tuning*");
   qRegisterMetaType<::gos::pid::toolkit::ui::view::model::Modbus*>(
     "::gos::pid::toolkit::ui::view::model::Modbus*");
+  qRegisterMetaType<::gos::pid::toolkit::ui::Configuration*>(
+      "::gos::pid::toolkit::ui::Configuration*");
 
   if (gptu::models::create(context)) {
     _orchestration = std::make_unique<Orchestration>();

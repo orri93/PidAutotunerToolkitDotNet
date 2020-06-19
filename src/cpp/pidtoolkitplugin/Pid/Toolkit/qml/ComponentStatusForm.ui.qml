@@ -1,96 +1,66 @@
 import QtQuick 2.14
-import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.12
 import QtQuick.Extras 1.4
 
 import Pid.Toolkit 1.0
 
-ColumnLayout {
+Item {
+    property alias connectivity: connectionIndicator.active
+    property alias activity: activityIndicator.active
+    property alias logging: loggingIndicator.active
+    property alias statusMessage: statusText.text
 
-  property alias connectivity: connectionIndicator.active
-  property alias activity: activityIndicator.active
-  property alias logging: loggingIndicator.active
-  property alias statusMessage: statusText.text
-
-  RowLayout {
-
-    ColumnLayout {
-      Layout.rightMargin: Style.panelItemMargin
-
-      StatusIndicator {
-          id: connectionIndicator
-          color: Style.statusConnectionIndicator
-          Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-          Layout.preferredWidth: Style.preferredPanelItemWidth
-      }
-
-      Label {
+    Label {
         text: qsTr("Connection")
-        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-          color: Style.labelTextColor
-          font.pointSize: Style.labelFontPointSize
-      }
+        color: Style.labelTextColor
+        font.pointSize: Style.labelFontPointSize
+        y: 5
+        x: 5
     }
 
-    ColumnLayout {
-      Layout.leftMargin: Style.panelItemMargin
-
-      StatusIndicator {
-          id: activityIndicator
-          color: Style.statusConnectionIndicator
-          Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-          Layout.preferredWidth: Style.preferredPanelItemWidth
-      }
-
-      Label {
-          text: qsTr("Activity")
-          color: Style.labelTextColor
-          font.pointSize: Style.labelFontPointSize
-          Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-      }
-
-    }
-  }
-
-  RowLayout {
-
-    ColumnLayout {
-      Layout.rightMargin: Style.panelItemMargin
-
-      StatusIndicator {
-          id: loggingIndicator
-          color: Style.statusConnectionIndicator
-          Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-          Layout.preferredWidth: Style.preferredPanelItemWidth
-      }
-
-      Label {
-          text: qsTr("Logging")
-          color: Style.labelTextColor
-          font.pointSize: Style.labelFontPointSize
-          Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-      }
+    StatusIndicator {
+        id: connectionIndicator
+        color: Style.statusConnectionIndicator
+        x: 70
+        y: 0
     }
 
-    Item {
-      Layout.leftMargin: Style.panelItemMargin
-      Layout.preferredWidth: Style.preferredPanelItemWidth
+    Label {
+        text: qsTr("Activity")
+        color: Style.labelTextColor
+        font.pointSize: Style.labelFontPointSize
+        x: 175
+        y: 5
     }
-  }
 
-    ColumnLayout {
-//        Label {
-//            text: qsTr("Message")
-//            color: Style.labelTextColor
-//            Layout.leftMargin: Style.labelLeftMargin
-//            font.pointSize: Style.labelFontPointSize
-//        }
-        Text {
-            id: statusText
-            color: Style.informationTextColor
-            Layout.preferredWidth: Style.preferredPanelDoubleItemWidth
-            font.pointSize: Style.informationFontPointSize
-        }
+    StatusIndicator {
+        id: activityIndicator
+        color: Style.statusConnectionIndicator
+        x: 240
+    }
+
+    Label {
+        text: qsTr("Logging")
+        color: Style.labelTextColor
+        font.pointSize: Style.labelFontPointSize
+        y: 65
+        x: 5
+    }
+
+    StatusIndicator {
+        id: loggingIndicator
+        color: Style.statusConnectionIndicator
+        y: 60
+        x: 70
+    }
+
+    Text {
+        id: statusText
+        color: Style.informationTextColor
+        font.bold: true
+        font.pointSize: Style.informationFontPointSize
+        width: parent.width
+        y: 100
     }
 }
 

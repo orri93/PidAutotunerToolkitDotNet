@@ -1,8 +1,8 @@
 digraph G {
 
   Main -> PidChart;
-  Main -> PanelMain -> ViewOutput;
-  PanelMain -> ComponentController;
+  Main -> PanelMain -> ViewOutput -> IndicatorGauge;
+  PanelMain -> ComponentController -> ControlRealSpinBox;
   PanelMain -> ComponentTuning;
   PanelMain -> ComponentStatus;
   PanelMain -> settingDialog -> TabViewSettings -> TabSettingMain -> ConfigurationModbus -> ComponentCommunication;

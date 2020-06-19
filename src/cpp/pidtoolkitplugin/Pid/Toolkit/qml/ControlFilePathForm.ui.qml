@@ -7,7 +7,7 @@ import Pid.Toolkit 1.0
 Item {
 
     /*** type:string The File Path Field */
-    property alias filePathField: filePathTextField.text
+    property alias filePathField: filePathTextField
 
     /*** type:alias The File Path Field */
     property alias filePathButton: filePathBrowseButton

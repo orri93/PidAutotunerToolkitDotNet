@@ -363,6 +363,7 @@ if (BUILD_DOCS)
     ${gos_pid_toolkit_cpp_source_dir})
   set(gos_pid_toolkit_doxygen_output_directory ${CMAKE_BINARY_DIR}/doc)
   set(gos_pid_toolkit_doxygen_working_directory ${PROJECT_SOURCE_DIR})
+  set(gos_pid_toolkit_doxygen_main_page_mdfile "${PROJECT_SOURCE_DIR}/README.md")
   set(gos_pid_toolkit_doxygen_main_target doxygetpidtoolkit)
   add_subdirectory(doc)
 endif (BUILD_DOCS)
@@ -390,10 +391,10 @@ if (gos_build_dependency_boost)
  list(REMOVE_DUPLICATES gos_pid_toolkit_boost_package)
 
   if (gos_pid_toolkit_boost_package)
-    find_package(Boost 1.71 COMPONENTS REQUIRED
+    find_package(Boost 1.62 COMPONENTS REQUIRED
       ${gos_pid_toolkit_boost_package})
   else ()
-    find_package(Boost 1.71)
+    find_package(Boost 1.62)
   endif ()
 
 # if (GOS_PID_TOOLKIT_CPP)

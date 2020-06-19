@@ -6,6 +6,9 @@ import Pid.Toolkit 1.0
 
 Item {
 
+    property alias loggingSeparatorField: loggingSeparatorTextField
+    property alias logControlPath: logControlFilePath
+
     Label {
         text: qsTr("Separator")
         color: Style.labelTextColor

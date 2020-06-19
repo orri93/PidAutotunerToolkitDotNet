@@ -3,10 +3,14 @@ import Pid.Toolkit 1.0
 
 ConfigurationControllerForm {
 
-  property var controller: null
+  property var orchestration: ptOrchestration
+  property var settings: ptOrchestration.settings
+  property var controller: ptOrchestration.settings.controller
 
-  onControllerChanged: {
-    if(controller) {
-    }
-  }
+
+  integralNumber.number: controller.integral
+  temperatureNumber.number: controller.temperature;
+
+
+
 }

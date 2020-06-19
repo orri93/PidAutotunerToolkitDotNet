@@ -1,3 +1,8 @@
+/** \defgroup GosPidToolkitUiModel PID Toolkit
+ *
+ * \brief Provide some stuff to do stuff
+ */
+
 #ifndef GOS_PID_TUNING_UI_MODEL_TYPES_H_
 #define GOS_PID_TUNING_UI_MODEL_TYPES_H_
 

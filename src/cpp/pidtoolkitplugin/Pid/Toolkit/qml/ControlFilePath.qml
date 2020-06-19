@@ -3,6 +3,8 @@ import QtQuick.Dialogs 1.2
 
 ControlFilePathForm {
 
+  property string filePath: qsTr("")
+
   FileDialog {
       id: fileDialog
       title: qsTr("Please choose a file")
@@ -17,7 +19,23 @@ ControlFilePathForm {
       onRejected: console.log("Fiel Dialog Cancel clicked")
   }
 
+
+  filePathField.text: filePath
+
   filePathButton.onClicked: {
     fileDialog.open();
   }
+
+  filePathField.onTextChanged: {
+    filePath = filePathField.text;
+  }
+
+  onFilePathChanged: {
+    filePathField.text = filePath;
+  }
+
+  Component.onCompleted: {
+    filePathField.text = filePath;
+  }
+
 }
