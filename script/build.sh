@@ -81,7 +81,7 @@ silent_popd () {
     command popd "$@" > /dev/null
 }
 
-
+#GOS_ROOT_DIR=`readlink -f "$DIR/.."`
 GOS_ROOT_DIR=`realpath "$DIR/.."`
 
 echo "---------------------------------------------------------------------------"
@@ -102,7 +102,7 @@ GOS_CMAKE_SYSTEM=Ninja
 #-DGOS_PID_TOOLKIT_UI_PLUGIN_GENERATE_DUMMY:BOOL=ON \
 #-DDOXYGEN_DIA_EXECUTABLE:FILEPATH="%GOS_DIA_EXE_PATH%" \
 #-A %GOS_CMAKE_PLATFORM% "%GOS_ROOT_DIR%"
-GOS_CMAKE_CREATE_OPTIONS=\
+GOS_CMAKE_CREATE_OPTIONS= \
 --graphviz="${GOS_PROJECT_ARTIFACTS_DIR}/share/graphviz/pidtoolkit" \
 -DBUILD_DOCS:BOOL=${GOS_BUILD_DOCS} \
 -DCMAKE_INSTALL_PREFIX:PATH="${GOS_PROJECT_ARTIFACTS_DIR}" \
@@ -127,8 +127,13 @@ if [ $GOS_NOT_CLEAN = "NOT_CLEAN" ]; then
   echo "Skipping Clean"
 else
   echo "*** Clean"
-  if [ -d "$DIRECTORY" ]; then
+  if [ -d "$GOS_PROJECT_BUILD_DIR" ]; then
     echo "The build folder already exists so deleting the old"
     "${GOS_CMAKE}" -E remove_directory "${GOS_PROJECT_BUILD_DIR}"
   fi
+  if [ -d "GOS_PROJECT_ARTIFACTS_DIR" ]; then
+    echo "The artifacts folder already exists so deleting the old"
+    "${GOS_CMAKE}" -E remove_directory "${GOS_PROJECT_ARTIFACTS_DIR}"
+  fi
+
 fi
