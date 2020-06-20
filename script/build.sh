@@ -114,9 +114,9 @@ GOS_CMAKE_SYSTEM=Ninja
 #-DGOS_PID_TOOLKIT_UI_PLUGIN_GENERATE_DUMMY:BOOL=ON \
 #-DDOXYGEN_DIA_EXECUTABLE:FILEPATH="%GOS_DIA_EXE_PATH%" \
 #-A %GOS_CMAKE_PLATFORM% "%GOS_ROOT_DIR%"
-GOS_CMAKE_CREATE_OPTIONS="--graphviz='${GOS_PROJECT_ARTIFACTS_DIR}/share/graphviz/pidtoolkit'"
+GOS_CMAKE_CREATE_OPTIONS="--graphviz=${GOS_PROJECT_ARTIFACTS_DIR}/share/graphviz/pidtoolkit"
 GOS_CMAKE_CREATE_OPTIONS="${GOS_CMAKE_CREATE_OPTIONS} -DBUILD_DOCS:BOOL=${GOS_BUILD_DOCS}"
-GOS_CMAKE_CREATE_OPTIONS="${GOS_CMAKE_CREATE_OPTIONS} -DCMAKE_INSTALL_PREFIX:PATH=\"${GOS_PROJECT_ARTIFACTS_DIR}\""
+GOS_CMAKE_CREATE_OPTIONS="${GOS_CMAKE_CREATE_OPTIONS} -DCMAKE_INSTALL_PREFIX:PATH=${GOS_PROJECT_ARTIFACTS_DIR}"
 GOS_CMAKE_CREATE_OPTIONS="${GOS_CMAKE_CREATE_OPTIONS} -DCMAKE_BUILD_TYPE=${GOS_BUILD_CONFIG}"
 GOS_CMAKE_CREATE_OPTIONS="${GOS_CMAKE_CREATE_OPTIONS} -G \"${GOS_CMAKE_SYSTEM}\""
 
@@ -127,9 +127,9 @@ echo "- CMake buld platform is defined as ${GOS_CMAKE_PLATFORM}"
 echo "- CMake buld directory is defined as ${GOS_PROJECT_BUILD_DIR}"
 echo "- CMake buld configuration is defined as ${GOS_BUILD_CONFIG}"
 
-GOS_CMAKE_BUILD_OPTIONS="--build '${GOS_PROJECT_BUILD_DIR}' --target all --config ${GOS_BUILD_CONFIG}"
-GOS_CMAKE_INSTALL_OPTIONS="--build '${GOS_PROJECT_BUILD_DIR}' --target install --config ${GOS_BUILD_CONFIG}"
-GOS_CMAKE_DOXYGEN_OPTIONS="--build '${GOS_PROJECT_BUILD_DIR}' --target doxygetpidtoolkit --config ${GOS_BUILD_CONFIG}"
+GOS_CMAKE_BUILD_OPTIONS="--build ${GOS_PROJECT_BUILD_DIR} --target all --config ${GOS_BUILD_CONFIG}"
+GOS_CMAKE_INSTALL_OPTIONS="--build ${GOS_PROJECT_BUILD_DIR} --target install --config ${GOS_BUILD_CONFIG}"
+GOS_CMAKE_DOXYGEN_OPTIONS="--build ${GOS_PROJECT_BUILD_DIR} --target doxygetpidtoolkit --config ${GOS_BUILD_CONFIG}"
 GOS_CTEST_OPTIONS="--build-config ${GOS_BUILD_CONFIG}"
 
 
@@ -137,22 +137,22 @@ if [[ $GOS_NOT_CLEAN = "NOT_CLEAN" ]]; then
   echo "Skipping Clean"
 else
   echo "*** Clean"
-  if [ -d "${GOS_PROJECT_BUILD_DIR}" ]; then
+  if [ -d ${GOS_PROJECT_BUILD_DIR} ]; then
     echo "The build folder already exists so deleting the old"
-    "${GOS_CMAKE}" -E remove_directory "${GOS_PROJECT_BUILD_DIR}"
+    ${GOS_CMAKE} -E remove_directory ${GOS_PROJECT_BUILD_DIR}
   fi
-  if [ -d "${GOS_PROJECT_ARTIFACTS_DIR}" ]; then
+  if [ -d ${GOS_PROJECT_ARTIFACTS_DIR} ]; then
     echo "The artifacts folder already exists so deleting the old"
-    "${GOS_CMAKE}" -E remove_directory "${GOS_PROJECT_ARTIFACTS_DIR}"
+    ${GOS_CMAKE} -E remove_directory ${GOS_PROJECT_ARTIFACTS_DIR}
   fi
 fi
 
 echo "Creating a build folder ${GOS_PROJECT_BUILD_DIR}"
-"${GOS_CMAKE}" -E make_directory "${GOS_PROJECT_BUILD_DIR}"
+${GOS_CMAKE} -E make_directory ${GOS_PROJECT_BUILD_DIR}
 
 
 echo "*** Creating a Build"
-GOS_CMAKE_CREATE_BUILD_CMD="${GOS_CMAKE} -E chdir '${GOS_PROJECT_BUILD_DIR}' ${GOS_CMAKE} ${GOS_CMAKE_CREATE_OPTIONS}"
+GOS_CMAKE_CREATE_BUILD_CMD="${GOS_CMAKE} -E chdir ${GOS_PROJECT_BUILD_DIR} ${GOS_CMAKE} ${GOS_CMAKE_CREATE_OPTIONS}"
 echo "${GOS_CMAKE_CREATE_BUILD_CMD}"
 ${GOS_CMAKE_CREATE_BUILD_CMD}
 
@@ -166,7 +166,7 @@ else
 fi
 
 echo "*** Testing"
-GOS_CMAKE_CTEST_CMD="${GOS_CMAKE} -E chdir '${GOS_PROJECT_BUILD_DIR}' ${GOS_CTEST} ${GOS_CTEST_OPTIONS}"
+GOS_CMAKE_CTEST_CMD="${GOS_CMAKE} -E chdir ${GOS_PROJECT_BUILD_DIR} ${GOS_CTEST} ${GOS_CTEST_OPTIONS}"
 echo "${GOS_CMAKE_CTEST_CMD}"
 ${GOS_CMAKE_CTEST_CMD}
 
