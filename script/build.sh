@@ -82,7 +82,7 @@ silent_popd () {
 }
 
 
-GOS_ROOT_DIR=DATE=`realpath "$DIR/.."`
+GOS_ROOT_DIR=`realpath "$DIR/.."`
 
 echo "---------------------------------------------------------------------------"
 echo "Build script for the ${GOS_PROJECT_NAME} project"
