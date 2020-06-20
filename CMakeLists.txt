@@ -26,6 +26,8 @@ option(CLANG_TIDY "Perform Clang-Tidy check" OFF)
 set(gos_pid_toolkit_binary_root ${CMAKE_CURRENT_BINARY_DIR})
 set(gos_pid_toolkit_cpp_source_dir "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp")
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 if (CLANG_TIDY)
   option(CLANG_TIDY_FIX_ERRORS
     "Perform fixes with Clang-Tidy even if compilation errors were found" OFF)
@@ -66,17 +68,7 @@ else ()
   set(gos_pid_toolkit_lib_modbus_path
     "${CMAKE_CURRENT_SOURCE_DIR}/extern/libmodbus")
   if (GOS_PID_TOOLKIT_EXTERNAL_PROJECT)
-    set(gos_pid_toolkit_lib_modbus_prefix
-      ${CMAKE_CURRENT_BINARY_DIR}/lib/libmodbus)
-    include(ExternalProject)
-    ExternalProject_Add(
-      ${gos_pid_toolkit_lib_modbus_lib}
-      SOURCE_DIR ${gos_pid_toolkit_lib_modbus_path}
-      CONFIGURE_COMMAND autoreconf --install --symlink --force ${gos_pid_toolkit_lib_modbus_path}
-      CONFIGURE_COMMAND ${gos_pid_toolkit_lib_modbus_path} --prefix=${gos_pid_toolkit_lib_modbus_prefix}
-      PREFIX ${gos_pid_toolkit_lib_modbus_prefix}
-      BUILD_COMMAND make --directory=${gos_pid_toolkit_lib_modbus_path}
-      )
+    include(modbus)
   else ()
     add_subdirectory(extern/libmodbus)
     list(APPEND gos_pid_toolkit_lib_modbus_include
