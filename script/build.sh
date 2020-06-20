@@ -149,3 +149,37 @@ fi
 
 echo "Creating a build folder ${GOS_PROJECT_BUILD_DIR}"
 "${GOS_CMAKE}" -E make_directory "${GOS_PROJECT_BUILD_DIR}"
+
+
+echo "*** Creating a Build"
+GOS_CMAKE_CREATE_BUILD_CMD="\"${GOS_CMAKE}\" -E chdir \"${GOS_PROJECT_BUILD_DIR}\" \"${GOS_CMAKE$}\" ${GOS_CMAKE_CREATE_OPTIONS}"
+echo "${GOS_CMAKE_CREATE_BUILD_CMD}"
+${GOS_CMAKE_CREATE_BUILD_CMD}
+
+if [[ $GOS_NOT_BUILD = "NOT_BUILD" ]]; then
+  echo "Skipping Building"
+else
+  echo "*** Building"
+  GOS_CMAKE_BUILD_CMD="\"${GOS_CMAKE}\" ${GOS_CMAKE_BUILD_OPTIONS}"
+  echo "${GOS_CMAKE_BUILD_CMD}"
+  ${GOS_CMAKE_BUILD_CMD}
+fi
+
+echo "*** Testing"
+GOS_CMAKE_CTEST_CMD="\"${GOS_CMAKE}\" -E chdir \"${GOS_PROJECT_BUILD_DIR}\" \"${GOS_CTEST}\" ${GOS_CTEST_OPTIONS}"
+echo "${GOS_CMAKE_CTEST_CMD}"
+${GOS_CMAKE_CTEST_CMD}
+
+if [[ $GOS_BUILD_DOCS = "ON" ]]; then
+  echo "*** Generating API Documentation"
+  GOS_CMAKE_DOXYGEN_CMD="\"${GOS_CMAKE}\" ${GOS_CMAKE_DOXYGEN_OPTIONS}"
+  echo "${GOS_CMAKE_DOXYGEN_CMD}"
+  ${GOS_CMAKE_DOXYGEN_CMD}
+else
+  echo "Skipping Generating API Documentation"
+fi
+
+echo "*** Installing"
+GOS_CMAKE_INSTALL_CMD="\"${GOS_CMAKE}\" ${GOS_CMAKE_INSTALL_OPTIONS}"
+echo "${GOS_CMAKE_INSTALL_CMD}"
+${GOS_CMAKE_INSTALL_CMD}
