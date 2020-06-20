@@ -6,15 +6,16 @@ project(PidToolkit VERSION 1.0.0.0
   
 set(CMAKE_PLATFORM_INDEPENDENT_CODE ON)
 
-option(GOS_DEPLOY_PDB_FILES "Deploy PDB files" ON)
+option(GOS_DEPLOY_PDB_FILES "Deploy PDB files" OFF)
 
 option(GOS_PID_TOOLKIT_C "Build C version of PID Toolkit" OFF)
 option(GOS_PID_TOOLKIT_CPP "Build C++ version of PID Toolkit" ON)
 option(GOS_PID_TOOLKIT_TEST "Build and execute the unit tests" OFF)
-option(GOS_PID_TOOLKIT_UI "Build PID Toolkit UI components" ON)
+option(GOS_PID_TOOLKIT_UI "Build PID Toolkit UI components" OFF)
 option(GOS_PID_ARDUINO_BASED_TUNING "Build the Arduino Based auto-tuning" OFF)
-option(GOS_PID_TOOLKIT_INSTALL_CONFIGURATION "Install the configuration file with the target" ON)
-option(GOS_PID_TOOLKIT_INSTALL_DEPENDENCIES "Install runtime dependencies" ON)
+option(GOS_PID_TOOLKIT_INSTALL_CONFIGURATION "Install the configuration file with the target" OFF)
+option(GOS_PID_TOOLKIT_INSTALL_DEPENDENCIES "Install runtime dependencies" OFF)
+option(GOS_PID_TOOLKIT_EXTERNAL_PROJECT "Add some dependencies as External Project" OFF)
 
 option(BUILD_DOCS "Generate Doxygen" OFF)
 
@@ -57,21 +58,34 @@ if (CLANG_TIDY)
   endif()
 endif (CLANG_TIDY)
 
+set(gos_pid_toolkit_lib_modbus_lib libmodbus)
 if (GOS_PID_TOOLKIT_INSTRUCT_LIB_MODBUS_PATH)
   set(gos_pid_toolkit_lib_modbus_path
     "${GOS_PID_TOOLKIT_INSTRUCT_LIB_MODBUS_PATH}")
-  list(APPEND gos_pid_toolkit_lib_modbus_include
-    "${GOS_PID_TOOLKIT_INSTRUCT_LIB_MODBUS_INCLUDE}"
-    "${gos_pid_toolkit_lib_modbus_path}/src")
 else ()
   set(gos_pid_toolkit_lib_modbus_path
     "${CMAKE_CURRENT_SOURCE_DIR}/extern/libmodbus")
-  add_subdirectory(extern/libmodbus)
-  list(APPEND gos_pid_toolkit_lib_modbus_include
-    "${CMAKE_CURRENT_BINARY_DIR}/extern/libmodbus/src"
-    "${gos_pid_toolkit_lib_modbus_path}/src")
+  if (GOS_PID_TOOLKIT_EXTERNAL_PROJECT)
+    set(gos_pid_toolkit_lib_modbus_prefix
+      ${CMAKE_CURRENT_BINARY_DIR}/lib/libmodbus)
+    include(ExternalProject)
+    ExternalProject_Add(
+      ${gos_pid_toolkit_lib_modbus_lib}
+      SOURCE_DIR ${gos_pid_toolkit_lib_modbus_path}
+      CONFIGURE_COMMAND autoreconf --install --symlink --force ${gos_pid_toolkit_lib_modbus_path}
+      CONFIGURE_COMMAND ${gos_pid_toolkit_lib_modbus_path} --prefix=${gos_pid_toolkit_lib_modbus_prefix}
+      PREFIX ${gos_pid_toolkit_lib_modbus_prefix}
+      BUILD_COMMAND make --directory=${gos_pid_toolkit_lib_modbus_path}
+      )
+  else ()
+    add_subdirectory(extern/libmodbus)
+    list(APPEND gos_pid_toolkit_lib_modbus_include
+      "${CMAKE_CURRENT_BINARY_DIR}/extern/libmodbus/src")
+  endif ()
 endif ()
-set(gos_pid_toolkit_lib_modbus_lib libmodbus)
+list(APPEND gos_pid_toolkit_lib_modbus_include
+  "${gos_pid_toolkit_lib_modbus_path}/src"
+  ${gos_pid_toolkit_lib_modbus_path})
 
 if (GOS_PID_TOOLKIT_C)
   set(gos_pid_toolkit_c_include_dir
