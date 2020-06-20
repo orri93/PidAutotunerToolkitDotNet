@@ -13,6 +13,18 @@ die() {
   exit 1
 }
 
+show_help() {
+cat << EOF
+Usage: ${0##*/} [-h] [-nc]
+Build the PID Toolkit Project
+
+     -h --help       display this help and exit
+     -nc --no-clean  SKip cleaning.
+     -v              verbose mode. Can be used multiple times for increased
+                     verbosity.
+EOF
+}
+
 GOS_BUILD_NUMBER=0
 GOS_BUILD_DOCS=ON
 
@@ -102,12 +114,11 @@ GOS_CMAKE_SYSTEM=Ninja
 #-DGOS_PID_TOOLKIT_UI_PLUGIN_GENERATE_DUMMY:BOOL=ON \
 #-DDOXYGEN_DIA_EXECUTABLE:FILEPATH="%GOS_DIA_EXE_PATH%" \
 #-A %GOS_CMAKE_PLATFORM% "%GOS_ROOT_DIR%"
-GOS_CMAKE_CREATE_OPTIONS= \
---graphviz="${GOS_PROJECT_ARTIFACTS_DIR}/share/graphviz/pidtoolkit" \
--DBUILD_DOCS:BOOL=${GOS_BUILD_DOCS} \
--DCMAKE_INSTALL_PREFIX:PATH="${GOS_PROJECT_ARTIFACTS_DIR}" \
--DCMAKE_BUILD_TYPE=${GOS_BUILD_CONFIG} \
--G "${GOS_CMAKE_SYSTEM}"
+GOS_CMAKE_CREATE_OPTIONS="--graphviz=\"${GOS_PROJECT_ARTIFACTS_DIR}/share/graphviz/pidtoolkit\""
+GOS_CMAKE_CREATE_OPTIONS="${GOS_CMAKE_CREATE_OPTIONS} -DBUILD_DOCS:BOOL=${GOS_BUILD_DOCS}"
+GOS_CMAKE_CREATE_OPTIONS="${GOS_CMAKE_CREATE_OPTIONS} -DCMAKE_INSTALL_PREFIX:PATH=\"${GOS_PROJECT_ARTIFACTS_DIR}\""
+GOS_CMAKE_CREATE_OPTIONS="${GOS_CMAKE_CREATE_OPTIONS} -DCMAKE_BUILD_TYPE=${GOS_BUILD_CONFIG}"
+GOS_CMAKE_CREATE_OPTIONS="${GOS_CMAKE_CREATE_OPTIONS} -G \"${GOS_CMAKE_SYSTEM}\""
 
 echo "- GOS Build number is defined as ${GOS_BUILD_NUMBER}"
 echo "- Install path is defined as ${GOS_PROJECT_ARTIFACTS_DIR}"
@@ -116,11 +127,10 @@ echo "- CMake buld platform is defined as ${GOS_CMAKE_PLATFORM}"
 echo "- CMake buld directory is defined as ${GOS_PROJECT_BUILD_DIR}"
 echo "- CMake buld configuration is defined as ${GOS_BUILD_CONFIG}"
 
-GOS_CMAKE_BUILD_OPTIONS=--build "${GOS_PROJECT_BUILD_DIR}" --target all --config ${GOS_BUILD_CONFIG}
-GOS_CMAKE_INSTALL_OPTIONS=--build "${GOS_PROJECT_BUILD_DIR}" --target install --config ${GOS_BUILD_CONFIG}
-GOS_CMAKE_DOXYGEN_OPTIONS=--build "${GOS_PROJECT_BUILD_DIR}" --target doxygetpidtoolkit --config ${GOS_BUILD_CONFIG}
-GOS_CTEST_OPTIONS=--build-config ${GOS_BUILD_CONFIG}
-
+GOS_CMAKE_BUILD_OPTIONS="--build \"${GOS_PROJECT_BUILD_DIR}\" --target all --config ${GOS_BUILD_CONFIG}"
+GOS_CMAKE_INSTALL_OPTIONS="--build \"${GOS_PROJECT_BUILD_DIR}\" --target install --config ${GOS_BUILD_CONFIG}"
+GOS_CMAKE_DOXYGEN_OPTIONS="--build \"${GOS_PROJECT_BUILD_DIR}\" --target doxygetpidtoolkit --config ${GOS_BUILD_CONFIG}"
+GOS_CTEST_OPTIONS="--build-config ${GOS_BUILD_CONFIG}"
 
 
 if [ $GOS_NOT_CLEAN = "NOT_CLEAN" ]; then
@@ -135,5 +145,7 @@ else
     echo "The artifacts folder already exists so deleting the old"
     "${GOS_CMAKE}" -E remove_directory "${GOS_PROJECT_ARTIFACTS_DIR}"
   fi
-
 fi
+
+echo "Creating a build folder ${GOS_PROJECT_BUILD_DIR}"
+"${GOS_CMAKE}" -E make_directory "${GOS_PROJECT_BUILD_DIR}"
