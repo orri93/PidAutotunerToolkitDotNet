@@ -133,15 +133,15 @@ GOS_CMAKE_DOXYGEN_OPTIONS="--build \"${GOS_PROJECT_BUILD_DIR}\" --target doxyget
 GOS_CTEST_OPTIONS="--build-config ${GOS_BUILD_CONFIG}"
 
 
-if [ $GOS_NOT_CLEAN = "NOT_CLEAN" ]; then
+if [[ $GOS_NOT_CLEAN = "NOT_CLEAN" ]]; then
   echo "Skipping Clean"
 else
   echo "*** Clean"
-  if [ -d "$GOS_PROJECT_BUILD_DIR" ]; then
+  if [ -d "${GOS_PROJECT_BUILD_DIR}" ]; then
     echo "The build folder already exists so deleting the old"
     "${GOS_CMAKE}" -E remove_directory "${GOS_PROJECT_BUILD_DIR}"
   fi
-  if [ -d "GOS_PROJECT_ARTIFACTS_DIR" ]; then
+  if [ -d "${GOS_PROJECT_ARTIFACTS_DIR}" ]; then
     echo "The artifacts folder already exists so deleting the old"
     "${GOS_CMAKE}" -E remove_directory "${GOS_PROJECT_ARTIFACTS_DIR}"
   fi
