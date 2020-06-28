@@ -377,10 +377,10 @@ if (BUILD_DOCS)
   list(APPEND gos_pid_toolkit_doxygen_source
     ${gos_pid_toolkit_cpp_include_dir}
     ${gos_pid_toolkit_cpp_source_dir})
-  set(gos_pid_toolkit_doxygen_output_directory ${CMAKE_BINARY_DIR}/doc)
+# set(gos_pid_toolkit_doxygen_output_directory ${CMAKE_BINARY_DIR}/doc)
   set(gos_pid_toolkit_doxygen_working_directory ${PROJECT_SOURCE_DIR})
   set(gos_pid_toolkit_doxygen_main_page_mdfile "${PROJECT_SOURCE_DIR}/README.md")
-  set(gos_pid_toolkit_doxygen_main_target doxygetpidtoolkit)
+  set(gos_pid_toolkit_doxygen_main_target doxygenpidtoolkit)
   add_subdirectory(doc)
 endif (BUILD_DOCS)
 

@@ -32,8 +32,16 @@ if (DOXYGEN_FOUND)
     ${gos_pid_toolkit_doxygen_source}
     WORKING_DIRECTORY ${gos_pid_toolkit_doxygen_working_directory})
 
-# install(DIRECTORY ${gos_pid_toolkit_doxygen_html_directory}
-#   DESTINATION share/doc/api)
+  set(gos_pid_toolkit_doxygen_html_directory "${CMAKE_BINARY_DIR}/doc/${DOXYGEN_HTML_OUTPUT}")
+
+  message(STATUS "")
+  message(STATUS "PID Toolkit Documents BUILD SUMMARY")
+  message(STATUS "  Doxygen output directory : ${DOXYGEN_OUTPUT_DIRECTORY}")
+  message(STATUS "  Doxygen html directory   : ${gos_pid_toolkit_doxygen_html_directory}")
+
+
+  install(DIRECTORY ${gos_pid_toolkit_doxygen_html_directory}
+    DESTINATION share/doc/api)
 
 
 else ()

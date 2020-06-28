@@ -138,7 +138,7 @@ echo "- CMake buld configuration is defined as ${GOS_BUILD_CONFIG}"
 
 GOS_CMAKE_BUILD_OPTIONS="--build ${GOS_PROJECT_BUILD_DIR} --target all --config ${GOS_BUILD_CONFIG}"
 GOS_CMAKE_INSTALL_OPTIONS="--build ${GOS_PROJECT_BUILD_DIR} --target install --config ${GOS_BUILD_CONFIG}"
-GOS_CMAKE_DOXYGEN_OPTIONS="--build ${GOS_PROJECT_BUILD_DIR} --target doxygetpidtoolkit --config ${GOS_BUILD_CONFIG}"
+GOS_CMAKE_DOXYGEN_OPTIONS="--build ${GOS_PROJECT_BUILD_DIR} --target doxygenpidtoolkit --config ${GOS_BUILD_CONFIG}"
 GOS_CTEST_OPTIONS="--build-config ${GOS_BUILD_CONFIG}"
 
 if [[ $GOS_NOT_CLEAN = "NOT_CLEAN" ]]; then

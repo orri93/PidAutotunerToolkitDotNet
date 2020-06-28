@@ -176,7 +176,7 @@ ECHO - CMake buld configuration is defined as "%GOS_BUILD_CONFIG%"
 SET GOS_CMAKE_BUILD_OPTIONS=--build "%GOS_PROJECT_BUILD_DIR%" --target ALL_BUILD --config %GOS_BUILD_CONFIG%
 REM SET GOS_CMAKE_BUILD_OPTIONS=--build "%GOS_PROJECT_BUILD_DIR%" --target ALL_BUILD --config %GOS_BUILD_CONFIG%
 SET GOS_CMAKE_INSTALL_OPTIONS=--build "%GOS_PROJECT_BUILD_DIR%" --target install --config %GOS_BUILD_CONFIG%
-SET GOS_CMAKE_DOXYGEN_OPTIONS=--build "%GOS_PROJECT_BUILD_DIR%" --target doxygetpidtoolkit --config %GOS_BUILD_CONFIG%
+SET GOS_CMAKE_DOXYGEN_OPTIONS=--build "%GOS_PROJECT_BUILD_DIR%" --target doxygenpidtoolkit --config %GOS_BUILD_CONFIG%
 
 SET GOS_CTEST_OPTIONS=--build-config %GOS_BUILD_CONFIG%
 
