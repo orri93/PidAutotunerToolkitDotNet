@@ -7,7 +7,7 @@ namespace gpt = ::gos::pid::toolkit;
 namespace gos {
 namespace pid {
 namespace toolkit {
-namespace default {
+namespace defval {
 
 gpt::type::level Verbosity = gpt::type::level::normal;
 

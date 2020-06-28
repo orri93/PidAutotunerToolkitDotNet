@@ -16,7 +16,7 @@ namespace po = ::boost::program_options;
 namespace gpt = ::gos::pid::toolkit;
 namespace gptt = ::gos::pid::toolkit::text;
 
-namespace gptd = ::gos::pid::toolkit::default;
+namespace gptd = ::gos::pid::toolkit::defval;
 namespace gpttcf = ::gos::pid::toolkit::text::capitalised::first;
 namespace gptto = ::gos::pid::toolkit::text::option;
 namespace gpts = ::gos::pid::toolkit::setting;
@@ -50,14 +50,14 @@ void create(po::options_description& description) {
   description.add_options()
     (gptt::option::composite::SerialPort,
       po::value(&(gpts::communication::serial::port))
-      ->default_value(gpt::default::communication::serial::Port),
+      ->default_value(gpt::defval::communication::serial::Port),
       gptt::option::description::SerialPort)
     (gptt::option::composite::SerialBaud,
       po::value(&(gpts::communication::serial::baud))
-      ->default_value(gpt::default::communication::serial::Baud),
+      ->default_value(gpt::defval::communication::serial::Baud),
       gptt::option::description::SerialBaud)
     (gptt::option::composite::SlaveId,
-      po::value(&(gpts::slave::id)) ->default_value(gpt::default::slave::Id),
+      po::value(&(gpts::slave::id)) ->default_value(gpt::defval::slave::Id),
       gptt::option::description::SlaveId);
 }
 }

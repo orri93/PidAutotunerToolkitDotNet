@@ -64,6 +64,9 @@ set(gos_pid_toolkit_lib_modbus_lib libmodbus)
 if (GOS_PID_TOOLKIT_INSTRUCT_LIB_MODBUS_PATH)
   set(gos_pid_toolkit_lib_modbus_path
     "${GOS_PID_TOOLKIT_INSTRUCT_LIB_MODBUS_PATH}")
+  list(APPEND gos_pid_toolkit_lib_modbus_include
+    "${gos_pid_toolkit_lib_modbus_path}/src"
+    ${gos_pid_toolkit_lib_modbus_path})
 else ()
   set(gos_pid_toolkit_lib_modbus_path
     "${CMAKE_CURRENT_SOURCE_DIR}/extern/libmodbus")
@@ -75,15 +78,16 @@ else ()
     message(STATUS "  Modbus binary    : ${MODBUS_BIN}")
     message(STATUS "  Modbus library   : ${MODBUS_STATIC_LIB}")
     message(STATUS "  Modbus includes  : ${MODBUS_INCLUDES}")
+    list(APPEND gos_pid_toolkit_lib_modbus_include
+      "${MODBUS_INCLUDES}/modbus")
   else ()
     add_subdirectory(extern/libmodbus)
     list(APPEND gos_pid_toolkit_lib_modbus_include
-      "${CMAKE_CURRENT_BINARY_DIR}/extern/libmodbus/src")
+      "${CMAKE_CURRENT_BINARY_DIR}/extern/libmodbus/src"
+      "${gos_pid_toolkit_lib_modbus_path}/src"
+      ${gos_pid_toolkit_lib_modbus_path})
   endif ()
 endif ()
-list(APPEND gos_pid_toolkit_lib_modbus_include
-  "${gos_pid_toolkit_lib_modbus_path}/src"
-  ${gos_pid_toolkit_lib_modbus_path})
 
 if (GOS_PID_TOOLKIT_C)
   set(gos_pid_toolkit_c_include_dir
@@ -413,6 +417,14 @@ if (gos_build_dependency_boost)
 #   list(APPEND gos_pid_toolkit_cpp_include
 #     ${Boost_INCLUDE_DIRS})
 # endif (GOS_PID_TOOLKIT_CPP)
+
+  message(STATUS "")
+  message(STATUS "PID Toolkit Boost Library BUILD SUMMARY")
+  message(STATUS "  Boost Version       : ${Boost_VERSION}")
+  message(STATUS "  Boost Macro Version : ${Boost_VERSION_MACRO}")
+
+  set(gos_pid_toolkit_boost_version_definition "GOS_PID_TUNING_BOOST_VERSION=${Boost_VERSION}")
+
 endif ()
 
 if (GOS_PID_TOOLKIT_CPP)

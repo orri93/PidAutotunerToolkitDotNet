@@ -41,8 +41,11 @@ list(APPEND gos_pid_toolkit_ui_libraries
   Boost::filesystem
   Boost::date_time
 # Boost::log_setup
-  Boost::regex
-  ws2_32)
+  Boost::regex)
+
+if (WIN32)
+  list(APPEND gos_pid_toolkit_ui_libraries ws2_32)
+endif ()
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)

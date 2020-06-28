@@ -7,10 +7,9 @@
 #define GOT_PI_FORCE_AUTO                   3
 #define GOT_PI_FORCE_MAXIMUM                3
 
-#include <cerrno>
-
 #include <string>
 
+#include <gos/pid/arduino/types.h>
 #include <gos/pid/arduino/modbus/types.h>
 
 namespace gos {
@@ -21,7 +20,7 @@ namespace master {
 
 namespace report {
 namespace error {
-errno_t errorno();
+::gos::pid::toolkit::type::error_number errorno();
 std::string last();
 } // namespace error
 } // namespace report

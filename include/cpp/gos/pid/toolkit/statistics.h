@@ -5,6 +5,8 @@
 
 #include <memory>
 #include <vector>
+#include <algorithm>
+#include <type_traits>
 
 #include <gos/pid/toolkit/types.h>
 #include <gos/pid/toolkit/utilities.h>
@@ -20,8 +22,6 @@ namespace toolkit {
 template<typename T> class Statistics {
 public:
   
-  typedef ::std::vector<T> Vector;
-
   Statistics() : sum_(0) {
   }
 
@@ -65,7 +65,7 @@ public:
     return static_cast<size_t>(vector_.size());
   }
 
-  const Vector& vector() const {
+  const ::std::vector<T>& vector() const {
     return vector_;
   }
 
@@ -78,10 +78,10 @@ public:
   }
 
   T median() {
-    VectorSizeType size = this->vector_.size();
+    auto size = this->vector_.size();
     if (size > 1) {
       size_t medianindex = size / static_cast<T>(2);
-      Vector sorted(vector_);
+      ::std::vector<T> sorted(this->vector_);
       ::std::sort(sorted.begin(), sorted.end());
       if (size % 2 == 0) {
         return (sorted[medianindex - 1] + sorted[medianindex]) /
@@ -108,10 +108,10 @@ public:
   }
 
   T sd() const {
-    if (T == double) {
+    if (::std::is_same<T, double>()) {
       return ::sqrt(variance());
-    } else if (T == float) {
-      return ::sqrtf(variance())
+    } else if (::std::is_same<T, float>()) {
+      return ::sqrtf(variance());
     } else {
       return static_cast<T>(::sqrt(static_cast<double>(variance())));
     }
@@ -122,7 +122,7 @@ protected:
   typedef std::unique_ptr<::gos::pid::toolkit::type::range<T>> RangePointer;
   RangePointer range_;
 #endif
-  Vector vector_;
+  ::std::vector<T> vector_;
   T sum_;
 };
 

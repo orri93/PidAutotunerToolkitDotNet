@@ -2,6 +2,7 @@
 #define GOS_PID_TOOLKIT_SETTINGS_H_
 
 #include <string>
+#include <chrono>
 
 #include <boost/program_options.hpp>
 
@@ -30,6 +31,7 @@ namespace interval {
 namespace milliseconds {
 extern int loop;
 } // namespace milliseconds
+std::chrono::milliseconds duration();
 } // namespace interval
 } // namespace timing
 

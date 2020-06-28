@@ -146,12 +146,12 @@ void load(
   const gpam::types::registry::Holding& holding,
   const std::string& separator,
   const bool& isinternal) {
-  if (initialized.Kd.has_value()) {
+  if (initialized.Kd.is_initialized()) {
     variables.Kd = initialized.Kd.get();
   } else {
     variables.Kd = holding.Kd;
   }
-  if (initialized.Setpoint.has_value()) {
+  if (initialized.Setpoint.is_initialized()) {
     variables.Setpoint = initialized.Setpoint.get();
   } else {
     variables.Setpoint = holding.Setpoint;
@@ -199,7 +199,7 @@ void cycle(
     detail::window.clear();
   }
   if (issuccessful) {
-    if (!parameters.BaseLine.has_value()) {
+    if (!parameters.BaseLine.is_initialized()) {
       parameters.BaseLine = input.Temperature +
         GOS_ARDUINO_TOOLS_MASTER_BASE_LINE_ADDITION;
       if (gpto::isverbose()) {
@@ -207,7 +207,6 @@ void cycle(
           << " at " << elapsed << std::endl;
       }
     }
-
     if (input.Temperature > variables.Maximum) {
       if (gpto::isverbose()) {
         std::cout << "New Maximum " << input.Temperature
@@ -469,7 +468,7 @@ bool tuning(
 
   switch (mode) {
   case gptt::TuningMode::blackbox:
-    if (initialized.Kp.has_value() && initialized.Ki.has_value()) {
+    if (initialized.Kp.is_initialized() && initialized.Ki.is_initialized()) {
       initialize(
         variables,
         black,
@@ -487,9 +486,9 @@ bool tuning(
   }
 
   if (
-    initialized.Kp.has_value() &&
-    initialized.Ki.has_value() &&
-    initialized.Kd.has_value()) {
+    initialized.Kp.is_initialized() &&
+    initialized.Ki.is_initialized() &&
+    initialized.Kd.is_initialized()) {
     if (gpam::master::retry::write::tuning(
       initialized.Kp.get(),
       initialized.Ki.get(),
@@ -498,28 +497,28 @@ bool tuning(
     }
   } else {
     if (
-      initialized.Kp.has_value() &&
-      initialized.Ki.has_value()) {
+      initialized.Kp.is_initialized() &&
+      initialized.Ki.is_initialized()) {
       if (gpam::master::retry::write::tuning(
         initialized.Kp.get(),
         initialized.Ki.get()) != gpam::types::result::success) {
         return false;
       }
     } else {
-      if (initialized.Kp.has_value()) {
+      if (initialized.Kp.is_initialized()) {
         if (gpam::master::retry::write::kp(initialized.Kp.get())
           != gpam::types::result::success) {
           return false;
         }
       }
-      if (initialized.Ki.has_value()) {
+      if (initialized.Ki.is_initialized()) {
         if (gpam::master::retry::write::ki(initialized.Ki.get())
           != gpam::types::result::success) {
           return false;
         }
       }
     }
-    if (initialized.Kd.has_value()) {
+    if (initialized.Kd.is_initialized()) {
       if (gpam::master::retry::write::kd(initialized.Kd.get())
         != gpam::types::result::success) {
         return false;
@@ -527,12 +526,12 @@ bool tuning(
     }
   }
 
-  if (initialized.Setpoint.has_value()) {
+  if (initialized.Setpoint.is_initialized()) {
     if (gpam::master::retry::write::setpoint(initialized.Setpoint.get())
       != gpam::types::result::success) {
       return false;
     }
-  } else if (initialized.Manual.has_value()) {
+  } else if (initialized.Manual.is_initialized()) {
     if (gpam::master::retry::write::manual(initialized.Manual.get())
       != gpam::types::result::success) {
       return false;

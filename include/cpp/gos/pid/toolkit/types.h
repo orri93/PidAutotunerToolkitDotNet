@@ -1,6 +1,8 @@
 #ifndef GOS_PID_TOOLKIT_TYPES_H_
 #define GOS_PID_TOOLKIT_TYPES_H_
 
+#include <cerrno>
+
 #include <fstream>
 #include <ostream>
 #include <string>
@@ -12,6 +14,11 @@ namespace pid {
 namespace toolkit {
 namespace type {
 
+#ifdef GOS_PID_ARDUINO_MODBUS_USE_ERROR
+typedef errno_t error_number;
+#else
+typedef int error_number;
+#endif
 
 typedef ::std::chrono::steady_clock Clock;
 typedef Clock::time_point Time;

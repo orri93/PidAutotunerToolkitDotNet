@@ -19,7 +19,7 @@
 namespace gos {
 namespace pid {
 namespace toolkit {
-namespace default {
+namespace defval {
 
   namespace communication {
   namespace serial {

@@ -22,7 +22,7 @@ namespace mu = ::std;
 #endif
 
 namespace gpt = ::gos::pid::toolkit;
-namespace gptd = ::gos::pid::toolkit::default;
+namespace gptd = ::gos::pid::toolkit::defval;
 namespace gptt = ::gos::pid::toolkit::text;
 
 namespace gos {
@@ -40,14 +40,17 @@ int baud = gptd::communication::serial::Baud;
 } // namespace communication
 
 namespace slave {
-int id = gpt::default::slave::Id;
+int id = gpt::defval::slave::Id;
 } // namespace slave
 
 namespace timing {
 namespace interval {
 namespace milliseconds {
-int loop = gpt::default::timing::interval::milliseconds::Loop;
+int loop = gpt::defval::timing::interval::milliseconds::Loop;
 } // namespace milliseconds
+std::chrono::milliseconds duration() {
+  return std::chrono::milliseconds(gpt::setting::timing::interval::milliseconds::loop);
+}
 } // namespace interval
 } // namespace timing
 

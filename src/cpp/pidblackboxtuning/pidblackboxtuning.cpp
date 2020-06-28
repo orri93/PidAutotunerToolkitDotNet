@@ -2,11 +2,15 @@
 
 #include <fstream>
 #include <iostream>
+#include <thread>
 #include <atomic>
 
 #ifdef WIN32
 #include <WinSock2.h>
 #include <Windows.h>
+#else
+#include <signal.h>
+#include <unistd.h>
 #endif
 
 #include <modbus.h>
@@ -51,9 +55,10 @@ namespace gpt = ::gos::pid::tuning;
 
 static std::atomic_bool go;
 
+#if defined(_WIN32)
+
 static HANDLE handle = NULL;
 
-#if defined(_WIN32)
 /*
  * See Handling Ctrl+C in Windows Console Application
  * https://asawicki.info/news_1465_handling_ctrlc_in_windows_console_application
@@ -68,6 +73,13 @@ static BOOL WINAPI console_ctrl_handler(DWORD dwCtrlType) {
     SetEvent(handle);
   }
   return TRUE;
+}
+#else
+static void console_handler(int s) {
+  if (gpts::isverbose()) {
+    std::cerr << "Stopping from console control handler" << std::endl;
+  }
+  go.store(false);
 }
 #endif
 
@@ -121,7 +133,17 @@ int main(int argc, char* argv[]) {
   GOS_PID_TUNING_BLACK_BOX_ELAPSED_TYPE elapsed;
 
 #if defined(_WIN32)
+  DWORD wait;
   ::SetConsoleCtrlHandler(console_ctrl_handler, TRUE);
+#else
+  struct sigaction signal_handling;
+
+  signal_handling.sa_handler = console_handler;
+  sigemptyset(&signal_handling.sa_mask);
+  signal_handling.sa_flags = 0;
+
+  sigaction(SIGINT, &signal_handling, NULL);
+
 #endif
 
   gpts::create();
@@ -292,7 +314,7 @@ int main(int argc, char* argv[]) {
       break;
     }
 
-    if (force::value.has_value()) {
+    if (force::value.is_initialized()) {
       if (gpammr::write::force(force::value.get())
         != gpam::types::result::success) {
         goto gos_arduino_tools_pid_modbus_master_exit_failure;
@@ -322,7 +344,6 @@ int main(int argc, char* argv[]) {
       break;
     }
 
-    DWORD wait;
     gp::toolkit::type::Duration duration;
     std::chrono::milliseconds dms;
     gp::toolkit::type::Time time, starttime =
@@ -372,6 +393,7 @@ int main(int argc, char* argv[]) {
       }
 
       if (localgo = go.load()) {
+#if defined(_WIN32)
         if (handle) {
           CloseHandle(handle);
         }
@@ -399,6 +421,9 @@ int main(int argc, char* argv[]) {
           std::cerr << "Failed to create loop wait event" << std::endl;
           goto gos_arduino_tools_pid_modbus_master_exit_failure;
         }
+#else
+        std::this_thread::sleep_for(gpts::timing::interval::duration());
+#endif
       }
     }
   } catch (::gos::pid::toolkit::exception& er) {
@@ -433,7 +458,7 @@ gos_arduino_tools_pid_modbus_master_exit:
     gpt::black::box::shutdown();
     break;
   default:
-    if(force::final.has_value()) {
+    if(force::final.is_initialized()) {
       gpammr::write::force(force::final.get());
     }
     break;

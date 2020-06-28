@@ -46,9 +46,9 @@ namespace master {
 
 namespace report {
 namespace error {
-errno_t _no;
+gpt::type::error_number _no;
 std::string _last;
-errno_t errorno() {
+gpt::type::error_number errorno() {
   return _no;
 }
 std::string last() {

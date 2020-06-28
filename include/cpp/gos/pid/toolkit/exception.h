@@ -27,10 +27,14 @@ public:
     \param what The description of the exception cause.
   */
   exception(const char* what);
+#ifdef _MSC_VER
 #if _MSC_VER >= 1910
   const char* what() const noexcept override;
 #else
   const char* what() const;
+#endif
+#else
+  const char* what() const noexcept override;
 #endif
 private:
   std::string what_;

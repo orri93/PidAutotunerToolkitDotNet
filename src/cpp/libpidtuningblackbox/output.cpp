@@ -82,21 +82,21 @@ void result(
     stream << separator << variables.Ki;
     break;
   default:
-    if (initialized.Kp.has_value()) {
+    if (initialized.Kp.is_initialized()) {
       stream << separator << holding.Kp;
     }
-    if (initialized.Ki.has_value()) {
+    if (initialized.Ki.is_initialized()) {
       stream << separator << holding.Ki;
     }
     break;
   }
-  if (initialized.Kd.has_value()) {
+  if (initialized.Kd.is_initialized()) {
     stream << separator << holding.Kd;
   }
-  if (initialized.Manual.has_value()) {
+  if (initialized.Manual.is_initialized()) {
     stream << separator << holding.Manual;
   }
-  if (initialized.Setpoint.has_value()) {
+  if (initialized.Setpoint.is_initialized()) {
     stream << separator << holding.Setpoint;
   }
 

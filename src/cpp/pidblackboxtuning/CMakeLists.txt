@@ -15,14 +15,17 @@ list(APPEND gos_pid_black_box_tuning_libraries
   Boost::filesystem
   Boost::date_time
 # Boost::log_setup
-  Boost::regex
-  ws2_32)
+  Boost::regex)
+
+if (WIN32)
+  list(APPEND gos_pid_black_box_tuning_libraries ws2_32)
+endif ()
 
 list(APPEND gos_pid_black_box_tuning_definitions
   NOMINMAX)
 
 add_executable(${gos_pid_black_box_tuning_target}
-  ${gos_pid_black_box_tuning_source})
+  ${gos_pid_black_box_tuning_source} )
 
 target_compile_definitions(${gos_pid_black_box_tuning_target} PUBLIC
   ${gos_pid_black_box_tuning_definitions})
