@@ -7,3 +7,6 @@
 [submodule "extern/qml-file-dialog-demo"]
 	path = extern/qml-file-dialog-demo
 	url = git@github.com:orri93/qml-file-dialog-demo.git
+[submodule "extern/paho-mqtt-c"]
+	path = extern/paho-mqtt-c
+	url = https://github.com/eclipse/paho.mqtt.c.git

@@ -4,6 +4,7 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/program_options.hpp>
 
 #ifdef GOS_NOT_YET_NEEDED
 #include <modbus.h>
@@ -25,18 +26,76 @@ namespace gpt = ::gos::pid::toolkit;
 namespace gptd = ::gos::pid::toolkit::defval;
 namespace gptt = ::gos::pid::toolkit::text;
 
+namespace gpttr = ::gos::pid::toolkit::type::reporting;
+
+namespace gptdr = ::gos::pid::toolkit::defval::reporting;
+
 namespace gos {
 namespace pid {
 namespace toolkit {
 namespace setting {
 
-gpt::type::level verbosity = gpt::type::level::normal;
+namespace reporting {
+gpttr::level verbosity = gptdr::Verbosity;
+namespace logging {
+gpttr::logging::level level = gptdr::logging::Level;
+std::string format = gptdr::logging::Format;
+namespace file {
+std::string path = gptdr::logging::file::Path;
+std::string pattern = gptdr::logging::file::Pattern;
+namespace rotation {
+size_t size = gptdr::logging::file::rotation::Size;
+} // namespace rotation
+} // namespace file
+} // namespace logging
+namespace repeate {
+int silence = gptdr::repeate::Silence;
+std::chrono::milliseconds Between() {
+  return std::chrono::minutes(silence);
+}
+} // namespace repeate
+} // namespace reporting
 
 namespace communication {
 namespace serial {
 std::string port = gptd::communication::serial::Port;
 int baud = gptd::communication::serial::Baud;
 } // namespace serial
+#ifdef GOS_PID_TOOLKIT_MQTT
+namespace mqtt {
+/* MQTT options */
+int version = gptd::communication::mqtt::Version;
+namespace topic {
+std::string prefix = gptd::communication::mqtt::topic::Prefix;
+} // namespace topic
+namespace client {
+std::string id = gptd::communication::mqtt::client::Id;
+} // namespace client
+int qos = gptd::communication::mqtt::Qos;
+int retained = gptd::communication::mqtt::Retained;
+//std::string username = nullptr;
+//std::string password = nullptr;
+std::string host = gptd::communication::mqtt::Host;
+int port = gptd::communication::mqtt::Port;
+//std::string connection;
+int keepalive = gptd::communication::mqtt::Keepalive;
+namespace connection {
+int timeout = gptd::communication::mqtt::connection::Timeout;
+}
+namespace tls {
+/* TLS options */
+//int insecure = gptd::communication::mqtt::tls::Insecure;
+//std::string capath;
+//std::string cert;
+//std::string cafile;
+//std::string key;
+//std::string keypass;
+//std::string ciphers;
+//std::string psk_identity;
+//std::string psk;
+} // namespace tls
+} // namespace mqtt
+#endif
 } // namespace communication
 
 namespace slave {
@@ -57,9 +116,9 @@ std::chrono::milliseconds duration() {
 void create() {
 }
 
-bool issilent() { return verbosity == gpt::type::level::silent; }
-bool isnormal() { return verbosity != gpt::type::level::silent; }
-bool isverbose() { return verbosity == gpt::type::level::verbose; }
+bool issilent() { return reporting::verbosity == gpttr::level::silent; }
+bool isnormal() { return reporting::verbosity != gpttr::level::silent; }
+bool isverbose() { return reporting::verbosity == gpttr::level::verbose; }
 
 namespace configuration {
 namespace file {
@@ -131,6 +190,12 @@ std::ifstream& stream() {
 
 bool iswithfile() {
   return details::is_configurateion_file_valid_;
+}
+
+void close() {
+  if (details::configuration_stream_) {
+    details::configuration_stream_->close();
+  }
 }
 
 } // namespace file

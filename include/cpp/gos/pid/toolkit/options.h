@@ -26,7 +26,12 @@ extern const char* Name;
 
 void create(
   ::boost::program_options::options_description& description,
-  const bool& file = false);
+  const bool& file = true);
+}
+
+namespace reporting {
+extern const char* Name;
+void create(::boost::program_options::options_description& description);
 }
 
 namespace communication {

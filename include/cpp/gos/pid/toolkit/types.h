@@ -27,11 +27,16 @@ typedef Clock::duration Duration;
 typedef ::std::unique_ptr<std::ofstream> OutputFileStreamPointer;
 typedef ::std::unique_ptr<std::ostream> OutputStreamPointer;
 
+namespace reporting {
 enum class level {
   silent,
   normal,
   verbose
 };
+namespace logging {
+enum class level { none, debug, info, warning, critical };
+}
+}
 
 template<typename T> struct range {
   T lowest;

@@ -11,11 +11,7 @@ list(APPEND gos_pid_black_box_tuning_libraries
   ${gos_pid_tuning_black_box_library_target}
   ${gos_pid_toolkit_cpp_library_target}
   ${gos_pid_toolkit_lib_modbus_lib}
-  Boost::program_options
-  Boost::filesystem
-  Boost::date_time
-# Boost::log_setup
-  Boost::regex)
+  ${gos_pid_toolkit_boost_libraries})
 
 if (WIN32)
   list(APPEND gos_pid_black_box_tuning_libraries ws2_32)

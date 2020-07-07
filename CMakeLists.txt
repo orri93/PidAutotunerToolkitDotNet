@@ -12,10 +12,14 @@ option(GOS_PID_TOOLKIT_C "Build C version of PID Toolkit" OFF)
 option(GOS_PID_TOOLKIT_CPP "Build C++ version of PID Toolkit" ON)
 option(GOS_PID_TOOLKIT_TEST "Build and execute the unit tests" OFF)
 option(GOS_PID_TOOLKIT_UI "Build PID Toolkit UI components" OFF)
+option(GOS_PID_TOOLKIT_SERVICE "Build PID Toolkit Service components" OFF)
 option(GOS_PID_ARDUINO_BASED_TUNING "Build the Arduino Based auto-tuning" OFF)
 option(GOS_PID_TOOLKIT_INSTALL_CONFIGURATION "Install the configuration file with the target" OFF)
 option(GOS_PID_TOOLKIT_INSTALL_DEPENDENCIES "Install runtime dependencies" OFF)
 option(GOS_PID_TOOLKIT_EXTERNAL_PROJECT "Add some dependencies as External Project" OFF)
+option(GOS_PID_TOOLKIT_WINDOWS_SERVICE "Generate Windows Services" OFF)
+option(GOS_PID_TOOLKIT_REPORT_BOOST_LOG "Report to Boost log" ON)
+option(GOS_PID_TOOLKIT_REPORT_CONSOLE "Report to console standard output and error" ON)
 
 option(BUILD_DOCS "Generate Doxygen" OFF)
 
@@ -140,6 +144,8 @@ if (GOS_PID_TOOLKIT_CPP)
     "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/arduino/modbus/master.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/arduino/modbus/types.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/arduino/modbus/retry.h")
+  list(APPEND gos_pid_toolkit_service_cpp_public_header
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/toolkit/service/service.h")
   list(APPEND gos_pid_tuning_black_box_library_public_header
     "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/tuning/blackbox.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/cpp/gos/pid/tuning/types.h")
@@ -154,11 +160,14 @@ if (GOS_PID_TOOLKIT_CPP)
   set(gos_pid_toolkit_pid_cpp_library_target libpidtoolkitpid)
   set(gos_pid_toolkit_tune_cpp_library_target libpidtoolkittune)
   set(gos_pid_arduino_modbus_master_library_target libpidarduinomodbusmaster)
+  set(gos_pid_toolkit_service_cpp_library_target libpidtoolkitservice)
   set(gos_pid_tuning_black_box_library_target libpidtuningblackbox)
   set(gos_pid_toolkit_ui_cpp_plugin_target pidtoolkitplugin)
   set(gos_pid_black_box_tuning_target pidblackboxtuning)
   set(gos_pid_toolkit_ui_target pidtoolkitui)
+  set(gos_pid_server_target pidtoolkitserver)
   set(gos_build_dependency_boost ON)
+  list(APPEND gos_pid_toolkig_cpp_definitions GOS_PID_TOOLKIT)
 
   if (GOS_PID_ARDUINO_BASED_TUNING)
     set(gos_pid_arduino_based_include_dir
@@ -188,6 +197,29 @@ if (GOS_PID_TOOLKIT_CPP)
       "${gos_pid_arduino_based_binary_include_dir}")
     set(gos_pid_arduino_based_library_target libarduinobasedautotuning)
   endif (GOS_PID_ARDUINO_BASED_TUNING)
+
+  if (GOS_PID_TOOLKIT_REPORT_CONSOLE)
+    list(APPEND gos_pid_toolkig_cpp_definitions GOS_PID_TOOLKIT_REPORT_CONSOLE)
+  endif ()
+  if (GOS_PID_TOOLKIT_REPORT_BOOST_LOG)
+    list(APPEND gos_pid_toolkig_cpp_definitions GOS_PID_TOOLKIT_REPORT_BOOST_LOG)
+    list(APPEND gos_pid_toolkit_boost_package
+      log_setup
+      log)
+    list(APPEND gos_pid_toolkit_boost_libraries
+      Boost::log_setup
+      Boost::log)
+  endif ()
+
+  if (GOS_PID_TOOLKIT_SERVICE)
+    set(gos_pid_toolkit_lib_mqtt_library paho-mqtt3c-static)
+    list(APPEND gos_pid_toolkig_cpp_definitions GOS_PID_TOOLKIT_MQTT)
+    list(APPEND gos_pid_toolkit_lib_mqtt_include
+      "${CMAKE_CURRENT_SOURCE_DIR}/extern/paho-mqtt-c/src")
+    list(APPEND gos_pid_toolkit_cpp_include
+      ${gos_pid_toolkit_lib_mqtt_include})
+    add_subdirectory(extern/paho-mqtt-c)
+  endif ()
 
   if (GOS_PID_TOOLKIT_UI)
     find_package(Qt5 COMPONENTS REQUIRED
@@ -399,12 +431,19 @@ if (gos_build_dependency_boost)
 
   list(APPEND gos_pid_toolkit_boost_package
     regex
-    system
+#   system
     date_time
     filesystem
-    serialization
+#   serialization
     program_options)
- list(REMOVE_DUPLICATES gos_pid_toolkit_boost_package)
+  list(REMOVE_DUPLICATES gos_pid_toolkit_boost_package)
+
+  list(APPEND gos_pid_toolkit_boost_libraries
+    Boost::regex
+    Boost::date_time
+    Boost::filesystem
+    Boost::program_options)
+  list(REMOVE_DUPLICATES gos_pid_toolkit_boost_libraries)
 
   if (gos_pid_toolkit_boost_package)
     find_package(Boost 1.62 COMPONENTS REQUIRED

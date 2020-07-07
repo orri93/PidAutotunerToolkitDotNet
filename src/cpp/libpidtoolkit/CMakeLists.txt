@@ -1,17 +1,27 @@
 list(APPEND gos_pid_toolkit_cpp_library_source
   "exception.cpp"
+  "reporting.cpp"
+  "parsing.cpp"
   "default.cpp"
   "options.cpp"
   "setting.cpp"
   "version.cpp"
+  "console.cpp"
   "serial.cpp"
+  "stream.cpp"
   "text.cpp")
+
+list(APPEND gos_pid_toolkit_cpp_include
+  ${Boost_INCLUDE_DIRS})
+
+list(APPEND gos_pid_toolkit_cpp_library_definitions
+  ${gos_pid_toolkig_cpp_definitions})
 
 add_library(${gos_pid_toolkit_cpp_library_target}
   ${gos_pid_toolkit_cpp_library_source})
 
-list(APPEND gos_pid_toolkit_cpp_include
-  ${Boost_INCLUDE_DIRS})
+target_compile_definitions(${gos_pid_toolkit_cpp_library_target} PUBLIC
+  ${gos_pid_toolkit_cpp_library_definitions})
 
 if(CLANG_TIDY_EXE)
   set_target_properties(${gos_pid_toolkit_cpp_library_target} PROPERTIES

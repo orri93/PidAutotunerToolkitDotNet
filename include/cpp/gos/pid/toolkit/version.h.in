@@ -5,7 +5,8 @@
  * \author Geirmundur Orri Sigurdsson
  * \date   May 2020
  *********************************************************************/
- #ifndef GOS_PID_TOOLKIT_VERSION_H_
+
+#ifndef GOS_PID_TOOLKIT_VERSION_H_
 #define GOS_PID_TOOLKIT_VERSION_H_
 
 /* The major version, (1, if %PROJECT_VERSION is 1.2.3.4) */

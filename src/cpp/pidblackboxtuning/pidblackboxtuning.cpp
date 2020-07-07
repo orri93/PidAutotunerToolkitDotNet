@@ -3,7 +3,6 @@
 #include <fstream>
 #include <iostream>
 #include <thread>
-#include <atomic>
 
 #ifdef WIN32
 #include <WinSock2.h>
@@ -18,6 +17,8 @@
 #include <gos/pid/toolkit/text.h>
 #include <gos/pid/toolkit/setting.h>
 #include <gos/pid/toolkit/options.h>
+#include <gos/pid/toolkit/console.h>
+#include <gos/pid/toolkit/version.h>
 #include <gos/pid/toolkit/exception.h>
 
 #include <gos/pid/arduino/modbus/master.h>
@@ -46,42 +47,13 @@ namespace po = ::boost::program_options;
 namespace gp = ::gos::pid;
 namespace gpts = ::gos::pid::toolkit::setting;
 namespace gpto = ::gos::pid::toolkit::options;
+namespace gptc = ::gos::pid::toolkit::console;
 
 namespace gpat = ::gos::pid::arduino::types;
 namespace gpam = ::gos::pid::arduino::modbus;
 namespace gpammr = ::gos::pid::arduino::modbus::master::retry;
 
 namespace gpt = ::gos::pid::tuning;
-
-static std::atomic_bool go;
-
-#if defined(_WIN32)
-
-static HANDLE handle = NULL;
-
-/*
- * See Handling Ctrl+C in Windows Console Application
- * https://asawicki.info/news_1465_handling_ctrlc_in_windows_console_application
- *
- */
-static BOOL WINAPI console_ctrl_handler(DWORD dwCtrlType) {
-  if (gpts::isverbose()) {
-    std::cerr << "Stopping from console control handler" << std::endl;
-  }
-  go.store(false);
-  if (handle) {
-    SetEvent(handle);
-  }
-  return TRUE;
-}
-#else
-static void console_handler(int s) {
-  if (gpts::isverbose()) {
-    std::cerr << "Stopping from console control handler" << std::endl;
-  }
-  go.store(false);
-}
-#endif
 
 namespace output {
 static std::string separator;
@@ -124,39 +96,23 @@ static bool successful;
 
 int main(int argc, char* argv[]) {
 
-  go.store(true);
+  gptc::go::start();
 
   int round = 0;
   int retval = EXIT_SUCCESS;
   gpam::types::result result;
 
   GOS_PID_TUNING_BLACK_BOX_ELAPSED_TYPE elapsed;
-
-#if defined(_WIN32)
-  DWORD wait;
-  ::SetConsoleCtrlHandler(console_ctrl_handler, TRUE);
-#else
-  struct sigaction signal_handling;
-
-  signal_handling.sa_handler = console_handler;
-  sigemptyset(&signal_handling.sa_mask);
-  signal_handling.sa_flags = 0;
-
-  sigaction(SIGINT, &signal_handling, NULL);
-
-#endif
-
+  if (!gptc::handler::create()) {
+    return EXIT_FAILURE;
+  }
   gpts::create();
 
   try {
-    po::options_description optdescript(gpto::general::Name);
-    gpto::general::create(optdescript);
-
-    po::options_description communicationdescript(gpto::communication::Name);
-    gpto::communication::create(communicationdescript);
-
-    po::options_description timer(gpto::timer::Name);
-    gpto::timer::create(timer, GOS_ARDUINO_TOOLS_MASTER_DEFAULT_INTERVAL);
+    po::options_description& optdescript = gptc::options::general::create();
+    po::options_description& repdescript = gptc::options::reporting::create();
+    po::options_description& communicationdescript = gptc::options::communication::create();
+    po::options_description& timer = gptc::options::timer::create(GOS_ARDUINO_TOOLS_MASTER_DEFAULT_INTERVAL);
 
     po::options_description custom(GOS_ARDUINO_TOOLS_MASTER_NAME);
     gpam::options::create(custom);
@@ -170,47 +126,24 @@ int main(int argc, char* argv[]) {
         ->default_value(GOS_ARDT_DEFAULT_SEPARATOR),
         "value separator")
       (GOS_ARDT_MOD_INTERNAL, GOS_ARDT_MOD_INTERNAL);
+    gptc::options::custom::add(custom);
 
     po::options_description clioptions(
       GOS_ARDUINO_TOOLS_MASTER_NAME " " GOST_USAGE, GOS_PO_LINE_LENGTH);
-    clioptions
-      .add(optdescript)
-      .add(communicationdescript)
-      .add(timer)
-      .add(custom);
+    gptc::options::cli::create(clioptions);
 
-    po::variables_map varmap;
+    po::variables_map& varmap = gptc::options::round::first::parse(clioptions, argc, argv);
 
-    /* First round with CLI parser only */
-    po::command_line_parser cmdlinparser(argc, argv);
-    po::parsed_options parseopt = cmdlinparser.options(clioptions)
-      .style(po::command_line_style::default_style).run();
-    po::store(parseopt, varmap);
-
-    if (gpto::handling::help(clioptions, varmap)) {
-      return GOS_PO_EXIT_HELP;
+    if (retval = gptc::options::round::first::handle(
+      clioptions,
+      GOS_ARDUINO_TOOLS_MASTER_NAME,
+      GPT_VERSION_STRING)) {
+      return retval;
     }
 
-    std::string version = "1.0.0.0";
-    std::string name = GOS_ARDUINO_TOOLS_MASTER_NAME;
-
-    if (gpto::handling::version(varmap, name, version)) {
-      return GOS_PO_EXIT_VERSION;
-    }
-
-    gpto::handling::verbosity(varmap);
-
-    /* second round */
-    po::notify(varmap);
-
-    /* Create the configuration file options description */
-    po::options_description configfdesc;
-    configfdesc
-      .add(communicationdescript)
-      .add(timer)
-      .add(custom);
-    if (gpto::handling::file(configfdesc, varmap) == EXIT_FAILURE) {
-      return EXIT_FAILURE;
+    po::options_description& configfdesc = gptc::options::round::second::parse(retval);
+    if (retval) {
+      return retval;
     }
 
     gpto::handling::communication(varmap);
@@ -348,7 +281,7 @@ int main(int argc, char* argv[]) {
     std::chrono::milliseconds dms;
     gp::toolkit::type::Time time, starttime =
       gp::toolkit::type::Clock::now();
-    bool localgo = go.load();
+    bool localgo = gptc::go::is();
     while (localgo) {
       time = gp::toolkit::type::Clock::now();
 
@@ -392,38 +325,8 @@ int main(int argc, char* argv[]) {
         output::file::stream::pointer->flush();
       }
 
-      if (localgo = go.load()) {
-#if defined(_WIN32)
-        if (handle) {
-          CloseHandle(handle);
-        }
-        handle = CreateEvent(
-          NULL,               // Default security attributes
-          TRUE,               // Manual-reset event
-          FALSE,              // Initial state is non-signaled
-          NULL                // Object name
-        );
-        if (handle) {
-          wait = WaitForSingleObject(
-            handle,
-            gpts::timing::interval::milliseconds::loop);
-          switch (wait) {
-          case WAIT_OBJECT_0:
-          case WAIT_TIMEOUT:
-            break;
-          case WAIT_ABANDONED:
-          case WAIT_FAILED:
-          default:
-            std::cerr << "Waiting for the go lock failed" << std::endl;
-            goto gos_arduino_tools_pid_modbus_master_exit_failure;
-          }
-        } else {
-          std::cerr << "Failed to create loop wait event" << std::endl;
-          goto gos_arduino_tools_pid_modbus_master_exit_failure;
-        }
-#else
-        std::this_thread::sleep_for(gpts::timing::interval::duration());
-#endif
+      if(!gptc::interval(localgo)) {
+        goto gos_arduino_tools_pid_modbus_master_exit_failure;
       }
     }
   } catch (::gos::pid::toolkit::exception& er) {
@@ -449,6 +352,7 @@ gos_arduino_tools_pid_modbus_master_exit_failure:
   retval = EXIT_FAILURE;
 
 gos_arduino_tools_pid_modbus_master_exit:
+  gptc::shutdown();
   if (output::file::stream::pointer) {
     output::file::stream::pointer->flush();
     output::file::stream::pointer->close();
